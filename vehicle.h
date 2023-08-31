@@ -71,7 +71,7 @@ public:
     int id;
     int num_trips;
     std::vector<int> trip_id;
-    double rotation_cost;
+    double deadhead_cost;
 
     // Constructor
     Vehicle() {
@@ -81,7 +81,7 @@ public:
     Vehicle(int id) {
         this->id = id;
         num_trips = 0;
-        rotation_cost = 0.0;
+        deadhead_cost = 0.0;
     }
 
     // Desctructor

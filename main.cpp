@@ -15,7 +15,7 @@
 int main() {
     std::string instance = "Ann_Arbor";
     Logger logger("./output/" + instance + "_log.txt", true);
-    logger.set_log_level_threshold(LogLevel::Info);
+    logger.set_log_level_threshold(LogLevel::Debug);
 
     // Initialize variables
     int num_trips, num_terminals;  // Number of trips and terminals in the network
