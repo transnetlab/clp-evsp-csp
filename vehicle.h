@@ -7,15 +7,15 @@
 //Create a trip class which contains relevant GTFS details
 class Trip {
 public:
-    int id;
-    int start_stop;
-    int end_stop;
-    int start_time;
-    int end_time;
-    double distance;
-    std::vector<bool> is_compatible;
-    std::vector<double> deadhead_distance;
-    std::vector<double> idle_time;
+    int id;  // Trip ID
+    int start_stop;  // GTFS stop ID
+    int end_stop;  // GTFS stop ID
+    int start_time;  // Minutes since midnight
+    int end_time;  // Minutes since midnight
+    double distance;  // Distance in km
+    std::vector<bool> is_compatible;  // Booleans to check if a trip is compatible with another (includes depot 'trips')
+    std::vector<double> deadhead_distance;  // Vector of deadhead distances (includes depot 'trips')
+    std::vector<double> idle_time;  // Vector of idle times (includes depot 'trips')
 
     // Constructor
     Trip() {
@@ -42,10 +42,11 @@ public:
 //Create a stops class with potential charging locations
 class Terminal {
 public:
+    int id;  // Terminal ID
     int stop_id;  // GTFS stop ID
     int trip_id;  // Augmented trip ID for populating rotations
-    bool is_depot;
-    bool is_station;
+    bool is_depot;  // True if the stop is a depot
+    bool is_charge_station;  // True if the stop is a charging station
 
     // Constructor
     Terminal() {
@@ -56,7 +57,7 @@ public:
         this->stop_id = stop_id;
         this->trip_id = trip_id;
         this->is_depot = is_depot;
-        this->is_station = is_station;
+        this->is_charge_station = is_station;
     }
 
     // Destructor
@@ -68,10 +69,10 @@ public:
 //Create a vehicle class which stores bus rotation details
 class Vehicle {
 public:
-    int id;
-    int num_trips;
-    std::vector<int> trip_id;
-    double rotation_cost;
+    int id;  // Vehicle ID
+    int num_trips;  // Number of trips in the rotation
+    std::vector<int> trip_id;  // First and last trips are aliases for depots
+    double deadhead_cost;  // Cost of deadheading in the rotation
 
     // Constructor
     Vehicle() {
@@ -81,7 +82,7 @@ public:
     Vehicle(int id) {
         this->id = id;
         num_trips = 0;
-        rotation_cost = 0.0;
+        deadhead_cost = 0.0;
     }
 
     // Desctructor
@@ -89,7 +90,18 @@ public:
         trip_id.clear();
     }
 
-private:
+    // Function to calculate the deadheading costs in the rotation
+    void calculate_deadhead_cost(const std::vector<Trip> &trip) {
+        // Calculate the deadhead cost of the rotation
+        deadhead_cost = 0.0;
+        int curr_trip_index, next_trip_index;
+        for (int i = 0; i < num_trips - 1; ++i) {
+            curr_trip_index = trip[i].id - 1;
+            next_trip_index = trip[i + 1].id - 1;
+            deadhead_cost += trip[curr_trip_index].deadhead_distance[next_trip_index];
+        }
+    }
+
     // Private function to update num_trips
     void update_num_trips() {
         num_trips = static_cast<int>(trip_id.size());

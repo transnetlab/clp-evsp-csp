@@ -129,6 +129,30 @@ ebus_vns/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ebus_vns.dir/build.make CMakeFiles/ebus_vns.dir/build
 .PHONY : ebus_vns/fast
 
+csp.o: csp.cpp.o
+.PHONY : csp.o
+
+# target to build an object file
+csp.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ebus_vns.dir/build.make CMakeFiles/ebus_vns.dir/csp.cpp.o
+.PHONY : csp.cpp.o
+
+csp.i: csp.cpp.i
+.PHONY : csp.i
+
+# target to preprocess a source file
+csp.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ebus_vns.dir/build.make CMakeFiles/ebus_vns.dir/csp.cpp.i
+.PHONY : csp.cpp.i
+
+csp.s: csp.cpp.s
+.PHONY : csp.s
+
+# target to generate assembly for a file
+csp.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ebus_vns.dir/build.make CMakeFiles/ebus_vns.dir/csp.cpp.s
+.PHONY : csp.cpp.s
+
 helpers.o: helpers.cpp.o
 .PHONY : helpers.o
 
@@ -234,6 +258,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... ebus_vns"
+	@echo "... csp.o"
+	@echo "... csp.i"
+	@echo "... csp.s"
 	@echo "... helpers.o"
 	@echo "... helpers.i"
 	@echo "... helpers.s"
