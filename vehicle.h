@@ -42,6 +42,7 @@ public:
 //Create a stops class with potential charging locations
 class Terminal {
 public:
+    int id;  // Terminal ID
     int stop_id;  // GTFS stop ID
     int trip_id;  // Augmented trip ID for populating rotations
     bool is_depot;  // True if the stop is a depot
@@ -101,13 +102,10 @@ public:
         }
     }
 
-private:
     // Private function to update num_trips
     void update_num_trips() {
         num_trips = static_cast<int>(trip_id.size());
     }
-
-
 };
 
 #endif //EBUS_VNS_VEHICLE_H

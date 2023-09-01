@@ -51,13 +51,18 @@ void preprocessing::read_terminal_data(std::string instance, std::vector<Termina
     // Read each line and populate members of the terminal class
     num_terminals = 0;
     std::string line;
+    int value;
     while (std::getline(input_file, line)) {
         Terminal temp_terminal;
         ++num_terminals;
         std::istringstream line_stream(line);
+        line_stream >> temp_terminal.id;
         line_stream >> temp_terminal.stop_id;
-        line_stream >> temp_terminal.is_depot; // TODO: Typecast to bool
-        line_stream >> temp_terminal.is_charge_station;
+        line_stream >> temp_terminal.trip_id;
+        line_stream >> value;
+        temp_terminal.is_depot = (value==1) ? true : false;
+        line_stream >> value;
+        temp_terminal.is_charge_station = (value==1) ? true : false;
 
         line_stream.clear();
         terminal.push_back(temp_terminal);
@@ -71,29 +76,30 @@ void preprocessing::read_terminal_data(std::string instance, std::vector<Termina
 }
 
 // Function to augment trips with depot stops
-void preprocessing::create_depot_trips(std::vector<Trip>& trip, std::vector<Terminal>& terminal, int& num_trips,
-        int& num_terminals, Logger& logger)
+void preprocessing::create_depot_trips(std::vector<Trip>& trip, std::vector<Terminal>& terminal, int& num_trips, Logger& logger)
 {
     // Augment trips with depot stops
     logger.log(LogLevel::Info, "Augmenting trips with depot stops...");
 
     // Add depot stops to the trip vector and update the terminal members with new trip IDs
     for (auto& current_terminal : terminal) {
-        if (current_terminal.is_depot) {
-            // Add a new trip to the trip vector
-            Trip temp_trip;
-            temp_trip.id = num_trips+1;
-            temp_trip.start_stop = current_terminal.stop_id;
-            temp_trip.end_stop = current_terminal.stop_id;
-            temp_trip.start_time = 0;
-            temp_trip.end_time = 0;
-            temp_trip.distance = 0.0;
+        // Add a new trip to the trip vector
+        Trip temp_trip;
+        temp_trip.id = num_trips+1;
+        temp_trip.start_stop = current_terminal.stop_id;
+        temp_trip.end_stop = current_terminal.stop_id;
+        temp_trip.start_time = 0;
+        temp_trip.end_time = 0;
+        temp_trip.distance = 0.0;
 
-            current_terminal.trip_id = temp_trip.id;  // Update the trip data of the terminal
+        // Add the new trip to the trip vector
+        trip.push_back(temp_trip);
+        ++num_trips;
 
-            // Add the new trip to the trip vector
-            trip.push_back(temp_trip);
-            ++num_trips;
+        // Double check if trip IDs are consistent
+        if (current_terminal.trip_id!=temp_trip.id) {
+            logger.log(LogLevel::Error, "Mismatch in trip IDs for depots found");
+            exit(1);
         }
     }
     logger.log(LogLevel::Info, "Number of trips after augmentation: "+std::to_string(num_trips));
@@ -105,9 +111,9 @@ void preprocessing::read_trip_pair_data(std::string instance, std::vector<Trip>&
     // Read trip pair data from file
     logger.log(LogLevel::Info, "Reading trip pair data from file...");
 
-    std::ifstream input_file_compatibility("./data/"+instance+"compatibility_matrix.txt");
-    std::ifstream input_file_deadheading("./data/"+instance+"deadhead_distance_matrix.txt");
-    std::ifstream input_file_idle_time("./data/"+instance+"idle_time_matrix.txt");
+    std::ifstream input_file_compatibility("./data/"+instance+"/compatibility_matrix.txt");
+    std::ifstream input_file_deadheading("./data/"+instance+"/deadhead_distance_matrix.txt");
+    std::ifstream input_file_idle_time("./data/"+instance+"/idle_time_matrix.txt");
 
     // Terminate with error if the files cannot be opened
     if (!input_file_compatibility.is_open()) {
@@ -151,10 +157,11 @@ void preprocessing::read_trip_pair_data(std::string instance, std::vector<Trip>&
             "Printing trip pair data (Current trip, Next trip, Is compatible?, Deadhead distance, Idle time)");
     for (const auto& current_trip : trip) {
         for (int i = 0; i<num_trips; ++i) {
-            // Print the current trip and the next trip as an ordered pair
-            logger.log(LogLevel::Debug, std::to_string(current_trip.id)+" "+std::to_string(i+1)+" "+
-                    std::to_string(current_trip.is_compatible[i])+" "
-                    +std::to_string(current_trip.deadhead_distance[i]));
+            // Print the current trip and the next trip as an ordered pair only if the trip pair is compatible
+            if (current_trip.is_compatible[i])
+                logger.log(LogLevel::Debug, std::to_string(current_trip.id)+" "+std::to_string(i+1)+" "
+                        +std::to_string(current_trip.is_compatible[i])+" "+std::to_string(current_trip.deadhead_distance[i])
+                        +" "+std::to_string(current_trip.idle_time[i]));
         }
     }
 }
@@ -200,43 +207,6 @@ void preprocessing::initialize_vehicle_rotations(std::string instance, std::vect
     logger.log(LogLevel::Info, "Number of vehicles: "+std::to_string(count));
 }
 
-// Function to initialize charging stations from the solution to the concurrent scheduler algorith
-void preprocessing::initialize_charge_locations(std::string instance, std::vector<Terminal>& terminal,
-        int& num_terminals, Logger& logger)
-{
-    // Initialize charging stations from the solution to the concurrent scheduler algorithm
-    logger.log(LogLevel::Info, "Initializing charging stations from the concurrent scheduler solution...");
-
-    // Read the initial charge locations from a file
-    std::ifstream input_file(instance+"./initial_charge_locations.txt");
-    if (!input_file.is_open()) {
-        std::cout << "Unable to open charge locations file";
-        exit(1); // terminate with error
-    }
-
-    // Save the data to the terminal vector
-    std::string line;
-    int stop_id;
-    while (std::getline(input_file, line)) {
-        std::istringstream line_stream(line);
-        line_stream >> stop_id;
-        terminal[stop_id-1].is_charge_station = true;
-    }
-
-    // Close the input file
-    input_file.close();
-
-    // Log the data read
-    logger.log(LogLevel::Info, "Charging stations read successfully");
-    // Calculate and log the number of charging stations based on the number of terminals where is_charge_station is true
-    int num_charge_stations = 0;
-    for (const auto& current_terminal : terminal) {
-        if (current_terminal.is_charge_station)
-            ++num_charge_stations;
-    }
-    logger.log(LogLevel::Info, "Number of charging stations: "+std::to_string(num_charge_stations));
-}
-
 void preprocessing::log_input_data(std::vector<Trip>& trip, std::vector<Terminal>& terminal,
         std::vector<Vehicle>& vehicle, Logger& logger)
 {
@@ -249,12 +219,12 @@ void preprocessing::log_input_data(std::vector<Trip>& trip, std::vector<Terminal
     }
 
     // Additional debug info that prints members of each terminal
-    logger.log(LogLevel::Debug, "Printing terminal data (Stop ID, Trip ID, Is depot?, Is station?)");
+    logger.log(LogLevel::Debug, "Printing terminal data (Stop ID, Trip ID, Is depot?, Is charging station?)");
     for (const auto& current_terminal : terminal) {
-        logger.log(LogLevel::Debug,
-                std::to_string(current_terminal.stop_id)+" "+std::to_string(current_terminal.trip_id)+" "+
-                        std::to_string(current_terminal.is_depot)+" "
-                        +std::to_string(current_terminal.is_charge_station));
+        logger.log(LogLevel::Debug, std::to_string(current_terminal.id)+" "+std::to_string(current_terminal.stop_id)+" "
+                +std::to_string(current_terminal.trip_id)+" "+
+                std::to_string(current_terminal.is_depot)+" "
+                +std::to_string(current_terminal.is_charge_station));
     }
 
     // Debug info for vehicle rotations
@@ -276,14 +246,13 @@ void preprocessing::initialize_inputs(std::string instance, std::vector<Trip>& t
     // Read input data on trips and stops and initialize bus rotations
     preprocessing::read_trip_data(instance, trip, num_trips, logger);
     preprocessing::read_terminal_data(instance, terminal, num_terminals, logger);
-    preprocessing::create_depot_trips(trip, terminal, num_trips, num_terminals, logger);
+    preprocessing::create_depot_trips(trip, terminal, num_trips, logger);
 
     // Populate compatibility, deadheading, and idle time information of trip pairs
-    // preprocessing::read_trip_pair_data(instance, trip, num_trips, logger);
+    preprocessing::read_trip_pair_data(instance, trip, num_trips, logger);
 
     // Initialize bus rotation and charging stations from the solution to the concurrent scheduler algorithm
     preprocessing::initialize_vehicle_rotations(instance, vehicle, logger);
-//    preprocessing::initialize_charge_locations(instance, terminal, num_terminals, logger);
 
     // Log the input data
     preprocessing::log_input_data(trip, terminal, vehicle, logger);
@@ -308,6 +277,7 @@ void evaluation::calculate_objective(std::vector<Trip>& trip, std::vector<Termin
     // Calculate variable cost of deadheading
     double deadhead_cost = 0.0;
     for (auto& current_vehicle : vehicle) {
+        current_vehicle.update_num_trips();
         current_vehicle.calculate_deadhead_cost(trip);
         deadhead_cost += current_vehicle.deadhead_cost;
     }
@@ -316,6 +286,6 @@ void evaluation::calculate_objective(std::vector<Trip>& trip, std::vector<Termin
     double total_cost = location_cost+vehicle_acquisition_cost+deadhead_cost;
     logger.log(LogLevel::Info, "Fixed cost of opening charging stations: "+std::to_string(location_cost));
     logger.log(LogLevel::Info, "Fixed cost of bus acquisition: "+std::to_string(vehicle_acquisition_cost));
-    logger.log(LogLevel::Info, "Variable cost of deadheading: "+std::to_string(deadhead_cost));
+    logger.log(LogLevel::Info, "Cost of deadheading: "+std::to_string(deadhead_cost));
     logger.log(LogLevel::Info, "Total cost: "+std::to_string(total_cost));
 }
