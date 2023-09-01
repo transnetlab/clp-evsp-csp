@@ -56,7 +56,7 @@ void preprocessing::read_terminal_data(std::string instance, std::vector<Termina
         ++num_terminals;
         std::istringstream line_stream(line);
         line_stream >> temp_terminal.stop_id;
-        line_stream >> temp_terminal.is_depot;
+        line_stream >> temp_terminal.is_depot; // TODO: Typecast to bool
         line_stream >> temp_terminal.is_charge_station;
 
         line_stream.clear();
@@ -166,9 +166,9 @@ void preprocessing::initialize_vehicle_rotations(std::string instance, std::vect
     logger.log(LogLevel::Info, "Initializing vehicle rotations from the concurrent scheduler solution...");
 
     // Read the initial vehicle rotations from a file
-    std::ifstream input_file(instance+"./initial_vehicle_rotations.txt");
+    std::ifstream input_file("./data/"+instance+"/initial_vehicle_rotations.txt");
     if (!input_file.is_open()) {
-        std::cout << "Unable to open bus rotations file";
+        std::cout << "Unable to open vehicle rotations file";
         exit(1); // terminate with error
     }
 
@@ -188,6 +188,9 @@ void preprocessing::initialize_vehicle_rotations(std::string instance, std::vect
         // Populate other trip ID elements of the row
         while (line_stream >> temp_trip_id)
             temp_vehicle.trip_id.push_back(temp_trip_id);
+
+        // Add the data to vehicle vector
+        vehicle.push_back(temp_vehicle);
     }
 
     // Close the input file
@@ -256,10 +259,12 @@ void preprocessing::log_input_data(std::vector<Trip>& trip, std::vector<Terminal
 
     // Debug info for vehicle rotations
     logger.log(LogLevel::Debug, "Printing vehicle rotations (Vehicle ID, Trip IDs)");
+    std::string trip_list;
     for (const auto& current_vehicle : vehicle) {
-        logger.log(LogLevel::Debug, std::to_string(current_vehicle.id));
+        trip_list = "";
         for (const auto& current_trip : current_vehicle.trip_id)
-            logger.log(LogLevel::Debug, std::to_string(current_trip));
+            trip_list += std::to_string(current_trip)+" ";
+        logger.log(LogLevel::Debug, std::to_string(current_vehicle.id)+" "+trip_list);
     }
 }
 
@@ -274,11 +279,14 @@ void preprocessing::initialize_inputs(std::string instance, std::vector<Trip>& t
     preprocessing::create_depot_trips(trip, terminal, num_trips, num_terminals, logger);
 
     // Populate compatibility, deadheading, and idle time information of trip pairs
-    preprocessing::read_trip_pair_data(instance, trip, num_trips, logger);
+    // preprocessing::read_trip_pair_data(instance, trip, num_trips, logger);
 
     // Initialize bus rotation and charging stations from the solution to the concurrent scheduler algorithm
     preprocessing::initialize_vehicle_rotations(instance, vehicle, logger);
-    preprocessing::initialize_charge_locations(instance, terminal, num_terminals, logger);
+//    preprocessing::initialize_charge_locations(instance, terminal, num_terminals, logger);
+
+    // Log the input data
+    preprocessing::log_input_data(trip, terminal, vehicle, logger);
 }
 
 void evaluation::calculate_objective(std::vector<Trip>& trip, std::vector<Terminal>& terminal,
