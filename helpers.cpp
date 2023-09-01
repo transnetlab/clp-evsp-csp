@@ -210,7 +210,32 @@ void preprocessing::initialize_inputs(std::string instance, std::vector<Trip>& t
     preprocessing::initialize_charge_locations(instance, terminal, num_terminals, logger);
 }
 
-void test::testing()
+void evaluation::calculate_objective(std::vector<Trip>& trip, std::vector<Terminal>& terminal, std::vector<Vehicle>& vehicle,
+        Logger& logger)
 {
-    std::cout << "Testing" << std::endl;
+    // Calculate the objective value of the initial solution
+    logger.log(LogLevel::Info, "Calculating the objective value of the solution...");
+
+    // Calculate fixed costs of opening charging stations
+    // TODO: This can be calculated faster if we keep track of the stations. Do we need to? Only if this is called often.
+    double location_cost = 0.0;
+    for (const auto& current_terminal : terminal)
+        location_cost += (current_terminal.is_charge_station) ? CHARGE_LOC_COST : 0;
+
+    // Calculate fixed cost of bus acquisition based on the number of vehicles
+    double vehicle_acquisition_cost = VEHICLE_COST * vehicle.size();
+
+    // Calculate variable cost of deadheading
+    double deadhead_cost = 0.0;
+    for (auto& current_vehicle : vehicle) {
+        current_vehicle.calculate_deadhead_cost(trip);
+        deadhead_cost += current_vehicle.deadhead_cost;
+    }
+
+    // Calculate the total cost and log the cost components
+    double total_cost = location_cost + vehicle_acquisition_cost + deadhead_cost;
+    logger.log(LogLevel::Info, "Fixed cost of opening charging stations: "+std::to_string(location_cost));
+    logger.log(LogLevel::Info, "Fixed cost of bus acquisition: "+std::to_string(vehicle_acquisition_cost));
+    logger.log(LogLevel::Info, "Variable cost of deadheading: "+std::to_string(deadhead_cost));
+    logger.log(LogLevel::Info, "Total cost: "+std::to_string(total_cost));
 }

@@ -12,4 +12,6 @@ add_executable(ebus_vns main.cpp
         operators.h
         constants.h
         logger.h
+        csp.cpp
+        csp.h
 )

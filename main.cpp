@@ -30,8 +30,10 @@ int main() {
     // Read input data on trips and stops and initialize bus rotations
     preprocessing::initialize_inputs(instance, trip, terminal, vehicle, num_trips, num_terminals, logger);
 
+    // Calculate the objective value of the initial solution
+    evaluation::calculate_objective(trip, terminal, vehicle, logger);
+
     // VNS algorithm
-    test::testing();
 
     return 0;
 }

@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/ebus_vns.dir/csp.cpp.o"
+  "CMakeFiles/ebus_vns.dir/csp.cpp.o.d"
   "CMakeFiles/ebus_vns.dir/helpers.cpp.o"
   "CMakeFiles/ebus_vns.dir/helpers.cpp.o.d"
   "CMakeFiles/ebus_vns.dir/main.cpp.o"

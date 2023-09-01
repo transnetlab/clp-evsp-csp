@@ -17,8 +17,10 @@ void initialize_vehicle_rotations(std::string, std::vector<Vehicle> &, Logger&);
 void initialize_charge_locations(std::string, std::vector<Terminal> &, int &, Logger&);
 }
 
-namespace test {
-void testing();
+namespace evaluation {
+void calculate_objective(std::vector<Trip> &, std::vector<Terminal> &, std::vector<Vehicle> &, Logger&);
+void check_charge_feasibility();
+void check_exchange_compatibility();
 }
 
 #endif //EBUS_VNS_HELPERS_H

@@ -89,11 +89,25 @@ public:
         trip_id.clear();
     }
 
+    // Function to calculate the deadheading costs in the rotation
+    void calculate_deadhead_cost(const std::vector<Trip> &trip) {
+        // Calculate the deadhead cost of the rotation
+        deadhead_cost = 0.0;
+        int curr_trip_index, next_trip_index;
+        for (int i = 0; i < num_trips - 1; ++i) {
+            curr_trip_index = trip_id[i] - 1;
+            next_trip_index = trip_id[i + 1] - 1;
+            deadhead_cost += trip[curr_trip_index].deadhead_distance[next_trip_index];
+        }
+    }
+
 private:
     // Private function to update num_trips
     void update_num_trips() {
         num_trips = static_cast<int>(trip_id.size());
     }
+
+
 };
 
 #endif //EBUS_VNS_VEHICLE_H
