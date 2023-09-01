@@ -89,31 +89,14 @@ void preprocessing::create_depot_trips(std::vector<Trip>& trip, std::vector<Term
             temp_trip.end_time = 0;
             temp_trip.distance = 0.0;
 
-            current_terminal.trip_id = temp_trip.id;  // Update the trip_id data of the terminal
+            current_terminal.trip_id = temp_trip.id;  // Update the trip data of the terminal
 
             // Add the new trip to the trip vector
             trip.push_back(temp_trip);
             ++num_trips;
         }
     }
-
-    // Log the set of augmented trips
     logger.log(LogLevel::Info, "Number of trips after augmentation: "+std::to_string(num_trips));
-    logger.log(LogLevel::Debug, "Printing trip data (Trip ID, Start stop, End stop, Start time, End time, Distance)");
-    for (const auto& current_trip : trip) {
-        logger.log(LogLevel::Debug, std::to_string(current_trip.id)+" "+std::to_string(current_trip.start_stop)+" "+
-                std::to_string(current_trip.end_stop)+" "+std::to_string(current_trip.start_time)+" "+
-                std::to_string(current_trip.end_time)+" "+std::to_string(current_trip.distance));
-    }
-
-    // Additional debug info that prints members of each terminal
-    logger.log(LogLevel::Debug, "Printing terminal data (Stop ID, Trip ID, Is depot?, Is station?)");
-    for (const auto& current_terminal : terminal) {
-        logger.log(LogLevel::Debug,
-                std::to_string(current_terminal.stop_id)+" "+std::to_string(current_terminal.trip_id)+" "+
-                        std::to_string(current_terminal.is_depot)+" "
-                        +std::to_string(current_terminal.is_charge_station));
-    }
 }
 
 // Function to read data on trip pairs
@@ -122,9 +105,9 @@ void preprocessing::read_trip_pair_data(std::string instance, std::vector<Trip>&
     // Read trip pair data from file
     logger.log(LogLevel::Info, "Reading trip pair data from file...");
 
-    std::ifstream input_file_compatibility("compatibility_matrix.txt");
-    std::ifstream input_file_deadheading("deadhead_distance_matrix.txt");
-    std::ifstream input_file_idle_time("idle_time_matrix.txt");
+    std::ifstream input_file_compatibility("./data/"+instance+"compatibility_matrix.txt");
+    std::ifstream input_file_deadheading("./data/"+instance+"deadhead_distance_matrix.txt");
+    std::ifstream input_file_idle_time("./data/"+instance+"idle_time_matrix.txt");
 
     // Terminate with error if the files cannot be opened
     if (!input_file_compatibility.is_open()) {
@@ -180,7 +163,38 @@ void preprocessing::read_trip_pair_data(std::string instance, std::vector<Trip>&
 void preprocessing::initialize_vehicle_rotations(std::string instance, std::vector<Vehicle>& vehicle, Logger& logger)
 {
     // Initialize bus rotations from the solution to the concurrent scheduler algorithm
-    logger.log(LogLevel::Info, "Initializing bus rotations from the concurrent scheduler solution...");
+    logger.log(LogLevel::Info, "Initializing vehicle rotations from the concurrent scheduler solution...");
+
+    // Read the initial vehicle rotations from a file
+    std::ifstream input_file(instance+"./initial_vehicle_rotations.txt");
+    if (!input_file.is_open()) {
+        std::cout << "Unable to open bus rotations file";
+        exit(1); // terminate with error
+    }
+
+    // Save the data to the vehicle vector
+    std::string line;
+    int count = 0;
+    int temp_trip_id;  // Variable used to populate trip IDs one at a time
+    while (std::getline(input_file, line)) {
+        Vehicle temp_vehicle;
+        ++count;
+        std::istringstream line_stream(line);
+        line_stream >> temp_vehicle.id;
+        // If count does not match the temp_vehicle id issue a warning
+        if (count!=temp_vehicle.id)
+            logger.log(LogLevel::Warning, "Found continuity ID issue in initial vehicle rotations");
+
+        // Populate other trip ID elements of the row
+        while (line_stream >> temp_trip_id)
+            temp_vehicle.trip_id.push_back(temp_trip_id);
+    }
+
+    // Close the input file
+    input_file.close();
+
+    logger.log(LogLevel::Info, "Vehicle rotations read successfully");
+    logger.log(LogLevel::Info, "Number of vehicles: "+std::to_string(count));
 }
 
 // Function to initialize charging stations from the solution to the concurrent scheduler algorith
@@ -190,6 +204,63 @@ void preprocessing::initialize_charge_locations(std::string instance, std::vecto
     // Initialize charging stations from the solution to the concurrent scheduler algorithm
     logger.log(LogLevel::Info, "Initializing charging stations from the concurrent scheduler solution...");
 
+    // Read the initial charge locations from a file
+    std::ifstream input_file(instance+"./initial_charge_locations.txt");
+    if (!input_file.is_open()) {
+        std::cout << "Unable to open charge locations file";
+        exit(1); // terminate with error
+    }
+
+    // Save the data to the terminal vector
+    std::string line;
+    int stop_id;
+    while (std::getline(input_file, line)) {
+        std::istringstream line_stream(line);
+        line_stream >> stop_id;
+        terminal[stop_id-1].is_charge_station = true;
+    }
+
+    // Close the input file
+    input_file.close();
+
+    // Log the data read
+    logger.log(LogLevel::Info, "Charging stations read successfully");
+    // Calculate and log the number of charging stations based on the number of terminals where is_charge_station is true
+    int num_charge_stations = 0;
+    for (const auto& current_terminal : terminal) {
+        if (current_terminal.is_charge_station)
+            ++num_charge_stations;
+    }
+    logger.log(LogLevel::Info, "Number of charging stations: "+std::to_string(num_charge_stations));
+}
+
+void preprocessing::log_input_data(std::vector<Trip>& trip, std::vector<Terminal>& terminal,
+        std::vector<Vehicle>& vehicle, Logger& logger)
+{
+    // Log the set of augmented trips
+    logger.log(LogLevel::Debug, "Printing trip data (Trip ID, Start stop, End stop, Start time, End time, Distance)");
+    for (const auto& current_trip : trip) {
+        logger.log(LogLevel::Debug, std::to_string(current_trip.id)+" "+std::to_string(current_trip.start_stop)+" "+
+                std::to_string(current_trip.end_stop)+" "+std::to_string(current_trip.start_time)+" "+
+                std::to_string(current_trip.end_time)+" "+std::to_string(current_trip.distance));
+    }
+
+    // Additional debug info that prints members of each terminal
+    logger.log(LogLevel::Debug, "Printing terminal data (Stop ID, Trip ID, Is depot?, Is station?)");
+    for (const auto& current_terminal : terminal) {
+        logger.log(LogLevel::Debug,
+                std::to_string(current_terminal.stop_id)+" "+std::to_string(current_terminal.trip_id)+" "+
+                        std::to_string(current_terminal.is_depot)+" "
+                        +std::to_string(current_terminal.is_charge_station));
+    }
+
+    // Debug info for vehicle rotations
+    logger.log(LogLevel::Debug, "Printing vehicle rotations (Vehicle ID, Trip IDs)");
+    for (const auto& current_vehicle : vehicle) {
+        logger.log(LogLevel::Debug, std::to_string(current_vehicle.id));
+        for (const auto& current_trip : current_vehicle.trip_id)
+            logger.log(LogLevel::Debug, std::to_string(current_trip));
+    }
 }
 
 // Function to read inputs to the model including GTFS data and initial rotations
@@ -210,7 +281,8 @@ void preprocessing::initialize_inputs(std::string instance, std::vector<Trip>& t
     preprocessing::initialize_charge_locations(instance, terminal, num_terminals, logger);
 }
 
-void evaluation::calculate_objective(std::vector<Trip>& trip, std::vector<Terminal>& terminal, std::vector<Vehicle>& vehicle,
+void evaluation::calculate_objective(std::vector<Trip>& trip, std::vector<Terminal>& terminal,
+        std::vector<Vehicle>& vehicle,
         Logger& logger)
 {
     // Calculate the objective value of the initial solution
@@ -223,7 +295,7 @@ void evaluation::calculate_objective(std::vector<Trip>& trip, std::vector<Termin
         location_cost += (current_terminal.is_charge_station) ? CHARGE_LOC_COST : 0;
 
     // Calculate fixed cost of bus acquisition based on the number of vehicles
-    double vehicle_acquisition_cost = VEHICLE_COST * vehicle.size();
+    double vehicle_acquisition_cost = VEHICLE_COST*vehicle.size();
 
     // Calculate variable cost of deadheading
     double deadhead_cost = 0.0;
@@ -233,7 +305,7 @@ void evaluation::calculate_objective(std::vector<Trip>& trip, std::vector<Termin
     }
 
     // Calculate the total cost and log the cost components
-    double total_cost = location_cost + vehicle_acquisition_cost + deadhead_cost;
+    double total_cost = location_cost+vehicle_acquisition_cost+deadhead_cost;
     logger.log(LogLevel::Info, "Fixed cost of opening charging stations: "+std::to_string(location_cost));
     logger.log(LogLevel::Info, "Fixed cost of bus acquisition: "+std::to_string(vehicle_acquisition_cost));
     logger.log(LogLevel::Info, "Variable cost of deadheading: "+std::to_string(deadhead_cost));

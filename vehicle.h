@@ -95,8 +95,8 @@ public:
         deadhead_cost = 0.0;
         int curr_trip_index, next_trip_index;
         for (int i = 0; i < num_trips - 1; ++i) {
-            curr_trip_index = trip_id[i] - 1;
-            next_trip_index = trip_id[i + 1] - 1;
+            curr_trip_index = trip[i] - 1;
+            next_trip_index = trip[i + 1] - 1;
             deadhead_cost += trip[curr_trip_index].deadhead_distance[next_trip_index];
         }
     }
