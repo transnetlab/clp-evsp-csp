@@ -1,0 +1,15 @@
+Index: cmake-build-debug/CMakeFiles/clion-Debug-log.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>C:\\WINDOWS\\system32\\wsl.exe --distribution Ubuntu --exec /bin/bash -c \"export CMAKE_COLOR_DIAGNOSTICS=ON && export CLION_IDE=TRUE && export JETBRAINS_IDE=TRUE && cd /mnt/c/Users/Tarun/CLionProjects/ebus-vns/cmake-build-debug && /usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G 'CodeBlocks - Unix Makefiles' -S /mnt/c/Users/Tarun/CLionProjects/ebus-vns -B /mnt/c/Users/Tarun/CLionProjects/ebus-vns/cmake-build-debug\"\r\n-- Configuring done\r\n-- Generating done\r\n-- Build files have been written to: /mnt/c/Users/Tarun/CLionProjects/ebus-vns/cmake-build-debug\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/cmake-build-debug/CMakeFiles/clion-Debug-log.txt b/cmake-build-debug/CMakeFiles/clion-Debug-log.txt
+--- a/cmake-build-debug/CMakeFiles/clion-Debug-log.txt	(revision d92254373ed702fb6a9214d0e9c60c7edc9f4b07)
++++ b/cmake-build-debug/CMakeFiles/clion-Debug-log.txt	(date 1693624812499)
+@@ -1,4 +1,0 @@
+-C:\WINDOWS\system32\wsl.exe --distribution Ubuntu --exec /bin/bash -c "export CMAKE_COLOR_DIAGNOSTICS=ON && export CLION_IDE=TRUE && export JETBRAINS_IDE=TRUE && cd /mnt/c/Users/Tarun/CLionProjects/ebus-vns/cmake-build-debug && /usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G 'CodeBlocks - Unix Makefiles' -S /mnt/c/Users/Tarun/CLionProjects/ebus-vns -B /mnt/c/Users/Tarun/CLionProjects/ebus-vns/cmake-build-debug"
+--- Configuring done
+--- Generating done
+--- Build files have been written to: /mnt/c/Users/Tarun/CLionProjects/ebus-vns/cmake-build-debug
