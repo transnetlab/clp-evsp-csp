@@ -5,7 +5,7 @@ void preprocessing::read_trip_data(std::string instance, std::vector<Trip>& trip
 {
     // Read trip data from file
     logger.log(LogLevel::Info, "Reading trip data from file...");
-    std::ifstream input_file("./data/"+instance+"/trip_data.txt");
+    std::ifstream input_file("../data/"+instance+"/trip_data.txt");
     if (!input_file.is_open()) {
         logger.log(LogLevel::Error, "Unable to open trip data file");
         exit(1); // Terminate with error
@@ -42,7 +42,7 @@ void preprocessing::read_terminal_data(std::string instance, std::vector<Termina
 {
     // Read terminal data from file
     logger.log(LogLevel::Info, "Reading terminal data from file...");
-    std::ifstream input_file("./data/"+instance+"/terminal_data.txt");
+    std::ifstream input_file("../data/"+instance+"/terminal_data.txt");
     if (!input_file.is_open()) {
         logger.log(LogLevel::Error, "Unable to open terminal data file");
         exit(1); // Terminate with error
@@ -111,9 +111,9 @@ void preprocessing::read_trip_pair_data(std::string instance, std::vector<Trip>&
     // Read trip pair data from file
     logger.log(LogLevel::Info, "Reading trip pair data from file...");
 
-    std::ifstream input_file_compatibility("./data/"+instance+"/compatibility_matrix.txt");
-    std::ifstream input_file_deadheading("./data/"+instance+"/deadhead_distance_matrix.txt");
-    std::ifstream input_file_idle_time("./data/"+instance+"/idle_time_matrix.txt");
+    std::ifstream input_file_compatibility("../data/"+instance+"/compatibility_matrix.txt");
+    std::ifstream input_file_deadheading("../data/"+instance+"/deadhead_distance_matrix.txt");
+    std::ifstream input_file_idle_time("../data/"+instance+"/idle_time_matrix.txt");
 
     // Terminate with error if the files cannot be opened
     if (!input_file_compatibility.is_open()) {
@@ -173,7 +173,7 @@ void preprocessing::initialize_vehicle_rotations(std::string instance, std::vect
     logger.log(LogLevel::Info, "Initializing vehicle rotations from the concurrent scheduler solution...");
 
     // Read the initial vehicle rotations from a file
-    std::ifstream input_file("./data/"+instance+"/initial_vehicle_rotations.txt");
+    std::ifstream input_file("../data/"+instance+"/initial_vehicle_rotations.txt");
     if (!input_file.is_open()) {
         std::cout << "Unable to open vehicle rotations file";
         exit(1); // terminate with error

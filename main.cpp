@@ -17,8 +17,8 @@ int main() {
     std::string instance = "Ann_Arbor";
 
     // Delete any old log files if present and create a new one. Set logging level.
-    std::remove(("./output/" + instance + "_log.txt").c_str());
-    Logger logger("./output/" + instance + "_log.txt", true);
+    std::remove(("../output/" + instance + "_log.txt").c_str());
+    Logger logger("../output/" + instance + "_log.txt", true);
     logger.set_log_level_threshold(LogLevel::Info);
 
     // Initialize variables  TODO: Check if we need to keep track of number of original trips
