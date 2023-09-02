@@ -1,18 +1,75 @@
-[2023-09-01 14:57:18] INFO: Reading trip data from file...
-[2023-09-01 14:57:18] INFO: Trip data read successfully
-[2023-09-01 14:57:18] INFO: Number of trips: 858
-[2023-09-01 14:57:18] INFO: Reading terminal data from file...
-[2023-09-01 14:57:18] INFO: Terminal data read successfully
-[2023-09-01 14:57:18] INFO: Number of terminals: 29
-[2023-09-01 14:57:18] INFO: Augmenting trips with depot stops...
-[2023-09-01 14:57:18] INFO: Number of trips after augmentation: 887
-[2023-09-01 14:57:18] INFO: Reading trip pair data from file...
-[2023-09-01 14:57:19] INFO: Trip pair data read successfully
-[2023-09-01 14:57:19] INFO: Initializing vehicle rotations from the concurrent scheduler solution...
-[2023-09-01 14:57:19] INFO: Vehicle rotations read successfully
-[2023-09-01 14:57:19] INFO: Number of vehicles: 57
-[2023-09-01 14:57:19] INFO: Calculating the objective value of the solution...
-[2023-09-01 14:57:19] INFO: Fixed cost of opening charging stations: 5000000.000000
-[2023-09-01 14:57:19] INFO: Fixed cost of bus acquisition: 19950000.000000
-[2023-09-01 14:57:19] INFO: Cost of deadheading: 3904.814000
-[2023-09-01 14:57:19] INFO: Total cost: 24953904.814000
+[2023-09-01 15:21:00] INFO: Reading trip data from file...
+[2023-09-01 15:21:00] INFO: Trip data read successfully
+[2023-09-01 15:21:00] INFO: Number of trips: 858
+[2023-09-01 15:21:00] INFO: Reading terminal data from file...
+[2023-09-01 15:21:00] INFO: Terminal data read successfully
+[2023-09-01 15:21:00] INFO: Number of terminals: 29
+[2023-09-01 15:21:00] INFO: Augmenting trips with depot stops...
+[2023-09-01 15:21:00] INFO: Number of trips after augmentation: 887
+[2023-09-01 15:21:00] INFO: Reading trip pair data from file...
+[2023-09-01 15:21:00] INFO: Trip pair data read successfully
+[2023-09-01 15:21:01] INFO: Initializing vehicle rotations from the concurrent scheduler solution...
+[2023-09-01 15:21:01] INFO: Vehicle rotations read successfully
+[2023-09-01 15:21:01] INFO: Number of vehicles: 57
+[2023-09-01 15:21:01] INFO: Calculating the objective value of the solution...
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 1: 37065.837600
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 2: 46046.589600
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 3: 3636.626400
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 4: 1678.591200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 5: 34863.048000
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 6: 47522.824800
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 7: 22332.393600
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 8: 37711.449600
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 9: 68407.891200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 10: 69217.315200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 11: 50999.493600
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 12: 28979.306400
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 13: 41851.075200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 14: 26184.866400
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 15: 12706.029600
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 16: 28732.624800
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 17: 11644.142400
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 18: 45478.065600
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 19: 27813.350400
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 20: 38740.574400
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 21: 49249.596000
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 22: 15352.075200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 23: 27017.416800
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 24: 41519.596800
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 25: 37318.300800
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 26: 37489.821600
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 27: 31752.547200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 28: 63366.336000
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 29: 40577.196000
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 30: 24361.735200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 31: 30785.092800
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 32: 15882.055200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 33: 42889.836000
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 34: 56069.956800
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 35: 31105.008000
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 36: 49473.151200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 37: 38863.915200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 38: 45275.709600
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 39: 106313.988000
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 40: 24608.416800
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 41: 48222.398400
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 42: 37418.515200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 43: 70550.937600
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 44: 49723.687200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 45: 11493.820800
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 46: 21233.889600
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 47: 19653.585600
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 48: 78180.722400
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 49: 42130.519200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 50: 29786.803200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 51: 41529.232800
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 52: 44568.427200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 53: 64584.326400
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 54: 38981.474400
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 55: 9691.888800
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 56: 29622.991200
+[2023-09-01 15:21:01] INFO: Deadheading cost of vehicle 57: 9772.831200
+[2023-09-01 15:21:01] INFO: Fixed cost of opening charging stations: 5000000.000000
+[2023-09-01 15:21:01] INFO: Fixed cost of bus acquisition: 19950000.000000
+[2023-09-01 15:21:01] INFO: Cost of deadheading: 2138029.898400
+[2023-09-01 15:21:01] INFO: Total cost: 27088029.898400

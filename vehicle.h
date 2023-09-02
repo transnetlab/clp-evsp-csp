@@ -1,8 +1,10 @@
 #ifndef EBUS_VNS_VEHICLE_H
 #define EBUS_VNS_VEHICLE_H
 
+#include "constants.h"
 #include <string>
 #include <vector>
+#include <iostream>
 
 //Create a trip class which contains relevant GTFS details
 class Trip {
@@ -96,9 +98,9 @@ public:
         deadhead_cost = 0.0;
         int curr_trip_index, next_trip_index;
         for (int i = 0; i < num_trips - 1; ++i) {
-            curr_trip_index = trip[i].id - 1;
-            next_trip_index = trip[i + 1].id - 1;
-            deadhead_cost += trip[curr_trip_index].deadhead_distance[next_trip_index];
+            curr_trip_index = trip_id[i] - 1;
+            next_trip_index = trip_id[i + 1] - 1;
+            deadhead_cost += trip[curr_trip_index].deadhead_distance[next_trip_index] * DEADHEAD_COST_FACTOR;
         }
     }
 

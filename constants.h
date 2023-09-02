@@ -3,7 +3,7 @@
 
 constexpr double VEHICLE_COST = 350000.0; // Acquisition cost of a bus
 constexpr double CHARGE_LOC_COST = 200000.0;  // Cost of opening one charging location
-constexpr double DEADHEAD_COST = 0.44 * 365 * 12;  // Per km travel cost
+constexpr double DEADHEAD_COST_FACTOR = 0.44 * 365 * 12;  // Per km travel cost
 
 constexpr double MAX_CHARGE_LEVEL = 100.0;  // Maximum allowed charge level
 constexpr double MIN_CHARGE_LEVEL = 20.0;  // Minimum charge level to be maintained

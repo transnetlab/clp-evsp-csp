@@ -279,6 +279,9 @@ void evaluation::calculate_objective(std::vector<Trip>& trip, std::vector<Termin
     for (auto& current_vehicle : vehicle) {
         current_vehicle.update_num_trips();
         current_vehicle.calculate_deadhead_cost(trip);
+        // Log the deadheading cost of each trip
+        logger.log(LogLevel::Debug, "Deadheading cost of vehicle "+std::to_string(current_vehicle.id)+": "
+                +std::to_string(current_vehicle.deadhead_cost));
         deadhead_cost += current_vehicle.deadhead_cost;
     }
 
