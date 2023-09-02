@@ -18,17 +18,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="dfb7e0d1-fbe7-4fd4-9206-4bd88376ec61" name="Changes" comment="Upload only relevant files">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/ebus-vns.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_02-09-2023_09_03_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_02-09-2023_09_03__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
-    </list>
+    <list default="true" id="dfb7e0d1-fbe7-4fd4-9206-4bd88376ec61" name="Changes" comment="Add gitignore" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -121,7 +111,7 @@
       <updated>1693487326356</updated>
       <workItem from="1693487327450" duration="19888000" />
       <workItem from="1693624961593" duration="42000" />
-      <workItem from="1693625457727" duration="666000" />
+      <workItem from="1693625457727" duration="965000" />
     </task>
     <task id="LOCAL-00001" summary="Update trip data">
       <option name="closed" value="true" />
@@ -195,7 +185,39 @@
       <option name="project" value="LOCAL" />
       <updated>1693625821678</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Delete .idea files">
+      <option name="closed" value="true" />
+      <created>1693626156317</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1693626156317</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Delete .idea files">
+      <option name="closed" value="true" />
+      <created>1693626337686</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1693626337686</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Delete .idea files">
+      <option name="closed" value="true" />
+      <created>1693626348100</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1693626348100</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Add gitignore">
+      <option name="closed" value="true" />
+      <created>1693626425214</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1693626425214</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -216,6 +238,8 @@
     <MESSAGE value="Complete preprocessing" />
     <MESSAGE value="Fix merge issues" />
     <MESSAGE value="Upload only relevant files" />
-    <option name="LAST_COMMIT_MESSAGE" value="Upload only relevant files" />
+    <MESSAGE value="Delete .idea files" />
+    <MESSAGE value="Add gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add gitignore" />
   </component>
 </project>
