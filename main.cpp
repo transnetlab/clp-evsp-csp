@@ -1,4 +1,6 @@
 #include "constants.h"
+#include "csp.h"
+#include "operators.h"
 #include "logger.h"
 #include "vehicle.h"
 #include "helpers.h"
@@ -34,6 +36,11 @@ int main() {
     evaluation::calculate_objective(trip, terminal, vehicle, logger);
 
     // VNS algorithm
+    logger.log(LogLevel::Info, "Running VNS algorithm...");
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    exchanges::two_opt(vehicle, trip, terminal, logger);
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    logger.log(LogLevel::Info, "VNS algorithm completed in " + std::to_string(std::chrono::duration_cast<std::chrono::seconds>(end - begin).count()) + " seconds.");
 
     return 0;
 }
