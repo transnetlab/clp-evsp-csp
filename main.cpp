@@ -38,9 +38,29 @@ int main() {
     // VNS algorithm
     logger.log(LogLevel::Info, "Running VNS algorithm...");
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    exchanges::two_opt(vehicle, trip, terminal, logger);
+    // TODO: Change order to vehicle, trip, terminal
+
+    // Run the VNS algorithm for a limited number of iterations within a while loop
+    int iteration = 0;
+    while (iteration < MAX_ITERATIONS) {
+        // Log iteration counter details
+        logger.log(LogLevel::Info, "Iteration " + std::to_string(iteration + 1));
+
+        // Run the shake operator
+
+        // Find the best operator among trip exchanges and trips and perform it
+        operators::best_improvement(vehicle, trip, terminal, logger);
+        evaluation::calculate_objective(trip, terminal, vehicle, logger);
+
+        // Increment the iteration counter
+        iteration++;
+    }
+
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     logger.log(LogLevel::Info, "VNS algorithm completed in " + std::to_string(std::chrono::duration_cast<std::chrono::seconds>(end - begin).count()) + " seconds.");
+
+    // Calculate the objective value of the final solution
+    evaluation::calculate_objective(trip, terminal, vehicle, logger);
 
     return 0;
 }

@@ -5,17 +5,28 @@
 #include "constants.h"
 #include "vehicle.h"
 
-namespace exchanges {
-void two_opt(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
+class Exchange {
+public:
+    int first_vehicle_index;
+    int first_trip_index;
+    int second_vehicle_index;
+    int second_trip_index;
+};
 
-}
+class Shift {
+public:
+    int source_vehicle_index;
+    int source_trip_index;
+    int dest_vehicle_index;
+    int dest_trip_index; // The new trip is inserted after this index
+};
 
-namespace shift {
-
-}
-
-namespace vns {
-
+namespace operators {
+void best_improvement(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal, Logger& logger);
+double exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal, Exchange& exchange, Logger& logger);
+double shift_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Shift& shift, Logger&);
+void perform_exchange(std::vector<Vehicle>&, std::vector<Terminal>&, Exchange&);
+void perform_shift(std::vector<Vehicle>&, std::vector<Terminal>&, Shift&);
 }
 
 namespace shake {
@@ -25,8 +36,13 @@ namespace shake {
 namespace evaluation {
 void calculate_objective(std::vector<Trip>&, std::vector<Terminal>&, std::vector<Vehicle>&, Logger&);
 bool is_exchange_compatible(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
-bool make_exchange_charge_feasible(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, std::vector<int>&, int, int, int, int);
+bool is_shift_compatible(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
+
 double calculate_trip_replacement_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
+double calculate_trip_addition_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
+double calculate_trip_removal_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int);
+
+double make_exchange_charge_feasible(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, int, int, int);
 }
 
 #endif //EBUS_VNS_OPERATORS_H

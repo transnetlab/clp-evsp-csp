@@ -9,4 +9,5 @@ constexpr double MAX_CHARGE_LEVEL = 100.0;  // Maximum allowed charge level
 constexpr double MIN_CHARGE_LEVEL = 20.0;  // Minimum charge level to be maintained
 constexpr double CHARGE_RATE = 1.67;  // Rate at which charging happens
 
+constexpr int MAX_ITERATIONS = 1000;  // Maximum number of iterations
 #endif //EBUS_VNS_CONSTANTS_H

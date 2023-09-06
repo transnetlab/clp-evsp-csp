@@ -97,7 +97,7 @@ public:
         // Calculate the deadhead cost of the rotation
         deadhead_cost = 0.0;
         int curr_trip_index, next_trip_index;
-        for (int i = 0; i < num_trips - 1; ++i) {
+        for (int i = 0; i < trip_id.size() - 1; ++i) {
             curr_trip_index = trip_id[i] - 1;
             next_trip_index = trip_id[i + 1] - 1;
             deadhead_cost += trip[curr_trip_index].deadhead_distance[next_trip_index] * DEADHEAD_COST_FACTOR;
@@ -107,6 +107,18 @@ public:
     // Private function to update num_trips
     void update_num_trips() {
         num_trips = static_cast<int>(trip_id.size());
+    }
+
+    // Print members of the class
+    void print_members() {
+        std::cout << "Vehicle ID: " << id << std::endl;
+        std::cout << "Number of trips: " << trip_id.size() << std::endl;
+        std::cout << "Trip IDs: ";
+        for (int i = 0; i < trip_id.size(); ++i) {
+            std::cout << trip_id[i] << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "Deadhead cost: " << deadhead_cost << std::endl;
     }
 };
 
