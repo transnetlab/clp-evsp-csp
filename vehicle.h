@@ -71,7 +71,7 @@ public:
 //Create a vehicle class which stores bus rotation details
 class Vehicle {
 public:
-    int id;  // Vehicle ID
+    int id;  // Vehicle ID  TODO: Does this get used anywhere? Since we add and remove rotations, IDs need not be continuous
     int num_trips;  // Number of trips in the rotation
     std::vector<int> trip_id;  // First and last trips are aliases for depots
     double deadhead_cost;  // Cost of deadheading in the rotation

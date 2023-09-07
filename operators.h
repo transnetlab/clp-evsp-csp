@@ -38,11 +38,11 @@ void calculate_objective(std::vector<Trip>&, std::vector<Terminal>&, std::vector
 bool is_exchange_compatible(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
 bool is_shift_compatible(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
 
+bool are_rotations_charge_feasible(std::vector<Trip>&, std::vector<std::vector<int>>, Logger&);
+
 double calculate_trip_replacement_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
 double calculate_trip_addition_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
 double calculate_trip_removal_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int);
-
-double make_exchange_charge_feasible(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, int, int, int);
 }
 
 #endif //EBUS_VNS_OPERATORS_H

@@ -6,8 +6,8 @@ double operators::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Trip
     // Find a pair of vehicle rotation as a set from vehicles
     double max_savings = 0.0;  // Stores the maximum savings among all exchanges
 
-    // std::vector<int> best_new_charge_stations;  // Stores the best new charging terminals to be opened in the exchange
-    // std::vector<int> temp_new_charge_stations;  // Stores the temporary new charging terminals to be opened in the exchange
+    // Store a vector of trip_id vectors after swapping trips
+    std::vector<std::vector<int>> swapped_trip_ids;
 
     for (int u = 0; u<vehicle.size(); u++) {
         for (int v = u+1; v<vehicle.size(); v++) {
@@ -16,24 +16,31 @@ double operators::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Trip
                     double savings = 0.0;
                     // Check if the exchanges is feasible
                     if (evaluation::is_exchange_compatible(vehicle, trip, u, v, k, l)) {
-                        // Check if exchanges require new charging stations to be opened and the associated costs
-                        // temp_new_charge_stations.clear();
-                        // double new_charge_station_cost = evaluation::make_exchange_charge_feasible(vehicle, trip, terminal, temp_new_charge_stations, u, v, k, l);
+                        // Check if exchanges are charge feasible
+                        swapped_trip_ids.clear();
 
-                        // Calculate savings in deadheading from performing the exchange
-                        savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, u, v, k, l);
-                        savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, v, u, l, k);
-                        // savings += new_charge_station_cost;
+                        // Push the original trip_ids to swapped_trip_ids
+                        swapped_trip_ids.push_back(vehicle[u].trip_id);
+                        swapped_trip_ids.push_back(vehicle[v].trip_id);
 
-                        // Check if the exchange is the best so far
-                        if (savings>max_savings) {
-                            max_savings = savings;
-                            exchange.first_vehicle_index = u;
-                            exchange.second_vehicle_index = v;
-                            exchange.first_trip_index = k;
-                            exchange.second_trip_index = l;
-                            // best_new_charge_stations.clear();
-                            // best_new_charge_stations = temp_new_charge_stations;
+                        // Exchange trips k and l of vehicles u and v in swapped_trip_ids
+                        int temp = swapped_trip_ids[0][k];
+                        swapped_trip_ids[0][k] = swapped_trip_ids[1][l];
+                        swapped_trip_ids[1][l] = temp;
+
+                        if (evaluation::are_rotations_charge_feasible(trip, swapped_trip_ids, logger)) {
+                            // Calculate savings in deadheading from performing the exchange  TODO: Can the replacement costs be calculated using the swapped trips?
+                            savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, u, v, k, l);
+                            savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, v, u, l, k);
+
+                            // Check if the exchange is the best so far
+                            if (savings>max_savings) {
+                                max_savings = savings;
+                                exchange.first_vehicle_index = u;
+                                exchange.second_vehicle_index = v;
+                                exchange.first_trip_index = k;
+                                exchange.second_trip_index = l;
+                            }
                         }
                     }
                 }
@@ -49,8 +56,8 @@ double operators::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& 
     // Variables for calculating the savings from trip shifts
     double max_savings = 0.0;
 
-    // std::vector<int> best_new_charge_stations;  // Stores the best new charging terminals to be opened in the exchange
-    // std::vector<int> temp_new_charge_stations;  // Stores the temporary new charging terminals to be opened in the exchange
+    // Store a vector of trip_id vectors after shifting trips
+    std::vector<std::vector<int>> shifted_trip_ids;
 
     for (int u = 0; u<vehicle.size(); u++) {
         for (int v = u+1; v<vehicle.size(); v++) {
@@ -60,25 +67,36 @@ double operators::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& 
 
                     // Check if the exchanges is feasible
                     if (evaluation::is_shift_compatible(vehicle, trip, u, v, k, l)) {
-                        // Check if exchanges require new charging stations to be opened and the associated costs
-                        // temp_new_charge_stations.clear();
-                        // double new_charge_station_cost = evaluation::make_exchange_charge_feasible(vehicle, trip, terminal, temp_new_charge_stations, u, v, k, l);
+                        // Check if exchanges are charge feasible
+                        shifted_trip_ids.clear();
 
-                        // Calculate savings in deadheading from performing the exchange
-                        savings += evaluation::calculate_trip_addition_cost(vehicle, trip, u, v, k, l);
-                        savings += evaluation::calculate_trip_removal_cost(vehicle, trip, v, l);
-                        // savings += new_charge_station_cost;
+                        // Insert the original trip_ids to shifted_trip_ids
+                        shifted_trip_ids.push_back(vehicle[u].trip_id);
+                        shifted_trip_ids.push_back(vehicle[v].trip_id);
 
-                        // Check if the exchange is the best so far
-                        if (savings>max_savings) {
-                            max_savings = savings;
-                            shift.dest_vehicle_index = u;
-                            shift.dest_trip_index = k;
-                            shift.source_vehicle_index = v;
-                            shift.source_trip_index = l;
+                        // Insert trip l of vehicle v after trip k of vehicle u in shifted_trip_ids
+                        shifted_trip_ids[0].insert(shifted_trip_ids[0].begin()+k+1, shifted_trip_ids[1][l]);
 
-                            // best_new_charge_stations.clear();
-                            // best_new_charge_stations = temp_new_charge_stations;
+                        // Remove trip l of vehicle v from shifted_trip_ids
+                        shifted_trip_ids[1].erase(shifted_trip_ids[1].begin()+l);
+
+                        // Check if shifted_trip_ids[1] has only two trips. If so, delete it
+                        if (shifted_trip_ids[1].size()==2)
+                            shifted_trip_ids.erase(shifted_trip_ids.begin()+1);
+
+                        if (evaluation::are_rotations_charge_feasible(trip, shifted_trip_ids, logger)) {
+                            // Calculate savings in deadheading from performing the exchange
+                            savings += evaluation::calculate_trip_addition_cost(vehicle, trip, u, v, k, l);
+                            savings += evaluation::calculate_trip_removal_cost(vehicle, trip, v, l);
+
+                            // Check if the exchange is the best so far
+                            if (savings>max_savings) {
+                                max_savings = savings;
+                                shift.dest_vehicle_index = u;
+                                shift.dest_trip_index = k;
+                                shift.source_vehicle_index = v;
+                                shift.source_trip_index = l;
+                            }
                         }
                     }
                 }
@@ -120,6 +138,11 @@ void operators::perform_shift(std::vector<Vehicle>& vehicle, std::vector<Termina
 
     // Remove the trip
     vehicle[source_vehicle_index].trip_id.erase(vehicle[source_vehicle_index].trip_id.begin()+source_trip_index);
+
+    // If the source vehicle has only two trips, remove the vehicle
+    if (vehicle[source_vehicle_index].trip_id.size()==2)
+        vehicle.erase(vehicle.begin()
+                +source_vehicle_index);   //  TODO: Check if removal creates a problem with indexing +-1 issues
 }
 
 // Best improvement function
@@ -140,6 +163,13 @@ void operators::best_improvement(std::vector<Vehicle>& vehicle, std::vector<Trip
     // Print the values of savings from both operators
     logger.log(LogLevel::Info, "Savings from exchanges operator: "+std::to_string(exchange_savings));
     logger.log(LogLevel::Info, "Savings from shifts operator: "+std::to_string(shift_savings));
+
+    // Check if savings are positive
+    if (exchange_savings<=0.0 and shift_savings<=0.0) {
+        logger.log(LogLevel::Info, "No improvement possible. Exiting...");
+        return;
+    }
+
     if (exchange_savings>shift_savings) {
         logger.log(LogLevel::Info, "Exchanges operator is better than shifts operator. Performing exchange...");
 
@@ -240,11 +270,19 @@ bool evaluation::is_shift_compatible(std::vector<Vehicle>& vehicle, std::vector<
         return false;
 }
 
-// Function to check if new charging stations need to be opened to make the exchange feasible
-double evaluation::make_exchange_charge_feasible(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, int u, int v, int k, int l)
-{
-    return 0.0;
+// Function to check if the new trip sequences are charge feasible
+bool evaluation::are_rotations_charge_feasible(std::vector<Trip>& trip, std::vector<std::vector<int>> rotation, Logger& logger) {
+    // Iterate across rotations
+    for (auto current_rotation : rotation) {
+        // Iterate across trips in the rotation
+        for (int i = 1; i<current_rotation.size()-1; i++) {
+            // Check if the trip is charge feasible
+            if (trip[current_rotation[i]-1].is_charge_feasible==false) {
+                logger.log(LogLevel::Info, "Rotation is not charge feasible. Exiting...");
+                return false;
+            }
+        }
+    }
 }
 
 // Calculate cost changes due to replacing a trip of a vehicle rotation with a trip from another rotation
@@ -303,6 +341,11 @@ double evaluation::calculate_trip_removal_cost(std::vector<Vehicle>& vehicle, st
             +trip[curr_trip_id-1].deadhead_distance[next_trip_id-1]*DEADHEAD_COST_FACTOR;
 
     double new_cost = trip[prev_trip_id-1].deadhead_distance[next_trip_id-1]*DEADHEAD_COST_FACTOR;
+
+    // Check if the size of trips in the source vehicle is 3 (two depots and one trip)
+    // If so, add the cost of the bus to the savings
+    if (vehicle[source_vehicle_index].num_trips==3)
+        new_cost += VEHICLE_COST;
 
     return current_cost-new_cost;  // If current cost is higher, the savings are positive and the exchange is beneficial
 }
