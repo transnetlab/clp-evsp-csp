@@ -10,8 +10,8 @@
 class Trip {
 public:
     int id;  // Trip ID
-    int start_stop;  // GTFS stop ID
-    int end_stop;  // GTFS stop ID
+    int start_terminal;  // Terminal ID of first stop
+    int end_terminal;  // Terminal ID of last stop
     int start_time;  // Minutes since midnight
     int end_time;  // Minutes since midnight
     double distance;  // Distance in km
@@ -20,21 +20,24 @@ public:
     std::vector<double> idle_time;  // Vector of idle times (includes depot 'trips')
 
     // Constructor
-    Trip() {
+    Trip()
+    {
         // Nothing to do here
     }
 
-    Trip(int id, int start_stop, int end_stop, int start_time, int end_time, double distance) {
+    Trip(int id, int start_stop, int end_stop, int start_time, int end_time, double distance)
+    {
         this->id = id;
-        this->start_stop = start_stop;
-        this->end_stop = end_stop;
+        this->start_terminal = start_stop;
+        this->end_terminal = end_stop;
         this->start_time = start_time;
         this->end_time = end_time;
         this->distance = distance;
     }
 
     //Destructor
-    ~Trip() {
+    ~Trip()
+    {
         is_compatible.clear();
         deadhead_distance.clear();
         idle_time.clear();
@@ -50,12 +53,18 @@ public:
     bool is_depot;  // True if the stop is a depot
     bool is_charge_station;  // True if the stop is a charging station
 
+    int total_idle_time;  // Total idle time across all rotations. This measures the utilization of the terminal.
+    std::vector<int> passing_rotation;  // indices passing through the terminal in the current rotation
+    std::vector<int> passing_rotation_idle_time;  // Idle time of each trip in the current rotation
+
     // Constructor
-    Terminal() {
+    Terminal()
+    {
         // Nothing to do here
     };
 
-    Terminal(int stop_id, int trip_id, bool is_depot, bool is_station) {
+    Terminal(int stop_id, int trip_id, bool is_depot, bool is_station)
+    {
         this->stop_id = stop_id;
         this->trip_id = trip_id;
         this->is_depot = is_depot;
@@ -63,7 +72,8 @@ public:
     }
 
     // Destructor
-    ~Terminal() {
+    ~Terminal()
+    {
         // Nothing to do here
     }
 };
@@ -72,49 +82,47 @@ public:
 class Vehicle {
 public:
     int id;  // Vehicle ID  TODO: Does this get used anywhere? Since we add and remove rotations, IDs need not be continuous
-    int num_trips;  // Number of trips in the rotation
     std::vector<int> trip_id;  // First and last trips are aliases for depots
     double deadhead_cost;  // Cost of deadheading in the rotation
 
     // Constructor
-    Vehicle() {
+    Vehicle()
+    {
         // Nothing to do here
     };
 
-    Vehicle(int id) {
+    Vehicle(int id)
+    {
         this->id = id;
-        num_trips = 0;
         deadhead_cost = 0.0;
     }
 
     // Desctructor
-    ~Vehicle() {
+    ~Vehicle()
+    {
         trip_id.clear();
     }
 
     // Function to calculate the deadheading costs in the rotation
-    void calculate_deadhead_cost(const std::vector<Trip> &trip) {
+    void calculate_deadhead_cost(const std::vector<Trip>& trip)
+    {
         // Calculate the deadhead cost of the rotation
         deadhead_cost = 0.0;
         int curr_trip_index, next_trip_index;
-        for (int i = 0; i < trip_id.size() - 1; ++i) {
-            curr_trip_index = trip_id[i] - 1;
-            next_trip_index = trip_id[i + 1] - 1;
-            deadhead_cost += trip[curr_trip_index].deadhead_distance[next_trip_index] * DEADHEAD_COST_FACTOR;
+        for (int i = 0; i<trip_id.size()-1; ++i) {
+            curr_trip_index = trip_id[i]-1;
+            next_trip_index = trip_id[i+1]-1;
+            deadhead_cost += trip[curr_trip_index].deadhead_distance[next_trip_index]*COST_PER_KM;
         }
     }
 
-    // Private function to update num_trips
-    void update_num_trips() {
-        num_trips = static_cast<int>(trip_id.size());
-    }
-
     // Print members of the class
-    void print_members() {
+    void print_members()
+    {
         std::cout << "Vehicle ID: " << id << std::endl;
         std::cout << "Number of trips: " << trip_id.size() << std::endl;
         std::cout << "Trip IDs: ";
-        for (int i = 0; i < trip_id.size(); ++i) {
+        for (int i = 0; i<trip_id.size(); ++i) {
             std::cout << trip_id[i] << " ";
         }
         std::cout << std::endl;

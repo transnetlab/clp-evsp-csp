@@ -7,28 +7,28 @@ double operators::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Trip
     double max_savings = 0.0;  // Stores the maximum savings among all exchanges
 
     // Store a vector of trip_id vectors after swapping trips
-    std::vector<std::vector<int>> swapped_trip_ids;
+    std::vector<std::vector<int>> swapped_rotations;
 
     for (int u = 0; u<vehicle.size(); u++) {
         for (int v = u+1; v<vehicle.size(); v++) {
-            for (int k = 1; k<vehicle[u].num_trips-1; k++) {  //  Exchange trips k and l of vehicles u and v
-                for (int l = 1; l<vehicle[v].num_trips-1; l++) {
+            for (int k = 1; k<vehicle[u].trip_id.size()-1; k++) {  //  Exchange trips k and l of vehicles u and v
+                for (int l = 1; l<vehicle[v].trip_id.size()-1; l++) {
                     double savings = 0.0;
                     // Check if the exchanges is feasible
                     if (evaluation::is_exchange_compatible(vehicle, trip, u, v, k, l)) {
                         // Check if exchanges are charge feasible
-                        swapped_trip_ids.clear();
+                        swapped_rotations.clear();
 
-                        // Push the original trip_ids to swapped_trip_ids
-                        swapped_trip_ids.push_back(vehicle[u].trip_id);
-                        swapped_trip_ids.push_back(vehicle[v].trip_id);
+                        // Push the original trip_ids to swapped_rotations
+                        swapped_rotations.push_back(vehicle[u].trip_id);
+                        swapped_rotations.push_back(vehicle[v].trip_id);
 
-                        // Exchange trips k and l of vehicles u and v in swapped_trip_ids
-                        int temp = swapped_trip_ids[0][k];
-                        swapped_trip_ids[0][k] = swapped_trip_ids[1][l];
-                        swapped_trip_ids[1][l] = temp;
+                        // Exchange trips k and l of vehicles u and v in swapped_rotations
+                        int temp = swapped_rotations[0][k];
+                        swapped_rotations[0][k] = swapped_rotations[1][l];
+                        swapped_rotations[1][l] = temp;
 
-                        if (evaluation::are_rotations_charge_feasible(trip, swapped_trip_ids, logger)) {
+                        if (evaluation::are_rotations_charge_feasible(trip, terminal, swapped_rotations)) {
                             // Calculate savings in deadheading from performing the exchange  TODO: Can the replacement costs be calculated using the swapped trips?
                             savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, u, v, k, l);
                             savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, v, u, l, k);
@@ -57,34 +57,34 @@ double operators::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& 
     double max_savings = 0.0;
 
     // Store a vector of trip_id vectors after shifting trips
-    std::vector<std::vector<int>> shifted_trip_ids;
+    std::vector<std::vector<int>> shifted_rotations;
 
     for (int u = 0; u<vehicle.size(); u++) {
         for (int v = u+1; v<vehicle.size(); v++) {
-            for (int k = 1; k<vehicle[u].num_trips-1; k++) {  //  Insert trip l of vehicle v after trip k of vehicle u
-                for (int l = 1; l<vehicle[v].num_trips-1; l++) {
+            for (int k = 1; k<vehicle[u].trip_id.size()-1; k++) {  //  Insert trip l of vehicle v after trip k of vehicle u
+                for (int l = 1; l<vehicle[v].trip_id.size()-1; l++) {
                     double savings = 0.0;
 
                     // Check if the exchanges is feasible
                     if (evaluation::is_shift_compatible(vehicle, trip, u, v, k, l)) {
                         // Check if exchanges are charge feasible
-                        shifted_trip_ids.clear();
+                        shifted_rotations.clear();
 
-                        // Insert the original trip_ids to shifted_trip_ids
-                        shifted_trip_ids.push_back(vehicle[u].trip_id);
-                        shifted_trip_ids.push_back(vehicle[v].trip_id);
+                        // Insert the original trip_ids to shifted_rotations
+                        shifted_rotations.push_back(vehicle[u].trip_id);
+                        shifted_rotations.push_back(vehicle[v].trip_id);
 
-                        // Insert trip l of vehicle v after trip k of vehicle u in shifted_trip_ids
-                        shifted_trip_ids[0].insert(shifted_trip_ids[0].begin()+k+1, shifted_trip_ids[1][l]);
+                        // Insert trip l of vehicle v after trip k of vehicle u in shifted_rotations
+                        shifted_rotations[0].insert(shifted_rotations[0].begin()+k+1, shifted_rotations[1][l]);
 
-                        // Remove trip l of vehicle v from shifted_trip_ids
-                        shifted_trip_ids[1].erase(shifted_trip_ids[1].begin()+l);
+                        // Remove trip l of vehicle v from shifted_rotations
+                        shifted_rotations[1].erase(shifted_rotations[1].begin()+l);
 
-                        // Check if shifted_trip_ids[1] has only two trips. If so, delete it
-                        if (shifted_trip_ids[1].size()==2)
-                            shifted_trip_ids.erase(shifted_trip_ids.begin()+1);
+                        // Check if shifted_rotations[1] has only two trips. If so, delete it
+                        if (shifted_rotations[1].size()==2)
+                            shifted_rotations.erase(shifted_rotations.begin()+1);
 
-                        if (evaluation::are_rotations_charge_feasible(trip, shifted_trip_ids, logger)) {
+                        if (evaluation::are_rotations_charge_feasible(trip, terminal, shifted_rotations)) {
                             // Calculate savings in deadheading from performing the exchange
                             savings += evaluation::calculate_trip_addition_cost(vehicle, trip, u, v, k, l);
                             savings += evaluation::calculate_trip_removal_cost(vehicle, trip, v, l);
@@ -146,7 +146,7 @@ void operators::perform_shift(std::vector<Vehicle>& vehicle, std::vector<Termina
 }
 
 // Best improvement function
-void operators::best_improvement(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+void operators::optimize_scheduling(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
         std::vector<Terminal>& terminal, Logger& logger)
 {
     logger.log(LogLevel::Info, "Running best improvement operator...");
@@ -197,7 +197,129 @@ void operators::best_improvement(std::vector<Vehicle>& vehicle, std::vector<Trip
     }
 }
 
-void evaluation::calculate_objective(std::vector<Trip>& trip, std::vector<Terminal>& terminal,
+// Function to open or close locations. This could create new rotations as well when locations are closed
+void operators::optimize_locations(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, Logger& logger)
+{
+    logger.log(LogLevel::Info, "Running location optimization operator...");
+
+    // Close all charging stations that have zero utilization
+    for (auto& curr_terminal : terminal) {
+        if (curr_terminal.is_charge_station and curr_terminal.total_idle_time==0)  {
+            curr_terminal.is_charge_station = false;
+        }
+    }
+
+    int sum_open_idle_times = 0;
+    int sum_closed_idle_times = 0;
+    for (const auto& curr_terminal : terminal) {
+        if (curr_terminal.is_charge_station)
+            sum_open_idle_times += curr_terminal.total_idle_time;
+        else
+            sum_closed_idle_times += curr_terminal.total_idle_time;
+    }
+
+    // Print values
+    logger.log(LogLevel::Info, "Sum of idle times at open terminals: "+std::to_string(sum_open_idle_times));
+    logger.log(LogLevel::Info, "Sum of idle times at closed terminals: "+std::to_string(sum_closed_idle_times));
+
+    // Among the ones that are open, choose a terminal randomly probability proportional to their total idle time
+    // Create a vector of vectors with the terminal id and the total idle time
+    std::vector<int> open_charge_station_ids;
+    std::vector<double> deletion_proportions;
+    for (const auto& curr_terminal : terminal) {
+        if (curr_terminal.is_charge_station) {
+            open_charge_station_ids.push_back(curr_terminal.id);
+            deletion_proportions.push_back(double(sum_open_idle_times)/double(curr_terminal.total_idle_time));
+        }
+    }
+
+    // Print the two vectors
+    logger.log(LogLevel::Info, "Open charge station ids:");
+    for (const auto& curr_id : open_charge_station_ids)
+        logger.log(LogLevel::Info, std::to_string(curr_id));
+
+    logger.log(LogLevel::Info, "Deletion probabilities:");
+    for (const auto& curr_prob : deletion_proportions)
+        logger.log(LogLevel::Info, std::to_string(curr_prob));
+
+    // Choose an index at random proportional to the deletion probabilities
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::discrete_distribution<> d(deletion_proportions.begin(), deletion_proportions.end());
+    int index = d(gen);
+
+    // Print the terminal id and the deletion probability of the chosen index
+    logger.log(LogLevel::Info, "Chosen terminal id: "+std::to_string(open_charge_station_ids[index]));
+    logger.log(LogLevel::Info, "Deletion probability of the chosen terminal: "+std::to_string(deletion_proportions[index]));
+
+    // Close the terminal with the chosen index
+    terminal[open_charge_station_ids[index]-1].is_charge_station = false;
+
+    // Scan through the rotations and find the ones that have the chosen terminal TODO: Save this upfront
+
+    // Check if the rotation is feasible after deletion of the terminal. If yes, delete. If not, create new rotations.
+
+
+
+
+}
+
+void evaluation::calculate_utilization(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, Logger& logger)
+{
+    logger.log(LogLevel::Info, "Calculating utilization statistics of all terminals...");
+
+    // Estimate the amount of idle time available at each charging and non charging terminal across all vehicles
+    for (auto& curr_terminal : terminal) {
+        curr_terminal.total_idle_time = 0;
+    }
+
+    int curr_trip, next_trip;  // Current trip and next trip IDs
+    int end_terminal_curr_trip, start_terminal_next_trip; // End terminal of current trip and start terminal of the next trip
+    bool is_trip_end_charge_terminal, is_next_trip_start_charge_terminal;
+    for (int v = 0; v<vehicle.size(); ++v) {
+        for (int i = 1; i<vehicle[v].trip_id.size()-2; ++i) {
+            curr_trip = vehicle[v].trip_id[i];
+            next_trip = vehicle[v].trip_id[i+1];
+
+            end_terminal_curr_trip = trip[curr_trip-1].end_terminal;  // End terminal id of current trip
+            start_terminal_next_trip = trip[next_trip-1].start_terminal;  // Start terminal id of next trip
+
+            is_trip_end_charge_terminal = terminal[end_terminal_curr_trip-1].is_charge_station;
+            is_next_trip_start_charge_terminal = terminal[start_terminal_next_trip-1].is_charge_station;
+
+            char scenario = 'n';  // n: no charging, e: end terminal, s: start terminal
+            // If both locations have charging stations, prefer charging at end terminal
+            // Else if either one of them have a charging station add it to the charge_terminal
+            if (is_trip_end_charge_terminal && is_next_trip_start_charge_terminal)
+                scenario = 'e';
+            else if (is_trip_end_charge_terminal || is_next_trip_start_charge_terminal)
+                scenario = is_trip_end_charge_terminal ? 'e' : 's';
+
+            switch (scenario) {
+            case 'e':
+                terminal[end_terminal_curr_trip-1].total_idle_time += trip[curr_trip-1].idle_time[next_trip-1];
+                break;
+            case 's':  // If charging station is opened at the end terminal, it takes the total idle time under the CAG policy
+                terminal[start_terminal_next_trip-1].total_idle_time += trip[curr_trip-1].idle_time[next_trip-1];
+                terminal[end_terminal_curr_trip-1].total_idle_time += trip[curr_trip-1].idle_time[next_trip-1];
+                break;
+            default:  // No charging location is available at either location
+                terminal[end_terminal_curr_trip-1].total_idle_time += trip[curr_trip-1].idle_time[next_trip-1];
+            }
+        }
+    }
+
+    // Log utilization statistics of all terminals
+    logger.log(LogLevel::Info, "Utilization statistics of all terminals:");
+    for (const auto& curr_terminal : terminal) {
+        logger.log(LogLevel::Info, "Terminal "+std::to_string(curr_terminal.id)+": "
+                +std::to_string(curr_terminal.total_idle_time));
+    }
+}
+
+double evaluation::calculate_objective(std::vector<Trip>& trip, std::vector<Terminal>& terminal,
         std::vector<Vehicle>& vehicle,
         Logger& logger)
 {
@@ -216,7 +338,6 @@ void evaluation::calculate_objective(std::vector<Trip>& trip, std::vector<Termin
     // Calculate variable cost of deadheading
     double deadhead_cost = 0.0;
     for (auto& current_vehicle : vehicle) {
-        current_vehicle.update_num_trips();
         current_vehicle.calculate_deadhead_cost(trip);
         // Log the deadheading cost of each trip
         logger.log(LogLevel::Debug, "Deadheading cost of vehicle "+std::to_string(current_vehicle.id)+": "
@@ -230,6 +351,8 @@ void evaluation::calculate_objective(std::vector<Trip>& trip, std::vector<Termin
     logger.log(LogLevel::Info, "Fixed cost of bus acquisition: "+std::to_string(vehicle_acquisition_cost));
     logger.log(LogLevel::Info, "Cost of deadheading: "+std::to_string(deadhead_cost));
     logger.log(LogLevel::Info, "Total cost: "+std::to_string(total_cost));
+
+    return total_cost;
 }
 
 // Checks if exchanging two trips across two different vehicle rotations is compatible
@@ -271,18 +394,75 @@ bool evaluation::is_shift_compatible(std::vector<Vehicle>& vehicle, std::vector<
 }
 
 // Function to check if the new trip sequences are charge feasible
-bool evaluation::are_rotations_charge_feasible(std::vector<Trip>& trip, std::vector<std::vector<int>> rotation, Logger& logger) {
+bool evaluation::are_rotations_charge_feasible(std::vector<Trip>& trip, std::vector<Terminal>& terminal,
+        std::vector<std::vector<int>> rotations)
+{
+    int curr_trip, next_trip;  // Current trip and next trip IDs
+    int end_terminal_curr_trip, start_terminal_next_trip; // End terminal of current trip and start terminal of the next trip
+    bool is_trip_end_charge_terminal, is_next_trip_start_charge_terminal;
+    int charge_time_window;  // Idle time during which charging is allowed
+
     // Iterate across rotations
-    for (auto current_rotation : rotation) {
-        // Iterate across trips in the rotation
-        for (int i = 1; i<current_rotation.size()-1; i++) {
-            // Check if the trip is charge feasible
-            if (trip[current_rotation[i]-1].is_charge_feasible==false) {
-                logger.log(LogLevel::Info, "Rotation is not charge feasible. Exiting...");
-                return false;
+    for (auto curr_rotation : rotations) {
+        // Iterate across trips in the rotations
+        // Calculate the energy required for deadheading from the depot to the end of the first trip
+        double charge_level = MAX_CHARGE_LEVEL
+                -(trip[curr_rotation[0]-1].deadhead_distance[curr_rotation[1]-1]+trip[curr_rotation[0]-1].distance)
+                        *ENERGY_PER_KM;
+
+        // Check if energy level is above the minimum threshold, if so, return false and break
+        if (charge_level<MIN_CHARGE_LEVEL)
+            return false;
+
+        for (int i = 1; i<curr_rotation.size()-2; ++i) {
+            curr_trip = curr_rotation[i];
+            next_trip = curr_rotation[i+1];
+
+            end_terminal_curr_trip = trip[curr_trip-1].end_terminal;  // End terminal id of current trip
+            start_terminal_next_trip = trip[next_trip-1].start_terminal;  // Start terminal id of next trip
+
+            is_trip_end_charge_terminal = terminal[end_terminal_curr_trip-1].is_charge_station;
+            is_next_trip_start_charge_terminal = terminal[start_terminal_next_trip-1].is_charge_station;
+
+            charge_time_window = trip[curr_trip-1].idle_time[next_trip-1];
+
+            char scenario = 'n';  // n: no charging, e: end terminal, s: start terminal
+            // If both locations have charging stations, prefer charging at end terminal
+            // Else if either one of them have a charging station add it to the charge_terminal
+            if (is_trip_end_charge_terminal && is_next_trip_start_charge_terminal)
+                scenario = 'e';
+            else if (is_trip_end_charge_terminal || is_next_trip_start_charge_terminal)
+                scenario = is_trip_end_charge_terminal ? 'e' : 's';
+
+            switch (scenario) {
+            case 'e':charge_level = std::min(charge_level+(charge_time_window*MAX_ENERGY_PER_MIN), MAX_CHARGE_LEVEL);
+                charge_level -= trip[curr_trip-1].deadhead_distance[next_trip-1]*ENERGY_PER_KM;
+                if (charge_level<MIN_CHARGE_LEVEL)
+                    return false;
+                break;
+            case 's':charge_level -= trip[curr_trip-1].deadhead_distance[next_trip-1]*ENERGY_PER_KM;
+                if (charge_level<MIN_CHARGE_LEVEL)
+                    return false;
+                charge_level = std::min(charge_level+charge_time_window*MAX_ENERGY_PER_MIN, MAX_CHARGE_LEVEL);
+                break;
+            default:  // No charging location is available at either location
+                charge_level -= trip[curr_trip-1].deadhead_distance[next_trip-1]*ENERGY_PER_KM;
+                if (charge_level<MIN_CHARGE_LEVEL)
+                    return false;
             }
+            charge_level -= trip[next_trip-1].distance*ENERGY_PER_KM;
+            if (charge_level<MIN_CHARGE_LEVEL)
+                return false;
         }
+
+        // Add distance from the last trip to the depot to cumulative_energy
+        int last_but_one_trip = curr_rotation[curr_rotation.size()-2];
+        int last_trip = curr_rotation[curr_rotation.size()-1];
+        charge_level -= trip[last_but_one_trip-1].deadhead_distance[last_trip-1]*ENERGY_PER_KM;
+        if (charge_level<MIN_CHARGE_LEVEL)
+            return false;
     }
+    return true;
 }
 
 // Calculate cost changes due to replacing a trip of a vehicle rotation with a trip from another rotation
@@ -298,10 +478,10 @@ double evaluation::calculate_trip_replacement_cost(std::vector<Vehicle>& vehicle
     int new_trip_id = vehicle[second_vehicle_index].trip_id[second_vehicle_trip_index];
 
     double current_cost = (trip[prev_trip_id-1].deadhead_distance[curr_trip_id-1]
-            +trip[curr_trip_id-1].deadhead_distance[next_trip_id-1])*DEADHEAD_COST_FACTOR;
+            +trip[curr_trip_id-1].deadhead_distance[next_trip_id-1])*COST_PER_KM;
 
     double new_cost = (trip[prev_trip_id-1].deadhead_distance[new_trip_id-1]
-            +trip[new_trip_id-1].deadhead_distance[next_trip_id-1])*DEADHEAD_COST_FACTOR;
+            +trip[new_trip_id-1].deadhead_distance[next_trip_id-1])*COST_PER_KM;
 
     return current_cost-new_cost;  // If current cost is higher, the savings are positive and the exchange is beneficial
 }
@@ -317,10 +497,10 @@ double evaluation::calculate_trip_addition_cost(std::vector<Vehicle>& vehicle, s
 
     int new_trip_id = vehicle[source_vehicle_index].trip_id[source_trip_index];
 
-    double current_cost = trip[curr_trip_id-1].deadhead_distance[next_trip_id-1]*DEADHEAD_COST_FACTOR;
+    double current_cost = trip[curr_trip_id-1].deadhead_distance[next_trip_id-1]*COST_PER_KM;
 
     double new_cost = (trip[curr_trip_id-1].deadhead_distance[new_trip_id-1]
-            +trip[new_trip_id-1].deadhead_distance[next_trip_id-1])*DEADHEAD_COST_FACTOR;
+            +trip[new_trip_id-1].deadhead_distance[next_trip_id-1])*COST_PER_KM;
 
     return current_cost-new_cost;  // If current cost is higher, the savings are positive and the exchange is beneficial
 }
@@ -337,14 +517,14 @@ double evaluation::calculate_trip_removal_cost(std::vector<Vehicle>& vehicle, st
     int curr_trip_id = vehicle[source_vehicle_index].trip_id[source_vehicle_trip_index];
     int next_trip_id = vehicle[source_vehicle_index].trip_id[source_vehicle_trip_index+1];
 
-    double current_cost = trip[prev_trip_id-1].deadhead_distance[curr_trip_id-1]*DEADHEAD_COST_FACTOR
-            +trip[curr_trip_id-1].deadhead_distance[next_trip_id-1]*DEADHEAD_COST_FACTOR;
+    double current_cost = trip[prev_trip_id-1].deadhead_distance[curr_trip_id-1]*COST_PER_KM
+            +trip[curr_trip_id-1].deadhead_distance[next_trip_id-1]*COST_PER_KM;
 
-    double new_cost = trip[prev_trip_id-1].deadhead_distance[next_trip_id-1]*DEADHEAD_COST_FACTOR;
+    double new_cost = trip[prev_trip_id-1].deadhead_distance[next_trip_id-1]*COST_PER_KM;
 
     // Check if the size of trips in the source vehicle is 3 (two depots and one trip)
     // If so, add the cost of the bus to the savings
-    if (vehicle[source_vehicle_index].num_trips==3)
+    if (vehicle[source_vehicle_index].trip_id.size()==3)
         new_cost += VEHICLE_COST;
 
     return current_cost-new_cost;  // If current cost is higher, the savings are positive and the exchange is beneficial

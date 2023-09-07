@@ -19,8 +19,8 @@ void preprocessing::read_trip_data(std::string instance, std::vector<Trip>& trip
         ++num_trips;
         std::istringstream line_stream(line);
         line_stream >> temp_trip.id;
-        line_stream >> temp_trip.start_stop;
-        line_stream >> temp_trip.end_stop;
+        line_stream >> temp_trip.start_terminal;
+        line_stream >> temp_trip.end_terminal;
         line_stream >> temp_trip.start_time;
         line_stream >> temp_trip.end_time;
         line_stream >> temp_trip.distance;
@@ -86,8 +86,8 @@ void preprocessing::create_depot_trips(std::vector<Trip>& trip, std::vector<Term
         // Add a new trip to the trip vector
         Trip temp_trip;
         temp_trip.id = num_trips+1;
-        temp_trip.start_stop = current_terminal.stop_id;
-        temp_trip.end_stop = current_terminal.stop_id;
+        temp_trip.start_terminal = current_terminal.stop_id;  // TODO: Should we save the stop id or the terminal id?
+        temp_trip.end_terminal = current_terminal.stop_id;
         temp_trip.start_time = 0;
         temp_trip.end_time = 0;
         temp_trip.distance = 0.0;
@@ -213,8 +213,8 @@ void preprocessing::log_input_data(std::vector<Trip>& trip, std::vector<Terminal
     // Log the set of augmented trips
     logger.log(LogLevel::Debug, "Printing trip data (Trip ID, Start stop, End stop, Start time, End time, Distance)");
     for (const auto& current_trip : trip) {
-        logger.log(LogLevel::Debug, std::to_string(current_trip.id)+" "+std::to_string(current_trip.start_stop)+" "+
-                std::to_string(current_trip.end_stop)+" "+std::to_string(current_trip.start_time)+" "+
+        logger.log(LogLevel::Debug, std::to_string(current_trip.id)+" "+std::to_string(current_trip.start_terminal)+" "+
+                std::to_string(current_trip.end_terminal)+" "+std::to_string(current_trip.start_time)+" "+
                 std::to_string(current_trip.end_time)+" "+std::to_string(current_trip.distance));
     }
 
