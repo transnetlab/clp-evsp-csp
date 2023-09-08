@@ -1,5 +1,15 @@
 #include "operators.h"
 
+template<typename T>
+std::string vector_to_string(const std::vector<T>& input_vector)
+{
+    std::stringstream ss;
+    for (const T& element : input_vector) {
+        ss << element << " ";
+    }
+    return ss.str();
+}
+
 double operators::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
         std::vector<Terminal>& terminal, Exchange& exchange, Logger& logger)
 {
@@ -166,8 +176,14 @@ void operators::optimize_scheduling(std::vector<Vehicle>& vehicle, std::vector<T
     logger.log(LogLevel::Info, "Savings from exchanges operator: "+std::to_string(exchange_savings));
     logger.log(LogLevel::Info, "Savings from shifts operator: "+std::to_string(shift_savings));
 
+    // Generate a random number between 0 and 1
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(0.0, 1.0);
+    double random_number = dis(gen);
+
     // Check if savings are positive
-    if (exchange_savings<=0.0 and shift_savings<=0.0) {
+    if (exchange_savings<=0.0 and shift_savings<=0.0 and random_number>0.05) {
         logger.log(LogLevel::Debug, "No improvement possible. Exiting...");
         return;
     }
@@ -207,28 +223,6 @@ void operators::close_charging_stations(std::vector<Vehicle>& vehicle, std::vect
     logger.log(LogLevel::Info, "Sum of idle times at open terminals: "+std::to_string(sum_open_idle_times));
     logger.log(LogLevel::Info, "Sum of idle times at closed terminals: "+std::to_string(sum_closed_idle_times));*/
 
-    // Among the ones that are open, choose a terminal randomly probability proportional to their total idle time
-    // Create a vector of vectors with the terminal id and the total idle time
-    std::vector<int> open_charge_station_ids;
-    std::vector<double> deletion_proportions;
-    for (const auto& curr_terminal : terminal) {
-        if (curr_terminal.is_charge_station) {
-            open_charge_station_ids.push_back(curr_terminal.id);
-            deletion_proportions.push_back(1.0/double(curr_terminal.total_idle_time));
-        }
-    }
-
-    // Choose an index at random proportional to the deletion probabilities
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::discrete_distribution<> d(deletion_proportions.begin(), deletion_proportions.end());
-    int index = d(gen);
-
-    // Print the terminal id and the deletion probability of the chosen index
-    logger.log(LogLevel::Info, "Chosen terminal id: "+std::to_string(open_charge_station_ids[index]));
-    logger.log(LogLevel::Info,
-            "Deletion proportion of the chosen terminal: "+std::to_string(deletion_proportions[index]));
-
     // Track the savings
     double best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
     double old_objective = 1e12;
@@ -249,16 +243,16 @@ void operators::close_charging_stations(std::vector<Vehicle>& vehicle, std::vect
     }
 
     // Log the details of the scan eligible rotations
-    logger.log(LogLevel::Info, "Scan eligible rotations: ");
-    for (const auto& rotation : scan_eligible_rotations)
-        logger.log(LogLevel::Info, std::to_string(rotation));
+    logger.log(LogLevel::Info, "Scan eligible rotations: "+vector_to_string(scan_eligible_rotations));
 
     // Check if rotations are feasible after deletion of the terminal. If not, create new rotations.
     evaluation::check_rotation_feasibility(vehicle, trip, terminal, scan_eligible_rotations, logger);
 
     // Check if savings can be achieved from applying the scheduling operators
+    int num_iterations = 0;
     while (best_objective
-            <old_objective) {  // TODO: By default it will do this twice since deleting a terminal will create savings
+            <old_objective*1.05 and num_iterations < 100) {  // TODO: By default it will do this twice since deleting a terminal will create savings
+        num_iterations++;
         old_objective = best_objective;
         operators::optimize_scheduling(vehicle, trip, terminal, logger);
         best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
@@ -275,7 +269,9 @@ void operators::open_charging_stations(std::vector<Vehicle>& vehicle, std::vecto
     terminal[open_terminal_id-1].is_charge_station = true;
 
     // Check if savings can be achieved from applying the scheduling operators
-    while (best_objective<old_objective) {
+    int num_iterations = 0;
+    while (best_objective<old_objective*1.05 and num_iterations < 100) {
+        ++num_iterations;
         old_objective = best_objective;
         operators::optimize_scheduling(vehicle, trip, terminal, logger);
         best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
@@ -298,30 +294,28 @@ void operators::optimize_locations(std::vector<Vehicle>& vehicle, std::vector<Tr
         }
     }
 
-    /* int sum_open_idle_times = 0;
-    int sum_closed_idle_times = 0;
+    // Among the ones that are open, choose a terminal randomly probability proportional to their total idle time
+    // Create a vector of vectors with the terminal id and the total idle time
+    std::vector<int> open_charge_station_ids;
+    std::vector<double> deletion_proportions;
     for (const auto& curr_terminal : terminal) {
-        if (curr_terminal.is_charge_station)
-            sum_open_idle_times += curr_terminal.total_idle_time;
-        else
-            sum_closed_idle_times += curr_terminal.total_idle_time;
-    } */
-
-    // Select the open charge station with the least utilization and close it. Calculate savings considering scheduling.
-    // If the savings are positive, close the charging station, and update the terminal and rotation data.
-    int least_utilized_terminal_id;
-    double least_utilization = 1e06;
-    for (const auto& curr_terminal : terminal) {
-        if (curr_terminal.is_charge_station and curr_terminal.total_idle_time<least_utilization) {
-            least_utilization = curr_terminal.total_idle_time;
-            least_utilized_terminal_id = curr_terminal.id;
+        if (curr_terminal.is_charge_station) {
+            open_charge_station_ids.push_back(curr_terminal.id);
+            deletion_proportions.push_back(1.0/double(curr_terminal.total_idle_time));
         }
     }
 
-    // Close the least utilized terminal
-    logger.log(LogLevel::Info, "Closing terminal "+std::to_string(least_utilized_terminal_id)+"...");
+    // Choose an index at random proportional to the deletion probabilities
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::discrete_distribution<> d(deletion_proportions.begin(), deletion_proportions.end());
+    int index = d(gen);
 
-    operators::close_charging_stations(vehicle, trip, terminal, least_utilized_terminal_id, logger);
+    // Print the terminal id and the deletion probability of the chosen index
+    logger.log(LogLevel::Info, "Closing terminal id: "+std::to_string(open_charge_station_ids[index]));
+    logger.log(LogLevel::Info,
+            "Deletion proportion of the chosen terminal: "+std::to_string(deletion_proportions[index]));
+    operators::close_charging_stations(vehicle, trip, terminal, open_charge_station_ids[index], logger);
 
     // Consider opening charging stations based on utilization and savings
     evaluation::calculate_utilization(vehicle, trip, terminal, logger);
@@ -344,8 +338,29 @@ void operators::optimize_locations(std::vector<Vehicle>& vehicle, std::vector<Tr
 void operators::split_trip(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal,
         int vehicle_index, int trip_in_rotation_index, std::vector<int>& scan_eligible_indices, Logger& logger)
 {
-    // Truncate existing trips on vehicle_index after trip_in_rotation_index
+    // Log operations
+    logger.log(LogLevel::Info, "Splitting trip "+std::to_string(vehicle[vehicle_index].trip_id[trip_in_rotation_index])
+            +" of vehicle "+std::to_string(vehicle_index)+"...");
+    // Log trip IDs before splitting
+    logger.log(LogLevel::Info, "Trip IDs before splitting: "+vector_to_string(vehicle[vehicle_index].trip_id));
 
+    // Create a new vehicle with the remaining trips
+    Vehicle new_vehicle;
+    new_vehicle.trip_id.push_back(vehicle[vehicle_index].trip_id[0]);  // Add the depot
+    new_vehicle.trip_id.insert(new_vehicle.trip_id.begin(),
+            vehicle[vehicle_index].trip_id.begin()+trip_in_rotation_index+1,
+            vehicle[vehicle_index].trip_id.end()); // Add the second half of the original rotation
+    vehicle.push_back(new_vehicle);
+
+    // Truncate existing trips on vehicle_index after trip_in_rotation_index till the last but one element
+    vehicle[vehicle_index].trip_id.erase(vehicle[vehicle_index].trip_id.begin()+trip_in_rotation_index+1,
+            vehicle[vehicle_index].trip_id.end()-1);
+
+    // Log trip IDs after splitting
+    logger.log(LogLevel::Info, "Trip IDs after splitting: "+vector_to_string(vehicle[vehicle_index].trip_id));
+
+    // Add the new vehicle to scan_eligible_indices
+    scan_eligible_indices.push_back(vehicle.size()-1);
 }
 
 void evaluation::check_rotation_feasibility(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
@@ -408,7 +423,8 @@ void evaluation::check_rotation_feasibility(std::vector<Vehicle>& vehicle, std::
             default:  // No charging location is available at either location
                 charge_level -= trip[curr_trip-1].deadhead_distance[next_trip-1]*ENERGY_PER_KM;
                 if (charge_level<MIN_CHARGE_LEVEL) {
-                    operators::split_trip(vehicle, trip, terminal, v, i, scan_eligible_vehicle_indices,logger);  // Splits after i
+                    operators::split_trip(vehicle, trip, terminal, v, i, scan_eligible_vehicle_indices,
+                            logger);  // Splits after i
                     break;
                 }
             }
@@ -424,7 +440,7 @@ void evaluation::check_rotation_feasibility(std::vector<Vehicle>& vehicle, std::
         int last_but_one_trip = vehicle[v].trip_id[vehicle[v].trip_id.size()-2];
         int last_trip = vehicle[v].trip_id[vehicle[v].trip_id.size()-1];
         charge_level -= trip[last_but_one_trip-1].deadhead_distance[last_trip-1]*ENERGY_PER_KM;
-        if (charge_level<MIN_CHARGE_LEVEL)  {
+        if (charge_level<MIN_CHARGE_LEVEL) {
             operators::split_trip(vehicle, trip, terminal, v, vehicle[v].trip_id.size()-3,
                     scan_eligible_vehicle_indices, logger);  // Splits after i
             break;

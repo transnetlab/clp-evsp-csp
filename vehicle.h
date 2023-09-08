@@ -119,14 +119,12 @@ public:
     // Print members of the class
     void print_members()
     {
-        std::cout << "Vehicle ID: " << id << std::endl;
-        std::cout << "Number of trips: " << trip_id.size() << std::endl;
-        std::cout << "Trip IDs: ";
-        for (int i = 0; i<trip_id.size(); ++i) {
+        std::cout << std::endl << "Vehicle ID, No. of Trips, Deadhead cost, Trip IDs ";
+        std::cout << id << " ";
+        std::cout << trip_id.size() << " ";
+        std::cout << deadhead_cost << " ";
+        for (int i = 0; i<trip_id.size(); ++i)
             std::cout << trip_id[i] << " ";
-        }
-        std::cout << std::endl;
-        std::cout << "Deadhead cost: " << deadhead_cost << std::endl;
     }
 };
 

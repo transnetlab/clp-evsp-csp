@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "vehicle.h"
 #include <random>
+#include <sstream>
 
 class Exchange {
 public:

@@ -43,7 +43,9 @@ int main()
     // Local search for scheduling
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     double old_objective = 1e12;
-    while (best_objective<old_objective) {
+    int num_iterations = 0;
+    while (best_objective<old_objective*1.05 and num_iterations < 100) {
+        ++num_iterations;
         old_objective = best_objective;
         operators::optimize_scheduling(vehicle, trip, terminal, logger);  // TODO: Have consistent tenses of namespaces
         best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
@@ -52,15 +54,18 @@ int main()
 
     // Local search for location. It includes schedule optimization as well.
     old_objective = 1e12;
-    while (best_objective<old_objective) {
+    for (int iter = 0; iter<200; ++iter) {
         old_objective = best_objective;
         operators::optimize_locations(vehicle, trip, terminal, logger);
         best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
     }
     evaluation::update_best_solution(vehicle, trip, terminal, best_vehicle, best_terminal, logger);
 
-
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     logger.log(LogLevel::Info, "Local search completed in "
             +std::to_string(std::chrono::duration_cast<std::chrono::seconds>(end-begin).count())+" seconds.");
+
+    // Print final vehicle rotations
+    for (auto& vehicle : best_vehicle)
+        vehicle.print_members();
 }
