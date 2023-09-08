@@ -30,8 +30,10 @@ double exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, st
 double shift_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Shift& shift, Logger&);
 void perform_exchange(std::vector<Vehicle>&, std::vector<Terminal>&, Exchange&);
 void perform_shift(std::vector<Vehicle>&, std::vector<Terminal>&, Shift&);
-void optimize_locations(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal,
-        Logger& logger);
+void optimize_locations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
+void close_charging_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, Logger&);
+void open_charging_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, Logger&);
+void split_trip(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, int, std::vector<int>&, Logger& );
 }
 
 namespace shake {
@@ -49,7 +51,9 @@ double calculate_trip_addition_cost(std::vector<Vehicle>&, std::vector<Trip>&, i
 double calculate_trip_removal_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int);
 void calculate_utilization(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
 void update_best_solution(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, std::vector<Vehicle>&,
-        std::vector<Terminal>&, double&, double, Logger&);
+        std::vector<Terminal>&, Logger&);
+void check_rotation_feasibility(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, std::vector<int>&, Logger&);
+
 }
 
 #endif //EBUS_VNS_OPERATORS_H

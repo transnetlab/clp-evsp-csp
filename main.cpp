@@ -14,13 +14,14 @@
 #include <algorithm>
 #include <iomanip>
 
-int main() {
+int main()
+{
     // Set the instance name
     std::string instance = "Ann_Arbor";
 
     // Delete any old log files if present and create a new one. Set logging level.
-    std::remove(("../output/" + instance + "_log.txt").c_str());
-    Logger logger("../output/" + instance + "_log.txt", false);
+    std::remove(("../output/"+instance+"_log.txt").c_str());
+    Logger logger("../output/"+instance+"_log.txt", true);
     logger.set_log_level_threshold(LogLevel::Info);
 
     // Initialize variables  TODO: Check if we need to keep track of number of original trips vs. augmented trips
@@ -37,25 +38,29 @@ int main() {
 
     // Calculate the objective value of the initial solution
     double best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
+    evaluation::update_best_solution(vehicle, trip, terminal, best_vehicle, best_terminal, logger);
 
     // Local search for scheduling
-    operators::optimize_scheduling(vehicle, trip, terminal, logger);  // TODO: Have consistent tenses of namespaces
-    double new_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
-    if (new_objective < best_objective)
-        evaluation::update_best_solution(vehicle, trip, terminal, best_vehicle, best_terminal, best_objective, new_objective, logger);
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    double old_objective = 1e12;
+    while (best_objective<old_objective) {
+        old_objective = best_objective;
+        operators::optimize_scheduling(vehicle, trip, terminal, logger);  // TODO: Have consistent tenses of namespaces
+        best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
+    }
+    evaluation::update_best_solution(vehicle, trip, terminal, best_vehicle, best_terminal, logger);
 
     // Local search for location. It includes schedule optimization as well.
-    bool is_new_solution_better;
-    while(is_new_solution_better) {
-        is_new_solution_better = false;
+    old_objective = 1e12;
+    while (best_objective<old_objective) {
+        old_objective = best_objective;
         operators::optimize_locations(vehicle, trip, terminal, logger);
-        new_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
-        if (new_objective < best_objective) {
-            is_new_solution_better = true;
-            evaluation::update_best_solution(vehicle, trip, terminal, best_vehicle, best_terminal, best_objective, new_objective, logger);
-        }
+        best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
     }
+    evaluation::update_best_solution(vehicle, trip, terminal, best_vehicle, best_terminal, logger);
+
 
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    logger.log(LogLevel::Info, "Local search completed in " + std::to_string(std::chrono::duration_cast<std::chrono::seconds>(end - begin).count()) + " seconds.");
+    logger.log(LogLevel::Info, "Local search completed in "
+            +std::to_string(std::chrono::duration_cast<std::chrono::seconds>(end-begin).count())+" seconds.");
 }
