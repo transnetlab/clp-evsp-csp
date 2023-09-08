@@ -145,62 +145,7 @@ void operators::perform_shift(std::vector<Vehicle>& vehicle, std::vector<Termina
                 +source_vehicle_index);   //  TODO: Check if removal creates a problem with indexing +-1 issues
 }
 
-// Best improvement function
-void operators::optimize_scheduling(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Logger& logger)
-{
-    logger.log(LogLevel::Info, "Running best improvement operator...");
-
-    // Run the exchanges operator
-    Exchange exchange;
-    double exchange_savings = exchange_trips(vehicle, trip, terminal, exchange, logger);
-
-    // Run the shifts operator
-    Shift shift;
-    double shift_savings = shift_trips(vehicle, trip, terminal, shift, logger);
-
-    // Check if the exchanges operator is better than the shifts operator
-    // Print the values of savings from both operators
-    logger.log(LogLevel::Info, "Savings from exchanges operator: "+std::to_string(exchange_savings));
-    logger.log(LogLevel::Info, "Savings from shifts operator: "+std::to_string(shift_savings));
-
-    // Check if savings are positive
-    if (exchange_savings<=0.0 and shift_savings<=0.0) {
-        logger.log(LogLevel::Info, "No improvement possible. Exiting...");
-        return;
-    }
-
-    if (exchange_savings>shift_savings) {
-        logger.log(LogLevel::Info, "Exchanges operator is better than shifts operator. Performing exchange...");
-
-        // Log the members of the exchange object
-        logger.log(LogLevel::Info, "First vehicle index, Second vehicle index, First trip index, Second trip index");
-        logger.log(LogLevel::Info,
-                std::to_string(exchange.first_vehicle_index)+", "+std::to_string(exchange.second_vehicle_index)+", "
-                        +std::to_string(exchange.first_trip_index)+", "+std::to_string(exchange.second_trip_index));
-
-        // TODO: Add details of charging locations opened
-        perform_exchange(vehicle, terminal, exchange);
-    }
-    else {
-        logger.log(LogLevel::Info, "Shifts operator is better than exchanges operator");
-
-        // Log the members of the shift object
-        logger.log(LogLevel::Info,
-                "Destination vehicle index, Source vehicle index, Destination trip index, Source trip index");
-        logger.log(LogLevel::Info,
-                std::to_string(shift.dest_vehicle_index)+", "+std::to_string(shift.source_vehicle_index)+", "
-                        +std::to_string(shift.dest_trip_index)+", "+std::to_string(shift.source_trip_index));
-
-        // TODO: Add details of charging locations opened
-        perform_shift(vehicle, terminal, shift);
-    }
-}
-
-// Function to open or close locations. This could create new rotations as well when locations are closed
-void operators::optimize_locations(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Logger& logger)
-{
+void operators::open_new_charge_station(){
     logger.log(LogLevel::Info, "Running location optimization operator...");
 
     // Close all charging stations that have zero utilization
@@ -261,6 +206,76 @@ void operators::optimize_locations(std::vector<Vehicle>& vehicle, std::vector<Tr
     // Check if the rotation is feasible after deletion of the terminal. If yes, delete. If not, create new rotations.
 
 
+}
+
+void operators::close_existing_charge_station() {
+
+}
+
+// Best improvement function
+void operators::optimize_scheduling(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, Logger& logger)
+{
+    logger.log(LogLevel::Info, "Running best improvement operator...");
+
+    // Run the exchanges operator
+    Exchange exchange;
+    double exchange_savings = exchange_trips(vehicle, trip, terminal, exchange, logger);
+
+    // Run the shifts operator
+    Shift shift;
+    double shift_savings = shift_trips(vehicle, trip, terminal, shift, logger);
+
+    // Check if the exchanges operator is better than the shifts operator
+    // Print the values of savings from both operators
+    logger.log(LogLevel::Info, "Savings from exchanges operator: "+std::to_string(exchange_savings));
+    logger.log(LogLevel::Info, "Savings from shifts operator: "+std::to_string(shift_savings));
+
+    // Check if savings are positive
+    if (exchange_savings<=0.0 and shift_savings<=0.0) {
+        logger.log(LogLevel::Info, "No improvement possible. Exiting...");
+        return;
+    }
+
+    if (exchange_savings>shift_savings) {
+        logger.log(LogLevel::Info, "Exchanges operator is better than shifts operator. Performing exchange...");
+
+        // Log the members of the exchange object
+        logger.log(LogLevel::Info, "First vehicle index, Second vehicle index, First trip index, Second trip index");
+        logger.log(LogLevel::Info,
+                std::to_string(exchange.first_vehicle_index)+", "+std::to_string(exchange.second_vehicle_index)+", "
+                        +std::to_string(exchange.first_trip_index)+", "+std::to_string(exchange.second_trip_index));
+
+        // TODO: Add details of charging locations opened
+        perform_exchange(vehicle, terminal, exchange);
+    }
+    else {
+        logger.log(LogLevel::Info, "Shifts operator is better than exchanges operator");
+
+        // Log the members of the shift object
+        logger.log(LogLevel::Info,
+                "Destination vehicle index, Source vehicle index, Destination trip index, Source trip index");
+        logger.log(LogLevel::Info,
+                std::to_string(shift.dest_vehicle_index)+", "+std::to_string(shift.source_vehicle_index)+", "
+                        +std::to_string(shift.dest_trip_index)+", "+std::to_string(shift.source_trip_index));
+
+        // TODO: Add details of charging locations opened
+        perform_shift(vehicle, terminal, shift);
+    }
+}
+
+// Function to open or close locations. This could create new rotations as well when locations are closed
+void operators::optimize_locations(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, Logger& logger)
+{
+    // Find utilization of different terminals TODO: These can be tracked upfront and be updated incrementally after every shift and exchange
+    evaluation::calculate_utilization(vehicle, trip, terminal, logger);
+
+
+    close_existing_charge_station();
+
+
+    open_new_charge_station();
 
 
 }
@@ -528,4 +543,22 @@ double evaluation::calculate_trip_removal_cost(std::vector<Vehicle>& vehicle, st
         new_cost += VEHICLE_COST;
 
     return current_cost-new_cost;  // If current cost is higher, the savings are positive and the exchange is beneficial
+}
+
+// Function to check for improvement in solutions
+void evaluation::update_best_solution(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, std::vector<Vehicle>& best_vehicle,
+        std::vector<Terminal>& best_terminal, double& best_objective, double new_objective, Logger& logger) {
+    best_objective = new_objective;  // Update the best objective value
+    best_terminal = terminal;  // Update the best charging station configuration
+    best_vehicle = vehicle;  // Update the best rotations
+
+    // Log the rotation data
+    logger.log(LogLevel::Info, "Current rotation data:");
+    for (int i = 0; i < vehicle.size(); ++i) {
+        logger.log(LogLevel::Info, "Vehicle " + std::to_string(i + 1));
+        for (int j = 0; j < vehicle[i].trip_id.size(); ++j) {
+            logger.log(LogLevel::Info, "Trip " + std::to_string(vehicle[i].trip_id[j]));
+        }
+    }
 }

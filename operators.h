@@ -23,8 +23,10 @@ public:
 };
 
 namespace operators {
-void optimize_scheduling(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal, Logger& logger);
-double exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal, Exchange& exchange, Logger& logger);
+void optimize_scheduling(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal,
+        Logger& logger);
+double exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal,
+        Exchange& exchange, Logger& logger);
 double shift_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Shift& shift, Logger&);
 void perform_exchange(std::vector<Vehicle>&, std::vector<Terminal>&, Exchange&);
 void perform_shift(std::vector<Vehicle>&, std::vector<Terminal>&, Shift&);
@@ -46,6 +48,8 @@ double calculate_trip_replacement_cost(std::vector<Vehicle>&, std::vector<Trip>&
 double calculate_trip_addition_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
 double calculate_trip_removal_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int);
 void calculate_utilization(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
+void update_best_solution(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, std::vector<Vehicle>&,
+        std::vector<Terminal>&, double&, double, Logger&);
 }
 
 #endif //EBUS_VNS_OPERATORS_H
