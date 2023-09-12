@@ -221,7 +221,7 @@ void operators::close_charging_stations(std::vector<Vehicle>& vehicle, std::vect
     logger.log(LogLevel::Info, "Checking for improvement after closing terminal ID: "+std::to_string(close_terminal_id));
 
     // Check if savings can be achieved from applying the scheduling operators
-    logger.log(LogLevel::Info, "Best objective found so far before closing any charging stations: ");
+    logger.log(LogLevel::Debug, "Best objective found so far before closing any charging stations: ");
     double best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
 
     // Close the terminal with the chosen index
@@ -240,7 +240,7 @@ void operators::close_charging_stations(std::vector<Vehicle>& vehicle, std::vect
     }
 
     // Log the details of the scan eligible rotations
-    logger.log(LogLevel::Info, "Scan eligible list of rotations affected: "+vector_to_string(scan_eligible_rotations));
+    logger.log(LogLevel::Debug, "Scan eligible list of rotations affected: "+vector_to_string(scan_eligible_rotations));
 
     // Create a copy of the vehicle vector to check for savings
     std::vector<Vehicle> vehicle_copy = vehicle;  // TODO: Double check if any of the other classes need to be copied
@@ -249,11 +249,11 @@ void operators::close_charging_stations(std::vector<Vehicle>& vehicle, std::vect
     evaluation::check_rotation_feasibility(vehicle_copy, trip, terminal, scan_eligible_rotations, logger);
 
     // Check if savings can be achieved from applying the scheduling operators
-    logger.log(LogLevel::Info, "Current objective after closing the charging stations and creating new rotations (if any): ");
+    logger.log(LogLevel::Debug, "Current objective after closing the charging stations and creating new rotations (if any): ");
     double curr_objective = evaluation::calculate_objective(trip, terminal, vehicle_copy, logger);
     double old_objective = 1e12;
 
-    logger.log(LogLevel::Info, "Applying local search operators to adjust scheduling...");
+    logger.log(LogLevel::Debug, "Applying local search operators to adjust scheduling...");
     while (curr_objective<old_objective) {  // TODO: By default it will do this twice since deleting a terminal will create savings
         old_objective = curr_objective;
         operators::optimize_scheduling(vehicle_copy, trip, terminal, logger);
@@ -381,10 +381,10 @@ void operators::split_trip(std::vector<Vehicle>& vehicle, std::vector<Trip>& tri
         int vehicle_index, int trip_in_rotation_index, std::vector<int>& scan_eligible_indices, Logger& logger)
 {
     // Log operations
-    logger.log(LogLevel::Info, "Splitting trip "+std::to_string(vehicle[vehicle_index].trip_id[trip_in_rotation_index])
+    logger.log(LogLevel::Debug, "Splitting trip "+std::to_string(vehicle[vehicle_index].trip_id[trip_in_rotation_index])
             +" of vehicle "+std::to_string(vehicle_index)+"...");
     // Log trip IDs before splitting
-    logger.log(LogLevel::Info, "Trip IDs before splitting: "+vector_to_string(vehicle[vehicle_index].trip_id));
+    logger.log(LogLevel::Debug, "Trip IDs before splitting: "+vector_to_string(vehicle[vehicle_index].trip_id));
 
     // Create a new vehicle with the remaining trips
     Vehicle new_vehicle;
@@ -399,7 +399,7 @@ void operators::split_trip(std::vector<Vehicle>& vehicle, std::vector<Trip>& tri
             vehicle[vehicle_index].trip_id.end()-1);
 
     // Log trip IDs after splitting
-    logger.log(LogLevel::Info, "Trip IDs after splitting: "+vector_to_string(vehicle[vehicle_index].trip_id));
+    logger.log(LogLevel::Debug, "Trip IDs after splitting: "+vector_to_string(vehicle[vehicle_index].trip_id));
 
     // Add the new vehicle to scan_eligible_indices
     scan_eligible_indices.push_back(vehicle.size()-1);

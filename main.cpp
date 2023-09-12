@@ -35,6 +35,7 @@ int main()
 
     // Calculate the objective value of the initial solution
     double best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
+
     // Local search for scheduling
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     double old_objective = 1e12;
@@ -54,7 +55,7 @@ int main()
     evaluation::calculate_utilization(vehicle, trip, terminal, logger);
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     logger.log(LogLevel::Info, "Local search completed in "
-            +std::to_string(std::chrono::duration_cast<std::chrono::seconds>(end-begin).count())+" seconds.");
+            +std::to_string(double(std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()) / 1000.0)+" seconds.");
 
     // Print final vehicle rotations
     for (auto& v : vehicle)

@@ -1,1178 +1,1056 @@
-[2023-09-12 11:49:22] INFO: Reading trip data from file...
-[2023-09-12 11:49:22] INFO: Trip data read successfully
-[2023-09-12 11:49:22] INFO: Number of trips: 858
-[2023-09-12 11:49:22] INFO: Reading terminal data from file...
-[2023-09-12 11:49:22] INFO: Terminal data read successfully
-[2023-09-12 11:49:22] INFO: Number of terminals: 29
-[2023-09-12 11:49:22] INFO: Augmenting trips with depot stops...
-[2023-09-12 11:49:22] INFO: Number of trips after augmentation: 887
-[2023-09-12 11:49:22] INFO: Reading trip pair data from file...
-[2023-09-12 11:49:22] INFO: Trip pair data read successfully
-[2023-09-12 11:49:22] INFO: Initializing vehicle rotations from the concurrent scheduler solution...
-[2023-09-12 11:49:22] INFO: Vehicle rotations read successfully
-[2023-09-12 11:49:22] INFO: Number of vehicles: 57
-[2023-09-12 11:49:22] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:22] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:22] INFO: Number of buses used: 57
-[2023-09-12 11:49:22] INFO: Total cost: 27088029.898400
-[2023-09-12 11:49:22] INFO: Savings from exchanges operator: 44988.556800
-[2023-09-12 11:49:22] INFO: Savings from shifts operator: 368054.009600
-[2023-09-12 11:49:22] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:22] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:22] INFO: Number of buses used: 56
-[2023-09-12 11:49:22] INFO: Total cost: 26719975.888800
-[2023-09-12 11:49:22] INFO: Savings from exchanges operator: 44988.556800
-[2023-09-12 11:49:22] INFO: Savings from shifts operator: 46644.021600
-[2023-09-12 11:49:22] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:22] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:22] INFO: Number of buses used: 56
-[2023-09-12 11:49:22] INFO: Total cost: 26673331.867200
-[2023-09-12 11:49:22] INFO: Savings from exchanges operator: 44847.871200
-[2023-09-12 11:49:22] INFO: Savings from shifts operator: 33907.156800
-[2023-09-12 11:49:22] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:22] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:22] INFO: Number of buses used: 56
-[2023-09-12 11:49:22] INFO: Total cost: 26628483.996000
-[2023-09-12 11:49:22] INFO: Savings from exchanges operator: 40249.572000
-[2023-09-12 11:49:22] INFO: Savings from shifts operator: 33907.156800
-[2023-09-12 11:49:22] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:22] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:22] INFO: Number of buses used: 56
-[2023-09-12 11:49:22] INFO: Total cost: 26588234.424000
-[2023-09-12 11:49:22] INFO: Savings from exchanges operator: 38183.613600
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 33907.156800
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26550050.810400
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 35701.380000
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 33907.156800
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26514349.430400
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 35655.127200
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 33907.156800
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26478694.303200
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 25797.499200
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 33907.156800
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26444787.146400
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 25797.499200
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 33213.364800
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26411573.781600
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 25797.499200
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 24315.482400
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26385776.282400
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 24756.811200
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 24315.482400
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26361019.471200
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 24315.482400
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 24315.482400
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26336703.988800
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 24007.130400
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 24315.482400
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26312388.506400
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 32182.312800
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 24016.766400
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26280206.193600
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 24007.130400
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 24315.482400
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26255890.711200
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 24007.130400
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 21258.943200
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26231883.580800
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 21100.912800
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 21258.943200
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26210624.637600
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 21100.912800
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 21255.088800
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26189369.548800
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 21100.912800
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 21100.912800
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26168268.636000
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 21097.058400
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 21100.912800
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26147167.723200
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 21097.058400
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 21100.912800
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26126066.810400
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 21097.058400
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 21100.912800
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26104965.897600
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 21097.058400
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 21097.058400
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26083868.839200
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 20511.189600
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 21097.058400
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26062771.780800
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 20511.189600
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 21097.058400
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26041674.722400
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 20511.189600
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 20189.347200
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26021163.532800
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 19827.033600
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 21021.897600
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 26000141.635200
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 19827.033600
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 20145.021600
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 25979996.613600
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 19827.033600
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 19827.033600
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 25960169.580000
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 19827.033600
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 19827.033600
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 25940342.546400
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 28987.015200
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 19827.033600
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 25911355.531200
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 18054.009600
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 19827.033600
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 25891528.497600
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 18054.009600
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 19827.033600
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 25871701.464000
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 18054.009600
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 19827.033600
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 25851874.430400
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 18054.009600
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 18884.632800
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 25832989.797600
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 18054.009600
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 18054.009600
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 25814935.788000
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 18054.009600
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 18054.009600
-[2023-09-12 11:49:23] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:23] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:23] INFO: Number of buses used: 56
-[2023-09-12 11:49:23] INFO: Total cost: 25796881.778400
-[2023-09-12 11:49:23] INFO: Savings from exchanges operator: 17601.117600
-[2023-09-12 11:49:23] INFO: Savings from shifts operator: 17647.370400
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25779234.408000
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 17599.190400
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 17647.370400
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25761587.037600
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 17552.937600
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 17599.190400
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25743987.847200
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 16500.686400
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 17599.190400
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25726388.656800
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 16500.686400
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 14762.352000
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25709887.970400
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 17745.657600
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 14762.352000
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25692142.312800
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 16032.376800
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 14762.352000
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25676109.936000
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 15542.868000
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 14762.352000
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25660567.068000
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 14937.727200
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 18054.009600
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25642513.058400
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 14937.727200
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 13719.736800
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25627575.331200
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 12449.712000
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 13719.736800
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25613855.594400
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 12833.224800
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 12156.777600
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25601022.369600
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 12449.712000
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 11524.656000
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25588572.657600
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 11975.620800
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 11524.656000
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25576597.036800
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 11559.345600
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 11524.656000
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25565037.691200
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 13708.173600
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 19827.033600
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25545210.657600
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 13708.173600
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 11524.656000
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25531502.484000
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 7749.271200
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 11524.656000
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25519977.828000
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 7749.271200
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 7749.271200
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25512228.556800
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 1971.525600
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 7749.271200
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25504479.285600
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 1971.525600
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 855.676800
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25502507.760000
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 1969.598400
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 855.676800
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25500538.161600
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 1094.649600
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 855.676800
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25499443.512000
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 705.355200
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 18121.461600
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25481322.050400
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 705.355200
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 763.171200
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25480558.879200
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 705.355200
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 452.892000
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25479853.524000
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 468.309600
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 452.892000
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25479385.214400
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 464.455200
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 452.892000
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25478920.759200
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 454.819200
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 452.892000
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25478465.940000
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 391.221600
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 391.221600
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25478074.718400
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 676.447200
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 46.252800
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25477398.271200
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 12156.777600
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 46.252800
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25465241.493600
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 391.221600
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 12625.087200
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25452616.406400
-[2023-09-12 11:49:24] INFO: Savings from exchanges operator: 391.221600
-[2023-09-12 11:49:24] INFO: Savings from shifts operator: 46.252800
-[2023-09-12 11:49:24] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:24] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:24] INFO: Number of buses used: 56
-[2023-09-12 11:49:24] INFO: Total cost: 25452225.184800
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 298.716000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 46.252800
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 56
-[2023-09-12 11:49:25] INFO: Total cost: 25451926.468800
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 250.536000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 46.252800
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 56
-[2023-09-12 11:49:25] INFO: Total cost: 25451675.932800
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 246.681600
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 46.252800
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 56
-[2023-09-12 11:49:25] INFO: Total cost: 25451429.251200
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 3702.151200
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 46.252800
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 56
-[2023-09-12 11:49:25] INFO: Total cost: 25447727.100000
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 119.486400
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 46.252800
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 56
-[2023-09-12 11:49:25] INFO: Total cost: 25447607.613600
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 46.252800
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 46.252800
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 56
-[2023-09-12 11:49:25] INFO: Total cost: 25447561.360800
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 46.252800
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 56
-[2023-09-12 11:49:25] INFO: Total cost: 25447515.108000
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 6371.323200
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 17599.190400
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 56
-[2023-09-12 11:49:25] INFO: Total cost: 25429915.917600
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 350000.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 25079915.917600
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 25.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 25079915.917600
-[2023-09-12 11:49:25] INFO: Optimizing locations...
-[2023-09-12 11:49:25] INFO: Utilization statistics of all terminals: (Terminal ID, Is charge station, Total idle time)
-[2023-09-12 11:49:25] INFO: Terminal 1: 1 2139
-[2023-09-12 11:49:25] INFO: Terminal 2: 1 160
-[2023-09-12 11:49:25] INFO: Terminal 3: 1 296
-[2023-09-12 11:49:25] INFO: Terminal 4: 1 304
-[2023-09-12 11:49:25] INFO: Terminal 5: 1 250
-[2023-09-12 11:49:25] INFO: Terminal 6: 1 497
-[2023-09-12 11:49:25] INFO: Terminal 7: 1 7
-[2023-09-12 11:49:25] INFO: Terminal 8: 1 0
-[2023-09-12 11:49:25] INFO: Terminal 9: 1 0
-[2023-09-12 11:49:25] INFO: Terminal 10: 1 0
-[2023-09-12 11:49:25] INFO: Terminal 11: 1 7
-[2023-09-12 11:49:25] INFO: Terminal 12: 1 0
-[2023-09-12 11:49:25] INFO: Terminal 13: 1 0
-[2023-09-12 11:49:25] INFO: Terminal 14: 1 188
-[2023-09-12 11:49:25] INFO: Terminal 15: 0 2139
-[2023-09-12 11:49:25] INFO: Terminal 16: 1 15
-[2023-09-12 11:49:25] INFO: Terminal 17: 0 0
-[2023-09-12 11:49:25] INFO: Terminal 18: 1 58
-[2023-09-12 11:49:25] INFO: Terminal 19: 0 0
-[2023-09-12 11:49:25] INFO: Terminal 20: 1 133
-[2023-09-12 11:49:25] INFO: Terminal 21: 1 73
-[2023-09-12 11:49:25] INFO: Terminal 22: 1 0
-[2023-09-12 11:49:25] INFO: Terminal 23: 1 0
-[2023-09-12 11:49:25] INFO: Terminal 24: 0 0
-[2023-09-12 11:49:25] INFO: Terminal 25: 1 35
-[2023-09-12 11:49:25] INFO: Terminal 26: 1 35
-[2023-09-12 11:49:25] INFO: Terminal 27: 1 597
-[2023-09-12 11:49:25] INFO: Terminal 28: 1 21
-[2023-09-12 11:49:25] INFO: Terminal 29: 1 0
-[2023-09-12 11:49:25] INFO: Checking if charge stations with zero utilization can be closed...
-[2023-09-12 11:49:25] INFO: Number of charge stations closed: 8
-[2023-09-12 11:49:25] INFO: Utilization statistics of all terminals: (Terminal ID, Is charge station, Total idle time)
-[2023-09-12 11:49:25] INFO: Terminal 1: 1 2139
-[2023-09-12 11:49:25] INFO: Terminal 2: 1 160
-[2023-09-12 11:49:25] INFO: Terminal 3: 1 296
-[2023-09-12 11:49:25] INFO: Terminal 4: 1 304
-[2023-09-12 11:49:25] INFO: Terminal 5: 1 250
-[2023-09-12 11:49:25] INFO: Terminal 6: 1 497
-[2023-09-12 11:49:25] INFO: Terminal 7: 1 7
-[2023-09-12 11:49:25] INFO: Terminal 8: 0 0
-[2023-09-12 11:49:25] INFO: Terminal 9: 0 0
-[2023-09-12 11:49:25] INFO: Terminal 10: 0 0
-[2023-09-12 11:49:25] INFO: Terminal 11: 1 7
-[2023-09-12 11:49:25] INFO: Terminal 12: 0 0
-[2023-09-12 11:49:25] INFO: Terminal 13: 0 0
-[2023-09-12 11:49:25] INFO: Terminal 14: 1 188
-[2023-09-12 11:49:25] INFO: Terminal 15: 0 2139
-[2023-09-12 11:49:25] INFO: Terminal 16: 1 15
-[2023-09-12 11:49:25] INFO: Terminal 17: 0 0
-[2023-09-12 11:49:25] INFO: Terminal 18: 1 58
-[2023-09-12 11:49:25] INFO: Terminal 19: 0 0
-[2023-09-12 11:49:25] INFO: Terminal 20: 1 133
-[2023-09-12 11:49:25] INFO: Terminal 21: 1 73
-[2023-09-12 11:49:25] INFO: Terminal 22: 0 0
-[2023-09-12 11:49:25] INFO: Terminal 23: 0 0
-[2023-09-12 11:49:25] INFO: Terminal 24: 0 0
-[2023-09-12 11:49:25] INFO: Terminal 25: 1 35
-[2023-09-12 11:49:25] INFO: Terminal 26: 1 35
-[2023-09-12 11:49:25] INFO: Terminal 27: 1 597
-[2023-09-12 11:49:25] INFO: Terminal 28: 1 21
-[2023-09-12 11:49:25] INFO: Terminal 29: 0 0
-[2023-09-12 11:49:25] INFO: Sorted terminal ids considered for opening: 15 
-[2023-09-12 11:49:25] INFO: Checking for improvement after opening terminal ID: 15
-[2023-09-12 11:49:25] INFO: Best objective found so far before opening any charging stations: 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 17.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 23479915.917600
-[2023-09-12 11:49:25] INFO: Current objective after opening the charging station: 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 18.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 23679915.917600
-[2023-09-12 11:49:25] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 18.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 23679915.917600
-[2023-09-12 11:49:25] INFO: Opening the charging station did not lead to any improvements. Reverting changes...
-[2023-09-12 11:49:25] INFO: Finishing analysis of terminal id: 15
-[2023-09-12 11:49:25] INFO: Sorted terminal ids being considered for closing: 7 11 16 28 26 25 18 21 20 2 14 5 3 4 6 27 1 
-[2023-09-12 11:49:25] INFO: Checking for improvement after closing terminal ID: 7
-[2023-09-12 11:49:25] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 17.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 23479915.917600
-[2023-09-12 11:49:25] INFO: Scan eligible list of rotations affected: 6 9 10 11 12 15 16 17 18 20 23 26 27 28 30 31 32 33 34 36 37 38 41 
-[2023-09-12 11:49:25] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 16.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 23279915.917600
-[2023-09-12 11:49:25] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 16.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 23279915.917600
-[2023-09-12 11:49:25] INFO: Best objective improved from 23479915.917600 to 23279915.917600
-[2023-09-12 11:49:25] INFO: Finishing analysis of terminal id: 7
-[2023-09-12 11:49:25] INFO: Checking for improvement after closing terminal ID: 11
-[2023-09-12 11:49:25] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 16.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 23279915.917600
-[2023-09-12 11:49:25] INFO: Scan eligible list of rotations affected: 4 7 10 11 17 19 20 21 23 24 26 27 28 29 30 31 33 35 36 37 39 40 41 48 52 
-[2023-09-12 11:49:25] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 15.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 23079915.917600
-[2023-09-12 11:49:25] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 15.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 23079915.917600
-[2023-09-12 11:49:25] INFO: Best objective improved from 23279915.917600 to 23079915.917600
-[2023-09-12 11:49:25] INFO: Finishing analysis of terminal id: 11
-[2023-09-12 11:49:25] INFO: Checking for improvement after closing terminal ID: 16
-[2023-09-12 11:49:25] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 15.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 23079915.917600
-[2023-09-12 11:49:25] INFO: Scan eligible list of rotations affected: 6 9 10 11 12 15 16 17 18 20 23 26 27 28 30 31 32 33 34 36 37 38 41 51 
-[2023-09-12 11:49:25] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 14.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22879915.917600
-[2023-09-12 11:49:25] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 14.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22879915.917600
-[2023-09-12 11:49:25] INFO: Best objective improved from 23079915.917600 to 22879915.917600
-[2023-09-12 11:49:25] INFO: Finishing analysis of terminal id: 16
-[2023-09-12 11:49:25] INFO: Checking for improvement after closing terminal ID: 28
-[2023-09-12 11:49:25] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 14.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22879915.917600
-[2023-09-12 11:49:25] INFO: Scan eligible list of rotations affected: 0 6 8 9 10 15 18 19 20 22 26 29 30 33 36 40 42 48 
-[2023-09-12 11:49:25] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 13.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22679915.917600
-[2023-09-12 11:49:25] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 13.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22679915.917600
-[2023-09-12 11:49:25] INFO: Best objective improved from 22879915.917600 to 22679915.917600
-[2023-09-12 11:49:25] INFO: Finishing analysis of terminal id: 28
-[2023-09-12 11:49:25] INFO: Checking for improvement after closing terminal ID: 26
-[2023-09-12 11:49:25] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 13.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22679915.917600
-[2023-09-12 11:49:25] INFO: Scan eligible list of rotations affected: 5 6 8 9 10 18 19 20 22 23 29 31 32 33 42 
-[2023-09-12 11:49:25] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 12.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22479915.917600
-[2023-09-12 11:49:25] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 10478.186400
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 12.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22469437.731200
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 1971.525600
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 12.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22467466.205600
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 12.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22467466.205600
-[2023-09-12 11:49:25] INFO: Best objective improved from 22679915.917600 to 22467466.205600
-[2023-09-12 11:49:25] INFO: Finishing analysis of terminal id: 26
-[2023-09-12 11:49:25] INFO: Checking for improvement after closing terminal ID: 25
-[2023-09-12 11:49:25] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 12.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22467466.205600
-[2023-09-12 11:49:25] INFO: Scan eligible list of rotations affected: 2 8 9 10 11 12 15 17 19 20 21 22 24 31 37 42 
-[2023-09-12 11:49:25] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 11.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22267466.205600
-[2023-09-12 11:49:25] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 17645.443200
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 11.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22249820.762400
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 11.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22249820.762400
-[2023-09-12 11:49:25] INFO: Best objective improved from 22467466.205600 to 22249820.762400
-[2023-09-12 11:49:25] INFO: Finishing analysis of terminal id: 25
-[2023-09-12 11:49:25] INFO: Checking for improvement after closing terminal ID: 18
-[2023-09-12 11:49:25] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 11.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22249820.762400
-[2023-09-12 11:49:25] INFO: Scan eligible list of rotations affected: 1 2 3 4 8 10 11 12 14 17 21 22 27 28 29 31 32 34 37 40 46 47 
-[2023-09-12 11:49:25] INFO: Splitting trip 156 of vehicle 32...
-[2023-09-12 11:49:25] INFO: Trip IDs before splitting: 859 132 372 681 15 385 617 153 605 229 88 96 156 680 99 361 586 859 
-[2023-09-12 11:49:25] INFO: Trip IDs after splitting: 859 132 372 681 15 385 617 153 605 229 88 96 156 859 
-[2023-09-12 11:49:25] INFO: Splitting trip 96 of vehicle 32...
-[2023-09-12 11:49:25] INFO: Trip IDs before splitting: 859 132 372 681 15 385 617 153 605 229 88 96 156 859 
-[2023-09-12 11:49:25] INFO: Trip IDs after splitting: 859 132 372 681 15 385 617 153 605 229 88 96 859 
-[2023-09-12 11:49:25] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 10.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 57
-[2023-09-12 11:49:25] INFO: Total cost: 22750169.585600
-[2023-09-12 11:49:25] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 13043.289600
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 350000.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 10.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 56
-[2023-09-12 11:49:25] INFO: Total cost: 22393264.428000
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 10.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 56
-[2023-09-12 11:49:25] INFO: Total cost: 22393264.428000
-[2023-09-12 11:49:25] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
-[2023-09-12 11:49:25] INFO: Finishing analysis of terminal id: 18
-[2023-09-12 11:49:25] INFO: Checking for improvement after closing terminal ID: 21
-[2023-09-12 11:49:25] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 11.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22249820.762400
-[2023-09-12 11:49:25] INFO: Scan eligible list of rotations affected: 4 6 7 16 19 22 28 29 31 46 47 50 
-[2023-09-12 11:49:25] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 10.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22049820.762400
-[2023-09-12 11:49:25] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 10.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22049820.762400
-[2023-09-12 11:49:25] INFO: Best objective improved from 22249820.762400 to 22049820.762400
-[2023-09-12 11:49:25] INFO: Finishing analysis of terminal id: 21
-[2023-09-12 11:49:25] INFO: Checking for improvement after closing terminal ID: 20
-[2023-09-12 11:49:25] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 10.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22049820.762400
-[2023-09-12 11:49:25] INFO: Scan eligible list of rotations affected: 0 5 7 8 11 18 22 23 25 29 30 31 32 35 36 39 40 43 46 47 51 
-[2023-09-12 11:49:25] INFO: Splitting trip 364 of vehicle 22...
-[2023-09-12 11:49:25] INFO: Trip IDs before splitting: 860 282 743 802 782 580 505 757 719 485 358 32 326 384 369 57 213 364 845 591 758 860 
-[2023-09-12 11:49:25] INFO: Trip IDs after splitting: 860 282 743 802 782 580 505 757 719 485 358 32 326 384 369 57 213 364 860 
-[2023-09-12 11:49:25] INFO: Splitting trip 213 of vehicle 22...
-[2023-09-12 11:49:25] INFO: Trip IDs before splitting: 860 282 743 802 782 580 505 757 719 485 358 32 326 384 369 57 213 364 860 
-[2023-09-12 11:49:25] INFO: Trip IDs after splitting: 860 282 743 802 782 580 505 757 719 485 358 32 326 384 369 57 213 860 
-[2023-09-12 11:49:25] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 9.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 57
-[2023-09-12 11:49:25] INFO: Total cost: 22535166.333600
-[2023-09-12 11:49:25] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 350000.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 9.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 56
-[2023-09-12 11:49:25] INFO: Total cost: 22185166.333600
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 9.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 56
-[2023-09-12 11:49:25] INFO: Total cost: 22185166.333600
-[2023-09-12 11:49:25] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
-[2023-09-12 11:49:25] INFO: Finishing analysis of terminal id: 20
-[2023-09-12 11:49:25] INFO: Checking for improvement after closing terminal ID: 2
-[2023-09-12 11:49:25] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 10.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 22049820.762400
-[2023-09-12 11:49:25] INFO: Scan eligible list of rotations affected: 0 1 2 3 4 5 13 15 16 20 22 23 32 34 36 
-[2023-09-12 11:49:25] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 9.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 21849820.762400
-[2023-09-12 11:49:25] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 9.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 21849820.762400
-[2023-09-12 11:49:25] INFO: Best objective improved from 22049820.762400 to 21849820.762400
-[2023-09-12 11:49:25] INFO: Finishing analysis of terminal id: 2
-[2023-09-12 11:49:25] INFO: Checking for improvement after closing terminal ID: 14
-[2023-09-12 11:49:25] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 9.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 21849820.762400
-[2023-09-12 11:49:25] INFO: Scan eligible list of rotations affected: 0 4 5 6 7 9 10 12 15 19 21 23 26 27 28 34 35 37 42 47 49 54 
-[2023-09-12 11:49:25] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 8.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 21649820.762400
-[2023-09-12 11:49:25] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 8.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 21649820.762400
-[2023-09-12 11:49:25] INFO: Best objective improved from 21849820.762400 to 21649820.762400
-[2023-09-12 11:49:25] INFO: Finishing analysis of terminal id: 14
-[2023-09-12 11:49:25] INFO: Checking for improvement after closing terminal ID: 5
-[2023-09-12 11:49:25] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 8.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 55
-[2023-09-12 11:49:25] INFO: Total cost: 21649820.762400
-[2023-09-12 11:49:25] INFO: Scan eligible list of rotations affected: 0 1 2 3 4 5 6 9 11 13 15 16 17 19 21 24 26 27 30 32 38 
-[2023-09-12 11:49:25] INFO: Splitting trip 239 of vehicle 13...
-[2023-09-12 11:49:25] INFO: Trip IDs before splitting: 861 143 172 272 220 612 158 570 1 4 663 6 523 458 239 141 520 82 861 
-[2023-09-12 11:49:25] INFO: Trip IDs after splitting: 861 143 172 272 220 612 158 570 1 4 663 6 523 458 239 861 
-[2023-09-12 11:49:25] INFO: Splitting trip 458 of vehicle 13...
-[2023-09-12 11:49:25] INFO: Trip IDs before splitting: 861 143 172 272 220 612 158 570 1 4 663 6 523 458 239 861 
-[2023-09-12 11:49:25] INFO: Trip IDs after splitting: 861 143 172 272 220 612 158 570 1 4 663 6 523 458 861 
-[2023-09-12 11:49:25] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 57
-[2023-09-12 11:49:25] INFO: Total cost: 22150053.953600
-[2023-09-12 11:49:25] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 350000.000000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 56
-[2023-09-12 11:49:25] INFO: Total cost: 21799820.762400
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 28522.560000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 56
-[2023-09-12 11:49:25] INFO: Total cost: 21771298.202400
-[2023-09-12 11:49:25] INFO: Savings from exchanges operator: 18539.664000
-[2023-09-12 11:49:25] INFO: Savings from shifts operator: 18539.664000
-[2023-09-12 11:49:25] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:25] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:25] INFO: Number of buses used: 56
-[2023-09-12 11:49:25] INFO: Total cost: 21752758.538400
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21752758.538400
-[2023-09-12 11:49:26] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
-[2023-09-12 11:49:26] INFO: Finishing analysis of terminal id: 5
-[2023-09-12 11:49:26] INFO: Checking for improvement after closing terminal ID: 3
-[2023-09-12 11:49:26] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 8.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 55
-[2023-09-12 11:49:26] INFO: Total cost: 21649820.762400
-[2023-09-12 11:49:26] INFO: Scan eligible list of rotations affected: 0 1 2 3 4 5 7 9 11 12 13 14 16 17 22 23 24 25 27 28 34 35 36 37 39 
-[2023-09-12 11:49:26] INFO: Splitting trip 300 of vehicle 23...
-[2023-09-12 11:49:26] INFO: Trip IDs before splitting: 860 309 33 822 687 263 11 246 419 202 734 667 119 530 230 64 300 8 816 250 860 
-[2023-09-12 11:49:26] INFO: Trip IDs after splitting: 860 309 33 822 687 263 11 246 419 202 734 667 119 530 230 64 300 860 
-[2023-09-12 11:49:26] INFO: Splitting trip 64 of vehicle 23...
-[2023-09-12 11:49:26] INFO: Trip IDs before splitting: 860 309 33 822 687 263 11 246 419 202 734 667 119 530 230 64 300 860 
-[2023-09-12 11:49:26] INFO: Trip IDs after splitting: 860 309 33 822 687 263 11 246 419 202 734 667 119 530 230 64 860 
-[2023-09-12 11:49:26] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 57
-[2023-09-12 11:49:26] INFO: Total cost: 22201018.757600
-[2023-09-12 11:49:26] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 47526.679200
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 350000.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21827260.236000
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 20283.780000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 45562.862400
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21781697.373600
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 3707.932800
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 12449.712000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21769247.661600
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 15319.312800
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21753928.348800
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 16575.847200
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21737352.501600
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 3707.932800
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 3362.964000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21733644.568800
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 418.202400
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21733226.366400
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21733226.366400
-[2023-09-12 11:49:26] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
-[2023-09-12 11:49:26] INFO: Finishing analysis of terminal id: 3
-[2023-09-12 11:49:26] INFO: Checking for improvement after closing terminal ID: 4
-[2023-09-12 11:49:26] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 8.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 55
-[2023-09-12 11:49:26] INFO: Total cost: 21649820.762400
-[2023-09-12 11:49:26] INFO: Scan eligible list of rotations affected: 0 1 2 4 5 7 11 13 14 16 17 21 22 24 25 32 34 35 36 37 39 43 45 50 53 
-[2023-09-12 11:49:26] INFO: Splitting trip 749 of vehicle 25...
-[2023-09-12 11:49:26] INFO: Trip IDs before splitting: 861 766 26 215 49 779 278 177 815 276 129 405 723 819 762 749 100 491 861 
-[2023-09-12 11:49:26] INFO: Trip IDs after splitting: 861 766 26 215 49 779 278 177 815 276 129 405 723 819 762 749 861 
-[2023-09-12 11:49:26] INFO: Splitting trip 762 of vehicle 25...
-[2023-09-12 11:49:26] INFO: Trip IDs before splitting: 861 766 26 215 49 779 278 177 815 276 129 405 723 819 762 749 861 
-[2023-09-12 11:49:26] INFO: Trip IDs after splitting: 861 766 26 215 49 779 278 177 815 276 129 405 723 819 762 861 
-[2023-09-12 11:49:26] INFO: Splitting trip 819 of vehicle 25...
-[2023-09-12 11:49:26] INFO: Trip IDs before splitting: 861 766 26 215 49 779 278 177 815 276 129 405 723 819 762 861 
-[2023-09-12 11:49:26] INFO: Trip IDs after splitting: 861 766 26 215 49 779 278 177 815 276 129 405 723 819 861 
-[2023-09-12 11:49:26] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 58
-[2023-09-12 11:49:26] INFO: Total cost: 22496168.718400
-[2023-09-12 11:49:26] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 350000.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 57
-[2023-09-12 11:49:26] INFO: Total cost: 22145935.527200
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 350000.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21785166.333600
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 28522.560000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21756643.773600
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 18539.664000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 18539.664000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21738104.109600
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21738104.109600
-[2023-09-12 11:49:26] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
-[2023-09-12 11:49:26] INFO: Finishing analysis of terminal id: 4
-[2023-09-12 11:49:26] INFO: Checking for improvement after closing terminal ID: 6
-[2023-09-12 11:49:26] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 8.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 55
-[2023-09-12 11:49:26] INFO: Total cost: 21649820.762400
-[2023-09-12 11:49:26] INFO: Scan eligible list of rotations affected: 0 1 2 3 4 7 11 12 13 14 15 21 24 25 27 28 30 32 34 35 36 37 38 39 41 44 
-[2023-09-12 11:49:26] INFO: Splitting trip 497 of vehicle 24...
-[2023-09-12 11:49:26] INFO: Trip IDs before splitting: 860 440 245 91 362 28 363 708 134 704 83 447 247 497 552 161 232 860 
-[2023-09-12 11:49:26] INFO: Trip IDs after splitting: 860 440 245 91 362 28 363 708 134 704 83 447 247 497 860 
-[2023-09-12 11:49:26] INFO: Splitting trip 247 of vehicle 24...
-[2023-09-12 11:49:26] INFO: Trip IDs before splitting: 860 440 245 91 362 28 363 708 134 704 83 447 247 497 860 
-[2023-09-12 11:49:26] INFO: Trip IDs after splitting: 860 440 245 91 362 28 363 708 134 704 83 447 247 860 
-[2023-09-12 11:49:26] INFO: Splitting trip 447 of vehicle 24...
-[2023-09-12 11:49:26] INFO: Trip IDs before splitting: 860 440 245 91 362 28 363 708 134 704 83 447 247 860 
-[2023-09-12 11:49:26] INFO: Trip IDs after splitting: 860 440 245 91 362 28 363 708 134 704 83 447 860 
-[2023-09-12 11:49:26] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 58
-[2023-09-12 11:49:26] INFO: Total cost: 22492243.012000
-[2023-09-12 11:49:26] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 350000.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 57
-[2023-09-12 11:49:26] INFO: Total cost: 22142243.012000
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 350000.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21792243.012000
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 3.854400
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21792239.157600
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21792239.157600
-[2023-09-12 11:49:26] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
-[2023-09-12 11:49:26] INFO: Finishing analysis of terminal id: 6
-[2023-09-12 11:49:26] INFO: Checking for improvement after closing terminal ID: 27
-[2023-09-12 11:49:26] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 8.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 55
-[2023-09-12 11:49:26] INFO: Total cost: 21649820.762400
-[2023-09-12 11:49:26] INFO: Scan eligible list of rotations affected: 0 1 3 4 6 7 9 12 13 14 15 16 17 18 19 20 21 22 23 29 30 31 33 34 35 36 38 39 41 42 46 49 
-[2023-09-12 11:49:26] INFO: Splitting trip 365 of vehicle 17...
-[2023-09-12 11:49:26] INFO: Trip IDs before splitting: 861 764 610 73 360 199 235 319 146 187 788 496 321 352 305 785 92 106 365 44 589 810 861 
-[2023-09-12 11:49:26] INFO: Trip IDs after splitting: 861 764 610 73 360 199 235 319 146 187 788 496 321 352 305 785 92 106 365 861 
-[2023-09-12 11:49:26] INFO: Splitting trip 106 of vehicle 17...
-[2023-09-12 11:49:26] INFO: Trip IDs before splitting: 861 764 610 73 360 199 235 319 146 187 788 496 321 352 305 785 92 106 365 861 
-[2023-09-12 11:49:26] INFO: Trip IDs after splitting: 861 764 610 73 360 199 235 319 146 187 788 496 321 352 305 785 92 106 861 
-[2023-09-12 11:49:26] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 57
-[2023-09-12 11:49:26] INFO: Total cost: 22173581.211200
-[2023-09-12 11:49:26] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 350000.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21800053.953600
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21800053.953600
-[2023-09-12 11:49:26] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
-[2023-09-12 11:49:26] INFO: Finishing analysis of terminal id: 27
-[2023-09-12 11:49:26] INFO: Checking for improvement after closing terminal ID: 1
-[2023-09-12 11:49:26] INFO: Best objective found so far before closing any charging stations: 
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 8.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 55
-[2023-09-12 11:49:26] INFO: Total cost: 21649820.762400
-[2023-09-12 11:49:26] INFO: Scan eligible list of rotations affected: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 45 46 47 48 49 50 51 52 53 54 
-[2023-09-12 11:49:26] INFO: Splitting trip 569 of vehicle 39...
-[2023-09-12 11:49:26] INFO: Trip IDs before splitting: 859 131 733 135 833 772 108 217 286 65 569 463 388 149 279 859 
-[2023-09-12 11:49:26] INFO: Trip IDs after splitting: 859 131 733 135 833 772 108 217 286 65 569 859 
-[2023-09-12 11:49:26] INFO: Splitting trip 65 of vehicle 39...
-[2023-09-12 11:49:26] INFO: Trip IDs before splitting: 859 131 733 135 833 772 108 217 286 65 569 859 
-[2023-09-12 11:49:26] INFO: Trip IDs after splitting: 859 131 733 135 833 772 108 217 286 65 859 
-[2023-09-12 11:49:26] INFO: Current objective after closing the charging stations and creating new rotations (if any): 
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 57
-[2023-09-12 11:49:26] INFO: Total cost: 22166336.866400
-[2023-09-12 11:49:26] INFO: Applying local search operators to adjust scheduling...
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 693.792000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 350000.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21799468.084800
-[2023-09-12 11:49:26] INFO: Savings from exchanges operator: 0.000000
-[2023-09-12 11:49:26] INFO: Savings from shifts operator: 0.000000
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 7.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 56
-[2023-09-12 11:49:26] INFO: Total cost: 21799468.084800
-[2023-09-12 11:49:26] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
-[2023-09-12 11:49:26] INFO: Finishing analysis of terminal id: 1
-[2023-09-12 11:49:26] INFO: Calculating the objective value of the solution...
-[2023-09-12 11:49:26] INFO: Number of charging stations: 8.000000
-[2023-09-12 11:49:26] INFO: Number of buses used: 55
-[2023-09-12 11:49:26] INFO: Total cost: 21649820.762400
-[2023-09-12 11:49:26] INFO: Utilization statistics of all terminals: (Terminal ID, Is charge station, Total idle time)
-[2023-09-12 11:49:26] INFO: Terminal 1: 1 2189
-[2023-09-12 11:49:26] INFO: Terminal 2: 0 0
-[2023-09-12 11:49:26] INFO: Terminal 3: 1 322
-[2023-09-12 11:49:26] INFO: Terminal 4: 1 304
-[2023-09-12 11:49:26] INFO: Terminal 5: 1 250
-[2023-09-12 11:49:26] INFO: Terminal 6: 1 497
-[2023-09-12 11:49:26] INFO: Terminal 7: 0 0
-[2023-09-12 11:49:26] INFO: Terminal 8: 0 0
-[2023-09-12 11:49:26] INFO: Terminal 9: 0 0
-[2023-09-12 11:49:26] INFO: Terminal 10: 0 0
-[2023-09-12 11:49:26] INFO: Terminal 11: 0 0
-[2023-09-12 11:49:26] INFO: Terminal 12: 0 0
-[2023-09-12 11:49:26] INFO: Terminal 13: 0 0
-[2023-09-12 11:49:26] INFO: Terminal 14: 0 188
-[2023-09-12 11:49:26] INFO: Terminal 15: 0 2139
-[2023-09-12 11:49:26] INFO: Terminal 16: 0 15
-[2023-09-12 11:49:26] INFO: Terminal 17: 0 0
-[2023-09-12 11:49:26] INFO: Terminal 18: 1 83
-[2023-09-12 11:49:26] INFO: Terminal 19: 0 0
-[2023-09-12 11:49:26] INFO: Terminal 20: 1 208
-[2023-09-12 11:49:26] INFO: Terminal 21: 0 50
-[2023-09-12 11:49:26] INFO: Terminal 22: 0 0
-[2023-09-12 11:49:26] INFO: Terminal 23: 0 0
-[2023-09-12 11:49:26] INFO: Terminal 24: 0 0
-[2023-09-12 11:49:26] INFO: Terminal 25: 0 0
-[2023-09-12 11:49:26] INFO: Terminal 26: 0 6
-[2023-09-12 11:49:26] INFO: Terminal 27: 1 582
-[2023-09-12 11:49:26] INFO: Terminal 28: 0 13
-[2023-09-12 11:49:26] INFO: Terminal 29: 0 0
-[2023-09-12 11:49:26] INFO: Local search completed in 3 seconds.
+[2023-09-12 12:01:12] INFO: Reading trip data from file...
+[2023-09-12 12:01:12] INFO: Trip data read successfully
+[2023-09-12 12:01:12] INFO: Number of trips: 858
+[2023-09-12 12:01:12] INFO: Reading terminal data from file...
+[2023-09-12 12:01:12] INFO: Terminal data read successfully
+[2023-09-12 12:01:12] INFO: Number of terminals: 29
+[2023-09-12 12:01:12] INFO: Augmenting trips with depot stops...
+[2023-09-12 12:01:12] INFO: Number of trips after augmentation: 887
+[2023-09-12 12:01:12] INFO: Reading trip pair data from file...
+[2023-09-12 12:01:12] INFO: Trip pair data read successfully
+[2023-09-12 12:01:12] INFO: Initializing vehicle rotations from the concurrent scheduler solution...
+[2023-09-12 12:01:12] INFO: Vehicle rotations read successfully
+[2023-09-12 12:01:12] INFO: Number of vehicles: 57
+[2023-09-12 12:01:12] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:12] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:12] INFO: Number of buses used: 57
+[2023-09-12 12:01:12] INFO: Total cost: 27088029.898400
+[2023-09-12 12:01:12] INFO: Savings from exchanges operator: 44988.556800
+[2023-09-12 12:01:12] INFO: Savings from shifts operator: 368054.009600
+[2023-09-12 12:01:12] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:12] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:12] INFO: Number of buses used: 56
+[2023-09-12 12:01:12] INFO: Total cost: 26719975.888800
+[2023-09-12 12:01:12] INFO: Savings from exchanges operator: 44988.556800
+[2023-09-12 12:01:12] INFO: Savings from shifts operator: 46644.021600
+[2023-09-12 12:01:12] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:12] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:12] INFO: Number of buses used: 56
+[2023-09-12 12:01:12] INFO: Total cost: 26673331.867200
+[2023-09-12 12:01:12] INFO: Savings from exchanges operator: 44847.871200
+[2023-09-12 12:01:12] INFO: Savings from shifts operator: 33907.156800
+[2023-09-12 12:01:12] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:12] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:12] INFO: Number of buses used: 56
+[2023-09-12 12:01:12] INFO: Total cost: 26628483.996000
+[2023-09-12 12:01:12] INFO: Savings from exchanges operator: 40249.572000
+[2023-09-12 12:01:12] INFO: Savings from shifts operator: 33907.156800
+[2023-09-12 12:01:12] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:12] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:12] INFO: Number of buses used: 56
+[2023-09-12 12:01:12] INFO: Total cost: 26588234.424000
+[2023-09-12 12:01:12] INFO: Savings from exchanges operator: 38183.613600
+[2023-09-12 12:01:12] INFO: Savings from shifts operator: 33907.156800
+[2023-09-12 12:01:12] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:12] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:12] INFO: Number of buses used: 56
+[2023-09-12 12:01:12] INFO: Total cost: 26550050.810400
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 35701.380000
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 33907.156800
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26514349.430400
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 35655.127200
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 33907.156800
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26478694.303200
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 25797.499200
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 33907.156800
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26444787.146400
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 25797.499200
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 33213.364800
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26411573.781600
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 25797.499200
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 24315.482400
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26385776.282400
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 24756.811200
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 24315.482400
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26361019.471200
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 24315.482400
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 24315.482400
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26336703.988800
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 24007.130400
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 24315.482400
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26312388.506400
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 32182.312800
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 24016.766400
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26280206.193600
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 24007.130400
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 24315.482400
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26255890.711200
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 24007.130400
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 21258.943200
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26231883.580800
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 21100.912800
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 21258.943200
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26210624.637600
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 21100.912800
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 21255.088800
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26189369.548800
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 21100.912800
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 21100.912800
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26168268.636000
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 21097.058400
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 21100.912800
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26147167.723200
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 21097.058400
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 21100.912800
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26126066.810400
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 21097.058400
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 21100.912800
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26104965.897600
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 21097.058400
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 21097.058400
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26083868.839200
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 20511.189600
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 21097.058400
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26062771.780800
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 20511.189600
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 21097.058400
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26041674.722400
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 20511.189600
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 20189.347200
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26021163.532800
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 19827.033600
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 21021.897600
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 26000141.635200
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 19827.033600
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 20145.021600
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 25979996.613600
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 19827.033600
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 19827.033600
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 25960169.580000
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 19827.033600
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 19827.033600
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 25940342.546400
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 28987.015200
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 19827.033600
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 25911355.531200
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 18054.009600
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 19827.033600
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 25891528.497600
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 18054.009600
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 19827.033600
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 25871701.464000
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 18054.009600
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 19827.033600
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 25851874.430400
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 18054.009600
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 18884.632800
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 25832989.797600
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 18054.009600
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 18054.009600
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 25814935.788000
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 18054.009600
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 18054.009600
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 25796881.778400
+[2023-09-12 12:01:13] INFO: Savings from exchanges operator: 17601.117600
+[2023-09-12 12:01:13] INFO: Savings from shifts operator: 17647.370400
+[2023-09-12 12:01:13] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:13] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:13] INFO: Number of buses used: 56
+[2023-09-12 12:01:13] INFO: Total cost: 25779234.408000
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 17599.190400
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 17647.370400
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25761587.037600
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 17552.937600
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 17599.190400
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25743987.847200
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 16500.686400
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 17599.190400
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25726388.656800
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 16500.686400
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 14762.352000
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25709887.970400
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 17745.657600
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 14762.352000
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25692142.312800
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 16032.376800
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 14762.352000
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25676109.936000
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 15542.868000
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 14762.352000
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25660567.068000
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 14937.727200
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 18054.009600
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25642513.058400
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 14937.727200
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 13719.736800
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25627575.331200
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 12449.712000
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 13719.736800
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25613855.594400
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 12833.224800
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 12156.777600
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25601022.369600
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 12449.712000
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 11524.656000
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25588572.657600
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 11975.620800
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 11524.656000
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25576597.036800
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 11559.345600
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 11524.656000
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25565037.691200
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 13708.173600
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 19827.033600
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25545210.657600
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 13708.173600
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 11524.656000
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25531502.484000
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 7749.271200
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 11524.656000
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25519977.828000
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 7749.271200
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 7749.271200
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25512228.556800
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 1971.525600
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 7749.271200
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25504479.285600
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 1971.525600
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 855.676800
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25502507.760000
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 1969.598400
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 855.676800
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25500538.161600
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 1094.649600
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 855.676800
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25499443.512000
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 705.355200
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 18121.461600
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25481322.050400
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 705.355200
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 763.171200
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25480558.879200
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 705.355200
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 452.892000
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25479853.524000
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 468.309600
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 452.892000
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25479385.214400
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 464.455200
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 452.892000
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25478920.759200
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 454.819200
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 452.892000
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25478465.940000
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 391.221600
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 391.221600
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25478074.718400
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 676.447200
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 46.252800
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25477398.271200
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 12156.777600
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 46.252800
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25465241.493600
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 391.221600
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 12625.087200
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25452616.406400
+[2023-09-12 12:01:14] INFO: Savings from exchanges operator: 391.221600
+[2023-09-12 12:01:14] INFO: Savings from shifts operator: 46.252800
+[2023-09-12 12:01:14] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:14] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:14] INFO: Number of buses used: 56
+[2023-09-12 12:01:14] INFO: Total cost: 25452225.184800
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 298.716000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 46.252800
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 25451926.468800
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 250.536000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 46.252800
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 25451675.932800
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 246.681600
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 46.252800
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 25451429.251200
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 3702.151200
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 46.252800
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 25447727.100000
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 119.486400
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 46.252800
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 25447607.613600
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 46.252800
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 46.252800
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 25447561.360800
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 46.252800
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 25447515.108000
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 6371.323200
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 17599.190400
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 25429915.917600
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 350000.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 25079915.917600
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 25.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 25079915.917600
+[2023-09-12 12:01:15] INFO: Optimizing locations...
+[2023-09-12 12:01:15] INFO: Utilization statistics of all terminals: (Terminal ID, Is charge station, Total idle time)
+[2023-09-12 12:01:15] INFO: Terminal 1: 1 2139
+[2023-09-12 12:01:15] INFO: Terminal 2: 1 160
+[2023-09-12 12:01:15] INFO: Terminal 3: 1 296
+[2023-09-12 12:01:15] INFO: Terminal 4: 1 304
+[2023-09-12 12:01:15] INFO: Terminal 5: 1 250
+[2023-09-12 12:01:15] INFO: Terminal 6: 1 497
+[2023-09-12 12:01:15] INFO: Terminal 7: 1 7
+[2023-09-12 12:01:15] INFO: Terminal 8: 1 0
+[2023-09-12 12:01:15] INFO: Terminal 9: 1 0
+[2023-09-12 12:01:15] INFO: Terminal 10: 1 0
+[2023-09-12 12:01:15] INFO: Terminal 11: 1 7
+[2023-09-12 12:01:15] INFO: Terminal 12: 1 0
+[2023-09-12 12:01:15] INFO: Terminal 13: 1 0
+[2023-09-12 12:01:15] INFO: Terminal 14: 1 188
+[2023-09-12 12:01:15] INFO: Terminal 15: 0 2139
+[2023-09-12 12:01:15] INFO: Terminal 16: 1 15
+[2023-09-12 12:01:15] INFO: Terminal 17: 0 0
+[2023-09-12 12:01:15] INFO: Terminal 18: 1 58
+[2023-09-12 12:01:15] INFO: Terminal 19: 0 0
+[2023-09-12 12:01:15] INFO: Terminal 20: 1 133
+[2023-09-12 12:01:15] INFO: Terminal 21: 1 73
+[2023-09-12 12:01:15] INFO: Terminal 22: 1 0
+[2023-09-12 12:01:15] INFO: Terminal 23: 1 0
+[2023-09-12 12:01:15] INFO: Terminal 24: 0 0
+[2023-09-12 12:01:15] INFO: Terminal 25: 1 35
+[2023-09-12 12:01:15] INFO: Terminal 26: 1 35
+[2023-09-12 12:01:15] INFO: Terminal 27: 1 597
+[2023-09-12 12:01:15] INFO: Terminal 28: 1 21
+[2023-09-12 12:01:15] INFO: Terminal 29: 1 0
+[2023-09-12 12:01:15] INFO: Checking if charge stations with zero utilization can be closed...
+[2023-09-12 12:01:15] INFO: Number of charge stations closed: 8
+[2023-09-12 12:01:15] INFO: Utilization statistics of all terminals: (Terminal ID, Is charge station, Total idle time)
+[2023-09-12 12:01:15] INFO: Terminal 1: 1 2139
+[2023-09-12 12:01:15] INFO: Terminal 2: 1 160
+[2023-09-12 12:01:15] INFO: Terminal 3: 1 296
+[2023-09-12 12:01:15] INFO: Terminal 4: 1 304
+[2023-09-12 12:01:15] INFO: Terminal 5: 1 250
+[2023-09-12 12:01:15] INFO: Terminal 6: 1 497
+[2023-09-12 12:01:15] INFO: Terminal 7: 1 7
+[2023-09-12 12:01:15] INFO: Terminal 8: 0 0
+[2023-09-12 12:01:15] INFO: Terminal 9: 0 0
+[2023-09-12 12:01:15] INFO: Terminal 10: 0 0
+[2023-09-12 12:01:15] INFO: Terminal 11: 1 7
+[2023-09-12 12:01:15] INFO: Terminal 12: 0 0
+[2023-09-12 12:01:15] INFO: Terminal 13: 0 0
+[2023-09-12 12:01:15] INFO: Terminal 14: 1 188
+[2023-09-12 12:01:15] INFO: Terminal 15: 0 2139
+[2023-09-12 12:01:15] INFO: Terminal 16: 1 15
+[2023-09-12 12:01:15] INFO: Terminal 17: 0 0
+[2023-09-12 12:01:15] INFO: Terminal 18: 1 58
+[2023-09-12 12:01:15] INFO: Terminal 19: 0 0
+[2023-09-12 12:01:15] INFO: Terminal 20: 1 133
+[2023-09-12 12:01:15] INFO: Terminal 21: 1 73
+[2023-09-12 12:01:15] INFO: Terminal 22: 0 0
+[2023-09-12 12:01:15] INFO: Terminal 23: 0 0
+[2023-09-12 12:01:15] INFO: Terminal 24: 0 0
+[2023-09-12 12:01:15] INFO: Terminal 25: 1 35
+[2023-09-12 12:01:15] INFO: Terminal 26: 1 35
+[2023-09-12 12:01:15] INFO: Terminal 27: 1 597
+[2023-09-12 12:01:15] INFO: Terminal 28: 1 21
+[2023-09-12 12:01:15] INFO: Terminal 29: 0 0
+[2023-09-12 12:01:15] INFO: Sorted terminal ids considered for opening: 15 
+[2023-09-12 12:01:15] INFO: Checking for improvement after opening terminal ID: 15
+[2023-09-12 12:01:15] INFO: Best objective found so far before opening any charging stations: 
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 17.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 23479915.917600
+[2023-09-12 12:01:15] INFO: Current objective after opening the charging station: 
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 18.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 23679915.917600
+[2023-09-12 12:01:15] INFO: Applying local search operators to adjust scheduling...
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 18.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 23679915.917600
+[2023-09-12 12:01:15] INFO: Opening the charging station did not lead to any improvements. Reverting changes...
+[2023-09-12 12:01:15] INFO: Finishing analysis of terminal id: 15
+[2023-09-12 12:01:15] INFO: Sorted terminal ids being considered for closing: 7 11 16 28 26 25 18 21 20 2 14 5 3 4 6 27 1 
+[2023-09-12 12:01:15] INFO: Checking for improvement after closing terminal ID: 7
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 17.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 23479915.917600
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 16.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 23279915.917600
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 16.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 23279915.917600
+[2023-09-12 12:01:15] INFO: Best objective improved from 23479915.917600 to 23279915.917600
+[2023-09-12 12:01:15] INFO: Finishing analysis of terminal id: 7
+[2023-09-12 12:01:15] INFO: Checking for improvement after closing terminal ID: 11
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 16.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 23279915.917600
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 15.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 23079915.917600
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 15.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 23079915.917600
+[2023-09-12 12:01:15] INFO: Best objective improved from 23279915.917600 to 23079915.917600
+[2023-09-12 12:01:15] INFO: Finishing analysis of terminal id: 11
+[2023-09-12 12:01:15] INFO: Checking for improvement after closing terminal ID: 16
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 15.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 23079915.917600
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 14.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22879915.917600
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 14.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22879915.917600
+[2023-09-12 12:01:15] INFO: Best objective improved from 23079915.917600 to 22879915.917600
+[2023-09-12 12:01:15] INFO: Finishing analysis of terminal id: 16
+[2023-09-12 12:01:15] INFO: Checking for improvement after closing terminal ID: 28
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 14.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22879915.917600
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 13.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22679915.917600
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 13.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22679915.917600
+[2023-09-12 12:01:15] INFO: Best objective improved from 22879915.917600 to 22679915.917600
+[2023-09-12 12:01:15] INFO: Finishing analysis of terminal id: 28
+[2023-09-12 12:01:15] INFO: Checking for improvement after closing terminal ID: 26
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 13.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22679915.917600
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 12.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22479915.917600
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 10478.186400
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 12.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22469437.731200
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 1971.525600
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 12.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22467466.205600
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 12.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22467466.205600
+[2023-09-12 12:01:15] INFO: Best objective improved from 22679915.917600 to 22467466.205600
+[2023-09-12 12:01:15] INFO: Finishing analysis of terminal id: 26
+[2023-09-12 12:01:15] INFO: Checking for improvement after closing terminal ID: 25
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 12.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22467466.205600
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 11.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22267466.205600
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 17645.443200
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 11.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22249820.762400
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 11.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22249820.762400
+[2023-09-12 12:01:15] INFO: Best objective improved from 22467466.205600 to 22249820.762400
+[2023-09-12 12:01:15] INFO: Finishing analysis of terminal id: 25
+[2023-09-12 12:01:15] INFO: Checking for improvement after closing terminal ID: 18
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 11.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22249820.762400
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 10.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 57
+[2023-09-12 12:01:15] INFO: Total cost: 22750169.585600
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 13043.289600
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 350000.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 10.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 22393264.428000
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 10.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 22393264.428000
+[2023-09-12 12:01:15] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
+[2023-09-12 12:01:15] INFO: Finishing analysis of terminal id: 18
+[2023-09-12 12:01:15] INFO: Checking for improvement after closing terminal ID: 21
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 11.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22249820.762400
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 10.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22049820.762400
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 10.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22049820.762400
+[2023-09-12 12:01:15] INFO: Best objective improved from 22249820.762400 to 22049820.762400
+[2023-09-12 12:01:15] INFO: Finishing analysis of terminal id: 21
+[2023-09-12 12:01:15] INFO: Checking for improvement after closing terminal ID: 20
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 10.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22049820.762400
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 9.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 57
+[2023-09-12 12:01:15] INFO: Total cost: 22535166.333600
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 350000.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 9.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 22185166.333600
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 9.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 22185166.333600
+[2023-09-12 12:01:15] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
+[2023-09-12 12:01:15] INFO: Finishing analysis of terminal id: 20
+[2023-09-12 12:01:15] INFO: Checking for improvement after closing terminal ID: 2
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 10.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 22049820.762400
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 9.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 21849820.762400
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 9.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 21849820.762400
+[2023-09-12 12:01:15] INFO: Best objective improved from 22049820.762400 to 21849820.762400
+[2023-09-12 12:01:15] INFO: Finishing analysis of terminal id: 2
+[2023-09-12 12:01:15] INFO: Checking for improvement after closing terminal ID: 14
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 9.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 21849820.762400
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 8.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 21649820.762400
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 8.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 21649820.762400
+[2023-09-12 12:01:15] INFO: Best objective improved from 21849820.762400 to 21649820.762400
+[2023-09-12 12:01:15] INFO: Finishing analysis of terminal id: 14
+[2023-09-12 12:01:15] INFO: Checking for improvement after closing terminal ID: 5
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 8.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 21649820.762400
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 57
+[2023-09-12 12:01:15] INFO: Total cost: 22150053.953600
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 350000.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 21799820.762400
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 28522.560000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 21771298.202400
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 18539.664000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 18539.664000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 21752758.538400
+[2023-09-12 12:01:15] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:15] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 56
+[2023-09-12 12:01:15] INFO: Total cost: 21752758.538400
+[2023-09-12 12:01:15] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
+[2023-09-12 12:01:15] INFO: Finishing analysis of terminal id: 5
+[2023-09-12 12:01:15] INFO: Checking for improvement after closing terminal ID: 3
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 8.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 55
+[2023-09-12 12:01:15] INFO: Total cost: 21649820.762400
+[2023-09-12 12:01:15] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:15] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:15] INFO: Number of buses used: 57
+[2023-09-12 12:01:15] INFO: Total cost: 22201018.757600
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 47526.679200
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 350000.000000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21827260.236000
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 20283.780000
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 45562.862400
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21781697.373600
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 3707.932800
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 12449.712000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21769247.661600
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 15319.312800
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21753928.348800
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 16575.847200
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21737352.501600
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 3707.932800
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 3362.964000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21733644.568800
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 418.202400
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21733226.366400
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21733226.366400
+[2023-09-12 12:01:16] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
+[2023-09-12 12:01:16] INFO: Finishing analysis of terminal id: 3
+[2023-09-12 12:01:16] INFO: Checking for improvement after closing terminal ID: 4
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 8.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 55
+[2023-09-12 12:01:16] INFO: Total cost: 21649820.762400
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 58
+[2023-09-12 12:01:16] INFO: Total cost: 22496168.718400
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 350000.000000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 57
+[2023-09-12 12:01:16] INFO: Total cost: 22145935.527200
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 350000.000000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21785166.333600
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 28522.560000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21756643.773600
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 18539.664000
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 18539.664000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21738104.109600
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21738104.109600
+[2023-09-12 12:01:16] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
+[2023-09-12 12:01:16] INFO: Finishing analysis of terminal id: 4
+[2023-09-12 12:01:16] INFO: Checking for improvement after closing terminal ID: 6
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 8.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 55
+[2023-09-12 12:01:16] INFO: Total cost: 21649820.762400
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 58
+[2023-09-12 12:01:16] INFO: Total cost: 22492243.012000
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 350000.000000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 57
+[2023-09-12 12:01:16] INFO: Total cost: 22142243.012000
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 350000.000000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21792243.012000
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 3.854400
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21792239.157600
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21792239.157600
+[2023-09-12 12:01:16] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
+[2023-09-12 12:01:16] INFO: Finishing analysis of terminal id: 6
+[2023-09-12 12:01:16] INFO: Checking for improvement after closing terminal ID: 27
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 8.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 55
+[2023-09-12 12:01:16] INFO: Total cost: 21649820.762400
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 57
+[2023-09-12 12:01:16] INFO: Total cost: 22173581.211200
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 350000.000000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21800053.953600
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21800053.953600
+[2023-09-12 12:01:16] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
+[2023-09-12 12:01:16] INFO: Finishing analysis of terminal id: 27
+[2023-09-12 12:01:16] INFO: Checking for improvement after closing terminal ID: 1
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 8.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 55
+[2023-09-12 12:01:16] INFO: Total cost: 21649820.762400
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 57
+[2023-09-12 12:01:16] INFO: Total cost: 22166336.866400
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 693.792000
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 350000.000000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21799468.084800
+[2023-09-12 12:01:16] INFO: Savings from exchanges operator: 0.000000
+[2023-09-12 12:01:16] INFO: Savings from shifts operator: 0.000000
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 7.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 56
+[2023-09-12 12:01:16] INFO: Total cost: 21799468.084800
+[2023-09-12 12:01:16] INFO: Closing the charging station did not lead to any improvements. Reverting changes...
+[2023-09-12 12:01:16] INFO: Finishing analysis of terminal id: 1
+[2023-09-12 12:01:16] INFO: Calculating the objective value of the solution...
+[2023-09-12 12:01:16] INFO: Number of charging stations: 8.000000
+[2023-09-12 12:01:16] INFO: Number of buses used: 55
+[2023-09-12 12:01:16] INFO: Total cost: 21649820.762400
+[2023-09-12 12:01:16] INFO: Utilization statistics of all terminals: (Terminal ID, Is charge station, Total idle time)
+[2023-09-12 12:01:16] INFO: Terminal 1: 1 2189
+[2023-09-12 12:01:16] INFO: Terminal 2: 0 0
+[2023-09-12 12:01:16] INFO: Terminal 3: 1 322
+[2023-09-12 12:01:16] INFO: Terminal 4: 1 304
+[2023-09-12 12:01:16] INFO: Terminal 5: 1 250
+[2023-09-12 12:01:16] INFO: Terminal 6: 1 497
+[2023-09-12 12:01:16] INFO: Terminal 7: 0 0
+[2023-09-12 12:01:16] INFO: Terminal 8: 0 0
+[2023-09-12 12:01:16] INFO: Terminal 9: 0 0
+[2023-09-12 12:01:16] INFO: Terminal 10: 0 0
+[2023-09-12 12:01:16] INFO: Terminal 11: 0 0
+[2023-09-12 12:01:16] INFO: Terminal 12: 0 0
+[2023-09-12 12:01:16] INFO: Terminal 13: 0 0
+[2023-09-12 12:01:16] INFO: Terminal 14: 0 188
+[2023-09-12 12:01:16] INFO: Terminal 15: 0 2139
+[2023-09-12 12:01:16] INFO: Terminal 16: 0 15
+[2023-09-12 12:01:16] INFO: Terminal 17: 0 0
+[2023-09-12 12:01:16] INFO: Terminal 18: 1 83
+[2023-09-12 12:01:16] INFO: Terminal 19: 0 0
+[2023-09-12 12:01:16] INFO: Terminal 20: 1 208
+[2023-09-12 12:01:16] INFO: Terminal 21: 0 50
+[2023-09-12 12:01:16] INFO: Terminal 22: 0 0
+[2023-09-12 12:01:16] INFO: Terminal 23: 0 0
+[2023-09-12 12:01:16] INFO: Terminal 24: 0 0
+[2023-09-12 12:01:16] INFO: Terminal 25: 0 0
+[2023-09-12 12:01:16] INFO: Terminal 26: 0 6
+[2023-09-12 12:01:16] INFO: Terminal 27: 1 582
+[2023-09-12 12:01:16] INFO: Terminal 28: 0 13
+[2023-09-12 12:01:16] INFO: Terminal 29: 0 0
+[2023-09-12 12:01:16] INFO: Local search completed in 3.880000 seconds.
