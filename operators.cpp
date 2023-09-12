@@ -183,7 +183,7 @@ void operators::optimize_scheduling(std::vector<Vehicle>& vehicle, std::vector<T
     double random_number = dis(gen);
 
     // Check if savings are positive
-    if (exchange_savings<=0.0 and shift_savings<=0.0 and random_number>0.05) {
+    if (exchange_savings<=0.0 and shift_savings<=0.0 and random_number>0.0) {
         logger.log(LogLevel::Debug, "No improvement possible. Exiting...");
         return;
     }
@@ -218,14 +218,11 @@ void operators::optimize_scheduling(std::vector<Vehicle>& vehicle, std::vector<T
 void operators::close_charging_stations(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
         std::vector<Terminal>& terminal, int close_terminal_id, Logger& logger)
 {
-    /*logger.log(LogLevel::Info, "Running location optimization operator...");
-    // Print values
-    logger.log(LogLevel::Info, "Sum of idle times at open terminals: "+std::to_string(sum_open_idle_times));
-    logger.log(LogLevel::Info, "Sum of idle times at closed terminals: "+std::to_string(sum_closed_idle_times));*/
+    logger.log(LogLevel::Info, "Checking for improvement after closing terminal ID: "+std::to_string(close_terminal_id));
 
-    // Track the savings
+    // Check if savings can be achieved from applying the scheduling operators
+    logger.log(LogLevel::Info, "Best objective found so far before closing any charging stations: ");
     double best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
-    double old_objective = 1e12;
 
     // Close the terminal with the chosen index
     terminal[close_terminal_id-1].is_charge_station = false;
@@ -243,96 +240,141 @@ void operators::close_charging_stations(std::vector<Vehicle>& vehicle, std::vect
     }
 
     // Log the details of the scan eligible rotations
-    logger.log(LogLevel::Info, "Scan eligible rotations: "+vector_to_string(scan_eligible_rotations));
+    logger.log(LogLevel::Info, "Scan eligible list of rotations affected: "+vector_to_string(scan_eligible_rotations));
+
+    // Create a copy of the vehicle vector to check for savings
+    std::vector<Vehicle> vehicle_copy = vehicle;  // TODO: Double check if any of the other classes need to be copied
 
     // Check if rotations are feasible after deletion of the terminal. If not, create new rotations.
-    evaluation::check_rotation_feasibility(vehicle, trip, terminal, scan_eligible_rotations, logger);
+    evaluation::check_rotation_feasibility(vehicle_copy, trip, terminal, scan_eligible_rotations, logger);
 
     // Check if savings can be achieved from applying the scheduling operators
-    int num_iterations = 0;
-    while (best_objective
-            <old_objective*1.05 and num_iterations < 100) {  // TODO: By default it will do this twice since deleting a terminal will create savings
-        num_iterations++;
-        old_objective = best_objective;
-        operators::optimize_scheduling(vehicle, trip, terminal, logger);
-        best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
+    logger.log(LogLevel::Info, "Current objective after closing the charging stations and creating new rotations (if any): ");
+    double curr_objective = evaluation::calculate_objective(trip, terminal, vehicle_copy, logger);
+    double old_objective = 1e12;
+
+    logger.log(LogLevel::Info, "Applying local search operators to adjust scheduling...");
+    while (curr_objective<old_objective) {  // TODO: By default it will do this twice since deleting a terminal will create savings
+        old_objective = curr_objective;
+        operators::optimize_scheduling(vehicle_copy, trip, terminal, logger);
+        curr_objective = evaluation::calculate_objective(trip, terminal, vehicle_copy, logger);
     }
+
+    // Check if the current objective is better than the best objective that we started with
+    if (curr_objective<best_objective) {
+        logger.log(LogLevel::Info, "Best objective improved from "+std::to_string(best_objective)+" to "+std::to_string(curr_objective));
+        vehicle = vehicle_copy;
+    }
+    else {
+        logger.log(LogLevel::Info, "Closing the charging station did not lead to any improvements. Reverting changes...");
+        terminal[close_terminal_id-1].is_charge_station = true;
+    }
+
+    logger.log(LogLevel::Info, "Finishing analysis of terminal id: "+std::to_string(close_terminal_id));
 }
 
 void operators::open_charging_stations(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
         std::vector<Terminal>& terminal, int open_terminal_id, Logger& logger)
 {
+    logger.log(LogLevel::Info, "Checking for improvement after opening terminal ID: "+std::to_string(open_terminal_id));
+
+    // Check if savings can be achieved from applying the scheduling operators
+    logger.log(LogLevel::Info, "Best objective found so far before opening any charging stations: ");
     double best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
-    double old_objective = 1e12;
 
     // Open the terminal with the chosen index
     terminal[open_terminal_id-1].is_charge_station = true;
 
+    // Create a copy of the vehicle vector to check for savings
+    std::vector<Vehicle> vehicle_copy = vehicle;  // TODO: Double check if any of the other classes need to be copied
+
     // Check if savings can be achieved from applying the scheduling operators
-    int num_iterations = 0;
-    while (best_objective<old_objective*1.05 and num_iterations < 100) {
-        ++num_iterations;
-        old_objective = best_objective;
-        operators::optimize_scheduling(vehicle, trip, terminal, logger);
-        best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
+    logger.log(LogLevel::Info, "Current objective after opening the charging station: ");
+    double curr_objective = evaluation::calculate_objective(trip, terminal, vehicle_copy, logger);
+    double old_objective = 1e12;
+
+    logger.log(LogLevel::Info, "Applying local search operators to adjust scheduling...");
+    while (curr_objective<old_objective) {  // TODO: By default it will do this twice since deleting a terminal will create savings
+        old_objective = curr_objective;
+        operators::optimize_scheduling(vehicle_copy, trip, terminal, logger);
+        curr_objective = evaluation::calculate_objective(trip, terminal, vehicle_copy, logger);
     }
+
+    // Check if the current objective is better than the best objective that we started with
+    if (curr_objective<best_objective) {
+        logger.log(LogLevel::Info, "Best objective improved from "+std::to_string(best_objective)+" to "+std::to_string(curr_objective));
+        vehicle = vehicle_copy;
+    }
+    else {
+        logger.log(LogLevel::Info, "Opening the charging station did not lead to any improvements. Reverting changes...");
+        terminal[open_terminal_id-1].is_charge_station = false;
+    }
+
+    logger.log(LogLevel::Info, "Finishing analysis of terminal id: "+std::to_string(open_terminal_id));
 }
 
 // Function to open or close locations. This could create new rotations as well when locations are closed
 void operators::optimize_locations(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
         std::vector<Terminal>& terminal, Logger& logger)
 {
-    logger.log(LogLevel::Info, "Checking if charge stations can be closed...");
-    // Find utilization of different terminals TODO: These can be tracked upfront and be updated incrementally after every shift and exchange
+    logger.log(LogLevel::Info, "Optimizing locations...");
+
+    // Find utilization of different terminals TODO: These can be tracked upfront and be updated incrementally when shift/exchange is actually performed
     evaluation::calculate_utilization(vehicle, trip, terminal, logger);
 
     // Close all open charging stations that have zero utilization
-    logger.log(LogLevel::Info, "Closing charge stations with zero utilization...");
+    logger.log(LogLevel::Info, "Checking if charge stations with zero utilization can be closed...");
+    int num_zero_utilization_terminals = 0;
     for (auto& curr_terminal : terminal) {
         if (curr_terminal.is_charge_station and curr_terminal.total_idle_time==0) {
             curr_terminal.is_charge_station = false;
+            ++num_zero_utilization_terminals;
         }
     }
+    logger.log(LogLevel::Info, "Number of charge stations closed: "+std::to_string(num_zero_utilization_terminals));
 
-    // Among the ones that are open, choose a terminal randomly probability proportional to their total idle time
-    // Create a vector of vectors with the terminal id and the total idle time
-    std::vector<int> open_charge_station_ids;
-    std::vector<double> deletion_proportions;
-    for (const auto& curr_terminal : terminal) {
-        if (curr_terminal.is_charge_station) {
-            open_charge_station_ids.push_back(curr_terminal.id);
-            deletion_proportions.push_back(1.0/double(curr_terminal.total_idle_time));
-        }
-    }
-
-    // Choose an index at random proportional to the deletion probabilities
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::discrete_distribution<> d(deletion_proportions.begin(), deletion_proportions.end());
-    int index = d(gen);
-
-    // Print the terminal id and the deletion probability of the chosen index
-    logger.log(LogLevel::Info, "Closing terminal id: "+std::to_string(open_charge_station_ids[index]));
-    logger.log(LogLevel::Info,
-            "Deletion proportion of the chosen terminal: "+std::to_string(deletion_proportions[index]));
-    operators::close_charging_stations(vehicle, trip, terminal, open_charge_station_ids[index], logger);
-
+    // Opening charging stations
     // Consider opening charging stations based on utilization and savings
     evaluation::calculate_utilization(vehicle, trip, terminal, logger);
 
     // Select a closed charging station with the highest utilization and open it. Calculate savings considering scheduling.
     // If the savings are positive, open the charging station, and update the terminal and rotation data.
-    int most_utilized_terminal_id;
-    double most_utilization = 0.0;
-    for (const auto& curr_terminal : terminal) {
-        if (not curr_terminal.is_charge_station and curr_terminal.total_idle_time>most_utilization) {
-            most_utilization = curr_terminal.total_idle_time;
-            most_utilized_terminal_id = curr_terminal.id;
-        }
+    std::vector<int> open_terminal_ids;
+    for (const auto& curr_terminal : terminal)
+        if (not curr_terminal.is_charge_station and curr_terminal.total_idle_time>0.0)
+            open_terminal_ids.push_back(curr_terminal.id);
+
+    // Sort the terminals that are closed in descending order of utilization
+    std::sort(open_terminal_ids.begin(), open_terminal_ids.end(),
+            [&terminal](int a, int b) { return terminal[a-1].total_idle_time>terminal[b-1].total_idle_time; });
+
+    // Print the sorted terminal IDs
+    logger.log(LogLevel::Info, "Sorted terminal ids considered for opening: "+vector_to_string(open_terminal_ids));
+
+    // Loop through the sorted terminal ID list and check if opening them leads to an improvement in the objective
+    for (const auto& open_terminal_id : open_terminal_ids) {
+        operators::open_charging_stations(vehicle, trip, terminal, open_terminal_id, logger);
     }
 
-    logger.log(LogLevel::Info, "Opening terminal "+std::to_string(most_utilized_terminal_id)+"...");
-    operators::open_charging_stations(vehicle, trip, terminal, most_utilized_terminal_id, logger);
+    // Closing charging stations
+    // Sort the terminals that are closed in ascending order of their utilization
+    std::vector<int> closed_terminal_ids;
+    for (const auto& curr_terminal : terminal)
+        if (curr_terminal.is_charge_station)
+            closed_terminal_ids.push_back(curr_terminal.id);
+
+    std::sort(closed_terminal_ids.begin(), closed_terminal_ids.end(),
+            [&terminal](int a, int b) { return terminal[a-1].total_idle_time<terminal[b-1].total_idle_time; });
+
+    // Print the sorted terminal IDs
+    logger.log(LogLevel::Info, "Sorted terminal ids being considered for closing: "+vector_to_string(closed_terminal_ids));
+
+    // Loop through the sorted terminal ID list and check if closing them leads to an improvement in the objective
+    for (const auto& close_terminal_id : closed_terminal_ids) {
+        operators::close_charging_stations(vehicle, trip, terminal, close_terminal_id, logger);
+    }
+
+
 }
 
 void operators::split_trip(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal,
@@ -451,8 +493,6 @@ void evaluation::check_rotation_feasibility(std::vector<Vehicle>& vehicle, std::
 void evaluation::calculate_utilization(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
         std::vector<Terminal>& terminal, Logger& logger)
 {
-    logger.log(LogLevel::Info, "Calculating utilization statistics of all terminals...");
-
     // Estimate the amount of idle time available at each charging and non charging terminal across all vehicles
     for (auto& curr_terminal : terminal) {
         curr_terminal.total_idle_time = 0;
@@ -531,11 +571,11 @@ double evaluation::calculate_objective(std::vector<Trip>& trip, std::vector<Term
 
     // Calculate the total cost and log the cost components
     double total_cost = location_cost+vehicle_acquisition_cost+deadhead_cost;
-    logger.log(LogLevel::Info, "Fixed cost of opening charging stations: "+std::to_string(location_cost));
+    logger.log(LogLevel::Debug, "Fixed cost of opening charging stations: "+std::to_string(location_cost));
     logger.log(LogLevel::Info, "Number of charging stations: "+std::to_string(location_cost/CHARGE_LOC_COST));
-    logger.log(LogLevel::Info, "Fixed cost of bus acquisition: "+std::to_string(vehicle_acquisition_cost));
+    logger.log(LogLevel::Debug, "Fixed cost of bus acquisition: "+std::to_string(vehicle_acquisition_cost));
     logger.log(LogLevel::Info, "Number of buses used: "+std::to_string(vehicle.size()));
-    logger.log(LogLevel::Info, "Cost of deadheading: "+std::to_string(deadhead_cost));
+    logger.log(LogLevel::Debug, "Cost of deadheading: "+std::to_string(deadhead_cost));
     logger.log(LogLevel::Info, "Total cost: "+std::to_string(total_cost));
 
     return total_cost;
@@ -711,25 +751,7 @@ double evaluation::calculate_trip_removal_cost(std::vector<Vehicle>& vehicle, st
     // Check if the size of trips in the source vehicle is 3 (two depots and one trip)
     // If so, add the cost of the bus to the savings
     if (vehicle[source_vehicle_index].trip_id.size()==3)
-        new_cost += VEHICLE_COST;
+        new_cost -= VEHICLE_COST;
 
     return current_cost-new_cost;  // If current cost is higher, the savings are positive and the exchange is beneficial
-}
-
-// Function to check for improvement in solutions
-void evaluation::update_best_solution(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, std::vector<Vehicle>& best_vehicle,
-        std::vector<Terminal>& best_terminal, Logger& logger)
-{
-    best_terminal = terminal;  // Update the best charging station configuration
-    best_vehicle = vehicle;  // Update the best rotations
-
-    // Log the rotation data
-    logger.log(LogLevel::Debug, "Current rotation data:");
-    for (int i = 0; i<vehicle.size(); ++i) {
-        logger.log(LogLevel::Debug, "Vehicle "+std::to_string(i+1));
-        for (int j = 0; j<vehicle[i].trip_id.size(); ++j) {
-            logger.log(LogLevel::Debug, "Trip "+std::to_string(vehicle[i].trip_id[j]));
-        }
-    }
 }
