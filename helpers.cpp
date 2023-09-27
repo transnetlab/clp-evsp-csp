@@ -1,5 +1,15 @@
 #include "helpers.h"
 
+template<typename T>
+std::string vector_to_string(const std::vector<T>& input_vector)
+{
+    std::stringstream ss;
+    for (const T& element : input_vector) {
+        ss << element << " ";
+    }
+    return ss.str();
+}
+
 // Function to read relevant GTFS trip data
 void preprocessing::read_trip_data(std::string instance, std::vector<Trip>& trip, int& num_trips, Logger& logger)
 {
@@ -76,7 +86,8 @@ void preprocessing::read_terminal_data(std::string instance, std::vector<Termina
 }
 
 // Function to augment trips with depot stops
-void preprocessing::create_depot_trips(std::vector<Trip>& trip, std::vector<Terminal>& terminal, int& num_trips, Logger& logger)
+void preprocessing::create_depot_trips(std::vector<Trip>& trip, std::vector<Terminal>& terminal, int& num_trips,
+        Logger& logger)
 {
     // Augment trips with depot stops
     logger.log(LogLevel::Info, "Augmenting trips with depot stops...");
@@ -86,8 +97,8 @@ void preprocessing::create_depot_trips(std::vector<Trip>& trip, std::vector<Term
         // Add a new trip to the trip vector
         Trip temp_trip;
         temp_trip.id = num_trips+1;
-        temp_trip.start_terminal = current_terminal.stop_id;  // TODO: Should we save the stop id or the terminal id?
-        temp_trip.end_terminal = current_terminal.stop_id;
+        temp_trip.start_terminal = current_terminal.id;
+        temp_trip.end_terminal = current_terminal.id;
         temp_trip.start_time = 0;
         temp_trip.end_time = 0;
         temp_trip.distance = 0.0;
@@ -153,15 +164,15 @@ void preprocessing::read_trip_pair_data(std::string instance, std::vector<Trip>&
 
     // Logging trip pair data
     logger.log(LogLevel::Info, "Trip pair data read successfully");
-    logger.log(LogLevel::Debug,
-            "Printing trip pair data (Current trip, Next trip, Is compatible?, Deadhead distance, Idle time)");
+    logger.log(LogLevel::Verbose,
+            "Printing compatible trip pair data (Current trip, Next trip, Deadhead distance, Idle time)");
     for (const auto& current_trip : trip) {
         for (int i = 0; i<num_trips; ++i) {
             // Print the current trip and the next trip as an ordered pair only if the trip pair is compatible
             if (current_trip.is_compatible[i])
-                logger.log(LogLevel::Debug, std::to_string(current_trip.id)+" "+std::to_string(i+1)+" "
-                        +std::to_string(current_trip.is_compatible[i])+" "+std::to_string(current_trip.deadhead_distance[i])
-                        +" "+std::to_string(current_trip.idle_time[i]));
+                logger.log(LogLevel::Verbose, std::to_string(current_trip.id)+" "+std::to_string(i+1)+" "
+                        +std::to_string(current_trip.deadhead_distance[i])+" "
+                        +std::to_string(current_trip.idle_time[i]));
         }
     }
 }
@@ -190,7 +201,7 @@ void preprocessing::initialize_vehicle_rotations(std::string instance, std::vect
         line_stream >> temp_vehicle.id;
         // If count does not match the temp_vehicle id issue a warning
         if (count!=temp_vehicle.id)
-            logger.log(LogLevel::Warning, "Found continuity ID issue in initial vehicle rotations");
+            logger.log(LogLevel::Warning, "Found continuity issue in IDs of initial vehicle rotations");
 
         // Populate other trip ID elements of the row
         while (line_stream >> temp_trip_id)
@@ -207,42 +218,45 @@ void preprocessing::initialize_vehicle_rotations(std::string instance, std::vect
     logger.log(LogLevel::Info, "Number of vehicles: "+std::to_string(count));
 }
 
-void preprocessing::log_input_data(std::vector<Trip>& trip, std::vector<Terminal>& terminal,
-        std::vector<Vehicle>& vehicle, Logger& logger)
+void preprocessing::log_input_data(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal,
+        Logger& logger)
 {
-    // Log the set of augmented trips
-    logger.log(LogLevel::Debug, "Printing trip data (Trip ID, Start stop, End stop, Start time, End time, Distance)");
+    // Log the set of trips including the augmented depot trips
+    logger.log(LogLevel::Verbose,
+            "Printing trip data (Trip ID, Start terminal, End terminal, Start time, End time, Distance)");
     for (const auto& current_trip : trip) {
-        logger.log(LogLevel::Debug, std::to_string(current_trip.id)+" "+std::to_string(current_trip.start_terminal)+" "+
-                std::to_string(current_trip.end_terminal)+" "+std::to_string(current_trip.start_time)+" "+
-                std::to_string(current_trip.end_time)+" "+std::to_string(current_trip.distance));
+        logger.log(LogLevel::Verbose,
+                std::to_string(current_trip.id)+" "+std::to_string(current_trip.start_terminal)+" "+
+                        std::to_string(current_trip.end_terminal)+" "+std::to_string(current_trip.start_time)+" "+
+                        std::to_string(current_trip.end_time)+" "+std::to_string(current_trip.distance));
     }
 
     // Additional debug info that prints members of each terminal
-    logger.log(LogLevel::Debug, "Printing terminal data (Stop ID, Trip ID, Is depot?, Is charging station?)");
+    logger.log(LogLevel::Verbose, "Printing terminal data (Stop ID, Trip ID, Is depot?, Is charging station?)");
     for (const auto& current_terminal : terminal) {
-        logger.log(LogLevel::Debug, std::to_string(current_terminal.id)+" "+std::to_string(current_terminal.stop_id)+" "
-                +std::to_string(current_terminal.trip_id)+" "+
-                std::to_string(current_terminal.is_depot)+" "
-                +std::to_string(current_terminal.is_charge_station));
+        logger.log(LogLevel::Verbose,
+                std::to_string(current_terminal.id)+" "+std::to_string(current_terminal.stop_id)+" "
+                        +std::to_string(current_terminal.trip_id)+" "+
+                        std::to_string(current_terminal.is_depot)+" "
+                        +std::to_string(current_terminal.is_charge_station));
     }
 
     // Debug info for vehicle rotations
-    logger.log(LogLevel::Debug, "Printing vehicle rotations (Vehicle ID, Trip IDs)");
+    logger.log(LogLevel::Verbose, "Printing vehicle rotations (Vehicle ID, Trip IDs)");
     std::string trip_list;
-    for (const auto& current_vehicle : vehicle) {
-        trip_list = "";
-        for (const auto& current_trip : current_vehicle.trip_id)
-            trip_list += std::to_string(current_trip)+" ";
-        logger.log(LogLevel::Debug, std::to_string(current_vehicle.id)+" "+trip_list);
-    }
+    for (const auto& current_vehicle : vehicle)
+        logger.log(LogLevel::Verbose, std::to_string(current_vehicle.id)+" "+vector_to_string(current_vehicle.trip_id));
 }
 
 // Function to read inputs to the model including GTFS data and initial rotations
-void preprocessing::initialize_inputs(std::string instance, std::vector<Trip>& trip, std::vector<Terminal>& terminal,
-        std::vector<Vehicle>& vehicle, int& num_trips, int& num_terminals,
+void preprocessing::initialize_inputs(std::string instance, std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal,
+        int& num_trips, int& num_terminals,
         Logger& logger)
 {
+    logger.log(LogLevel::Info, "Initializing inputs to the model...");
+
     // Read input data on trips and stops and initialize bus rotations
     preprocessing::read_trip_data(instance, trip, num_trips, logger);
     preprocessing::read_terminal_data(instance, terminal, num_terminals, logger);
@@ -255,5 +269,7 @@ void preprocessing::initialize_inputs(std::string instance, std::vector<Trip>& t
     preprocessing::initialize_vehicle_rotations(instance, vehicle, logger);
 
     // Log the input data
-    preprocessing::log_input_data(trip, terminal, vehicle, logger);
+    preprocessing::log_input_data(vehicle, trip, terminal, logger);
+
+    logger.log(LogLevel::Info, "Inputs to the model initialized successfully");
 }

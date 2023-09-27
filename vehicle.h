@@ -6,44 +6,6 @@
 #include <vector>
 #include <iostream>
 
-//Create a trip class which contains relevant GTFS details
-class Trip {
-public:
-    int id;  // Trip ID
-    int start_terminal;  // Terminal ID of first stop
-    int end_terminal;  // Terminal ID of last stop
-    int start_time;  // Minutes since midnight
-    int end_time;  // Minutes since midnight
-    double distance;  // Distance in km
-    std::vector<bool> is_compatible;  // Booleans to check if a trip is compatible with another (includes depot 'trips')
-    std::vector<double> deadhead_distance;  // Vector of deadhead distances (includes depot 'trips')
-    std::vector<double> idle_time;  // Vector of idle times (includes depot 'trips')
-
-    // Constructor
-    Trip()
-    {
-        // Nothing to do here
-    }
-
-    Trip(int id, int start_stop, int end_stop, int start_time, int end_time, double distance)
-    {
-        this->id = id;
-        this->start_terminal = start_stop;
-        this->end_terminal = end_stop;
-        this->start_time = start_time;
-        this->end_time = end_time;
-        this->distance = distance;
-    }
-
-    //Destructor
-    ~Trip()
-    {
-        is_compatible.clear();
-        deadhead_distance.clear();
-        idle_time.clear();
-    }
-};
-
 //Create a stops class with potential charging locations
 class Terminal {
 public:
@@ -75,6 +37,44 @@ public:
     ~Terminal()
     {
         // Nothing to do here
+    }
+};
+
+//Create a trip class which contains relevant GTFS details
+class Trip {
+public:
+    int id;  // Trip ID
+    int start_terminal;  // Terminal ID of first stop
+    int end_terminal;  // Terminal ID of last stop
+    int start_time;  // Minutes since midnight
+    int end_time;  // Minutes since midnight
+    double distance;  // Distance in km
+    std::vector<bool> is_compatible;  // Booleans to check if a trip is compatible with another (includes depot 'trips')
+    std::vector<double> deadhead_distance;  // Vector of deadhead distances (includes depot 'trips')
+    std::vector<double> idle_time;  // Vector of idle times (includes depot 'trips')
+
+    // Constructor
+    Trip()
+    {
+        // Nothing to do here
+    }
+
+    Trip(int id, int start_terminal, int end_terminal, int start_time, int end_time, double distance)
+    {
+        this->id = id;
+        this->start_terminal = start_terminal;
+        this->end_terminal = end_terminal;
+        this->start_time = start_time;
+        this->end_time = end_time;
+        this->distance = distance;
+    }
+
+    //Destructor
+    ~Trip()
+    {
+        is_compatible.clear();
+        deadhead_distance.clear();
+        idle_time.clear();
     }
 };
 

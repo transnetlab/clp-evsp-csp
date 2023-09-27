@@ -17,7 +17,7 @@
 int main()
 {
     // Set the instance name
-    std::string instance = "Ann_Arbor";
+    std::string instance = "SCMTD";
 
     // Delete any old log files if present and create a new one. Set logging level.
     std::remove(("../output/"+instance+"_log.txt").c_str());
@@ -31,10 +31,10 @@ int main()
     std::vector<Vehicle> vehicle;  // Vector of vehicles
 
     // Read input data on trips and stops and initialize bus rotations
-    preprocessing::initialize_inputs(instance, trip, terminal, vehicle, num_trips, num_terminals, logger);
+    preprocessing::initialize_inputs(instance, vehicle, trip, terminal, num_trips, num_terminals, logger);
 
     // Calculate the objective value of the initial solution
-    double best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
+    double best_objective = evaluation::calculate_objective(vehicle, trip, terminal, logger);
 
     // Local search for scheduling
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -43,15 +43,15 @@ int main()
     while (best_objective<old_objective) {
         ++num_iterations;
         old_objective = best_objective;
-        operators::optimize_scheduling(vehicle, trip, terminal, logger);  // TODO: Have consistent tenses of namespaces
-        best_objective = evaluation::calculate_objective(trip, terminal, vehicle, logger);
+        operators::optimize_scheduling(vehicle, trip, terminal, logger);  // Pick the best among exchanges and shifts // TODO: Have consistent tenses of namespaces
+        best_objective = evaluation::calculate_objective(vehicle, trip, terminal, logger);  // TODO: Optimize scheduling can tell us if there is an improvement, so we don't need to recalculate the objective
     }
 
     // Local search for charging locations
-    operators::optimize_locations(vehicle, trip, terminal, logger);
+    /*operators::optimize_locations(vehicle, trip, terminal, logger);*/
 
     // Print the best solution found
-    evaluation::calculate_objective(trip, terminal, vehicle, logger);
+    evaluation::calculate_objective(vehicle, trip, terminal, logger);
     evaluation::calculate_utilization(vehicle, trip, terminal, logger);
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     logger.log(LogLevel::Info, "Local search completed in "

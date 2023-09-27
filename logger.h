@@ -23,9 +23,8 @@ public:
 
     ~Logger()
     {
-        if (log_file_.is_open()) {
+        if (log_file_.is_open())
             log_file_.close();
-        }
     }
 
     void log(LogLevel level, const std::string& message)
