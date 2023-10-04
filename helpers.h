@@ -18,6 +18,4 @@ void initialize_vehicle_rotations(std::string, std::vector<Vehicle> &, Logger&);
 void log_input_data(std::vector<Vehicle> &, std::vector<Trip> &, std::vector<Terminal> &, Logger&);
 }
 
-
-
 #endif //EBUS_VNS_HELPERS_H

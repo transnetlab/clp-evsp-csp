@@ -26,10 +26,8 @@ double operators::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Trip
                     double savings = 0.0;
                     // Check if the exchanges is feasible
                     if (evaluation::is_exchange_compatible(vehicle, trip, u, v, k, l)) {
-                        // Check if exchanges are charge feasible
+                        // Check if exchanges are charge feasible. Push the original trip_ids to swapped_rotations
                         swapped_rotations.clear();
-
-                        // Push the original trip_ids to swapped_rotations
                         swapped_rotations.push_back(vehicle[u].trip_id);
                         swapped_rotations.push_back(vehicle[v].trip_id);
 
@@ -79,10 +77,8 @@ double operators::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& 
 
                     // Check if the exchanges is feasible
                     if (evaluation::is_shift_compatible(vehicle, trip, u, v, k, l)) {
-                        // Check if exchanges are charge feasible
+                        // Check if exchanges are charge feasible. Insert the original trip_ids to shifted_rotations
                         shifted_rotations.clear();
-
-                        // Insert the original trip_ids to shifted_rotations
                         shifted_rotations.push_back(vehicle[u].trip_id);
                         shifted_rotations.push_back(vehicle[v].trip_id);
 
@@ -119,28 +115,54 @@ double operators::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& 
 }
 
 // Function that actually performs the exchange using the exchange object
-void operators::perform_exchange(std::vector<Vehicle>& vehicle, Exchange& exchange)
+void operators::perform_exchange(std::vector<Vehicle>& vehicle, Exchange& exchange, Logger& logger)
 {
+    logger.log(LogLevel::Info, "Performing exchange...");
+
     // Exchange trips k and l of vehicles u and v
     int first_vehicle_index = exchange.first_vehicle_index;
     int second_vehicle_index = exchange.second_vehicle_index;
     int first_trip_index = exchange.first_trip_index;
     int second_trip_index = exchange.second_trip_index;
 
+    // Log trip IDs before exchange
+    logger.log(LogLevel::Debug, "First vehicle curr trip IDs: "+vector_to_string(vehicle[first_vehicle_index].trip_id));
+    logger.log(LogLevel::Debug, "Second vehicle curr trip IDs: "+vector_to_string(vehicle[second_vehicle_index].trip_id));
+
+    // Log exchange information
+    logger.log(LogLevel::Debug, "Exchanging trip index "+ std::to_string(first_trip_index)+" of vehicle index "
+            +std::to_string(first_vehicle_index)+" with trip index "+std::to_string(second_trip_index)+" of vehicle index "
+            +std::to_string(second_vehicle_index)+"...");
+
     // Swap the trips
     int temp = vehicle[first_vehicle_index].trip_id[first_trip_index];
     vehicle[first_vehicle_index].trip_id[first_trip_index] = vehicle[second_vehicle_index].trip_id[second_trip_index];
     vehicle[second_vehicle_index].trip_id[second_trip_index] = temp;
+
+    // Log trip IDs after exchange for both first vehicle and second vehicle
+    logger.log(LogLevel::Debug, "First vehicle new trip IDs: "+vector_to_string(vehicle[first_vehicle_index].trip_id));
+    logger.log(LogLevel::Debug, "Second vehicle new trip IDs: "+vector_to_string(vehicle[second_vehicle_index].trip_id));
 }
 
 // Function that actually performs the shift using the shift object
-void operators::perform_shift(std::vector<Vehicle>& vehicle, Shift& shift)
+void operators::perform_shift(std::vector<Vehicle>& vehicle, Shift& shift, Logger& logger)
 {
+    logger.log(LogLevel::Info, "Performing shift...");
+
     // Insert trip l of vehicle v after trip k of vehicle u
     int dest_vehicle_index = shift.dest_vehicle_index;
     int source_vehicle_index = shift.source_vehicle_index;
     int dest_trip_index = shift.dest_trip_index;
     int source_trip_index = shift.source_trip_index;
+
+    // Log trip IDs before shift
+    logger.log(LogLevel::Debug, "Source vehicle curr trip IDs: "+vector_to_string(vehicle[source_vehicle_index].trip_id));
+    logger.log(LogLevel::Debug, "Destination vehicle curr trip IDs: "+vector_to_string(vehicle[dest_vehicle_index].trip_id));
+
+    // Log shift information
+    logger.log(LogLevel::Debug, "Shifting trip index "+std::to_string(source_trip_index)+" of vehicle index "
+            +std::to_string(source_vehicle_index)+" after trip index "+std::to_string(dest_trip_index)+" of vehicle index "
+            +std::to_string(dest_vehicle_index)+"...");
 
     // Insert the trip
     vehicle[dest_vehicle_index].trip_id.insert(vehicle[dest_vehicle_index].trip_id.begin()+dest_trip_index+1,
@@ -149,17 +171,23 @@ void operators::perform_shift(std::vector<Vehicle>& vehicle, Shift& shift)
     // Remove the trip
     vehicle[source_vehicle_index].trip_id.erase(vehicle[source_vehicle_index].trip_id.begin()+source_trip_index);
 
-    // If the source vehicle has only two trips, remove the vehicle
-    if (vehicle[source_vehicle_index].trip_id.size()==2)
-        vehicle.erase(vehicle.begin()
-                +source_vehicle_index);   //  TODO: Check if removal creates a problem with indexing +-1 issues
+    // If the source vehicle has only two trips, remove the vehicle TODO: Check if removal creates a problem with indexing +-1 issues
+    if (vehicle[source_vehicle_index].trip_id.size()==2) {
+        logger.log(LogLevel::Debug, "Source vehicle has only two trips. Removing it...");
+        vehicle.erase(vehicle.begin()+source_vehicle_index);
+    }
+    else
+        logger.log(LogLevel::Debug, "Source vehicle new trip IDs: " + vector_to_string(vehicle[source_vehicle_index].trip_id));
+
+    // Log the rotations after the shift for the destination vehicle
+    logger.log(LogLevel::Debug, "Destination vehicle new trip new IDs: "+vector_to_string(vehicle[dest_vehicle_index].trip_id));
 }
 
 // Best improvement function
 void operators::optimize_scheduling(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
         std::vector<Terminal>& terminal, Logger& logger)
 {
-    logger.log(LogLevel::Debug, "Optimizing scheduling...");
+    logger.log(LogLevel::Info, "Optimizing scheduling...");
 
     Exchange exchange;
     Shift shift;
@@ -169,8 +197,8 @@ void operators::optimize_scheduling(std::vector<Vehicle>& vehicle, std::vector<T
     double shift_savings = shift_trips(vehicle, trip, terminal, shift);
 
     // Check if the exchanges operator is better than the shifts operator
-    logger.log(LogLevel::Debug, "Savings from exchanges operator: "+std::to_string(exchange_savings));
-    logger.log(LogLevel::Debug, "Savings from shifts operator: "+std::to_string(shift_savings));
+    logger.log(LogLevel::Info, "Savings from exchanges operator: "+std::to_string(exchange_savings));
+    logger.log(LogLevel::Info, "Savings from shifts operator: "+std::to_string(shift_savings));
 
     // Check if savings are positive
     if (exchange_savings<=0.0 and shift_savings<=0.0) {
@@ -178,36 +206,10 @@ void operators::optimize_scheduling(std::vector<Vehicle>& vehicle, std::vector<T
         return;
     }
 
-    if (exchange_savings>shift_savings) {
-        logger.log(LogLevel::Info,
-                "Performing exchange: First vehicle index, Second vehicle index, First trip index, Second trip index");
-        logger.log(LogLevel::Info,
-                std::to_string(exchange.first_vehicle_index)+", "+std::to_string(exchange.second_vehicle_index)+", "
-                        +std::to_string(exchange.first_trip_index)+", "+std::to_string(exchange.second_trip_index));
-        perform_exchange(vehicle, exchange);
-
-        // Log trip IDs after exchange for both first vehicle and second vehicle
-        logger.log(LogLevel::Debug, "First vehicle trip IDs: "+vector_to_string(vehicle[exchange.first_vehicle_index].trip_id));
-        logger.log(LogLevel::Debug, "Second vehicle trip IDs: "+vector_to_string(vehicle[exchange.second_vehicle_index].trip_id));
-    }
-    else {
-        logger.log(LogLevel::Info,
-                "Performing shift: Destination vehicle index, Source vehicle index, Destination trip index, Source trip index");
-        logger.log(LogLevel::Info,
-                std::to_string(shift.dest_vehicle_index)+", "+std::to_string(shift.source_vehicle_index)+", "
-                        +std::to_string(shift.dest_trip_index)+", "+std::to_string(shift.source_trip_index));
-        perform_shift(vehicle, shift);
-
-        // Log the rotations after the shift to see if the shift was performed correctly and if vehicles are removed when there are only two trips
-        logger.log(LogLevel::Debug, "Destination vehicle trip IDs: "+vector_to_string(vehicle[shift.dest_vehicle_index].trip_id));
-        // Try logging the trip IDs of the source vehicle. This will throw an error if the source vehicle has been removed
-        try {
-            logger.log(LogLevel::Debug, "Source vehicle trip IDs: "+vector_to_string(vehicle[shift.source_vehicle_index].trip_id));
-        }
-        catch (const std::out_of_range& oor) {
-            logger.log(LogLevel::Debug, "Source vehicle has been removed.");
-        }
-    }
+    if (exchange_savings>shift_savings)
+        perform_exchange(vehicle, exchange, logger);
+    else
+        perform_shift(vehicle, shift, logger);
 }
 
 void operators::close_charging_stations(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,

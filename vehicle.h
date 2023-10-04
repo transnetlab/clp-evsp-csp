@@ -119,7 +119,7 @@ public:
     // Print members of the class
     void print_members()
     {
-        std::cout << std::endl << "Vehicle ID, No. of Trips, Deadhead cost, Trip IDs ";
+        std::cout << std::endl << "Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: ";
         std::cout << id << " ";
         std::cout << trip_id.size() << " ";
         std::cout << deadhead_cost << " ";
