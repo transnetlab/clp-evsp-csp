@@ -23,12 +23,15 @@ public:
     int dest_trip_index; // The new trip is inserted after this index
 };
 
-namespace operators {
-void optimize_scheduling(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
+namespace scheduling {
 double exchange_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Exchange&);
 double shift_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Shift&);
 void perform_exchange(std::vector<Vehicle>&, Exchange&, Logger&);
 void perform_shift(std::vector<Vehicle>&, Shift&, Logger&);
+void optimize_rotations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger& logger);
+}
+
+namespace operators {
 void optimize_locations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
 void close_charging_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, Logger&);
 void open_charging_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, Logger&);
@@ -47,6 +50,7 @@ double calculate_trip_removal_cost(std::vector<Vehicle>&, std::vector<Trip>&, in
 void calculate_utilization(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
 void check_rotation_feasibility(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, std::vector<int>&,
         Logger&);
+bool is_charge_adequate_next_trip(std::vector<Trip>& trip, int curr_trip, int next_trip, bool is_curr_trip_end_charge_terminal, bool is_next_trip_start_charge_terminal, int charge_time_window, double& charge_level);
 }
 
 #endif //EBUS_VNS_OPERATORS_H

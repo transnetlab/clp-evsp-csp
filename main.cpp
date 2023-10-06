@@ -22,7 +22,7 @@ int main()
     // Delete any old log files if present and create a new one. Set logging level.
     std::remove(("../output/"+instance+"_log.txt").c_str());
     Logger logger("../output/"+instance+"_log.txt", true);
-    logger.set_log_level_threshold(LogLevel::Info);
+    logger.set_log_level_threshold(LogLevel::Debug);
 
     // Initialize variables  TODO: Check if we need to keep track of number of original trips vs. augmented trips
     int num_trips, num_terminals;  // Number of trips and terminals in the network
@@ -43,7 +43,7 @@ int main()
     while (best_objective<old_objective) {
         ++num_iterations;
         old_objective = best_objective;
-        operators::optimize_scheduling(vehicle, trip, terminal, logger);  // Pick the best among exchanges and shifts // TODO: Have consistent tenses of namespaces
+        scheduling::optimize_rotations(vehicle, trip, terminal, logger);  // Pick the best among exchanges and shifts // TODO: Have consistent tenses of namespaces
         best_objective = evaluation::calculate_objective(vehicle, trip, terminal, logger);  // TODO: Optimize scheduling can tell us if there is an improvement, so we don't need to recalculate the objective
     }
 
