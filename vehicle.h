@@ -2,20 +2,33 @@
 #define EBUS_VNS_VEHICLE_H
 
 #include "constants.h"
+#include "logger.h"
 #include <string>
 #include <vector>
 #include <iostream>
+#include <sstream>
+
+template<typename T>
+std::string vector_to_string(const std::vector<T>& input_vector)
+{
+    std::stringstream ss;
+    for (const T& element : input_vector) {
+        ss << element << " ";
+    }
+    return ss.str();
+}
 
 //Create a stops class with potential charging locations
 class Terminal {
 public:
     int id;  // Terminal ID
-    int stop_id;  // GTFS stop ID
+    std::string stop_id;  // GTFS stop ID
     int trip_id;  // Augmented trip ID for populating rotations
     bool is_depot;  // True if the stop is a depot
     bool is_charge_station;  // True if the stop is a charging station
 
-    int total_idle_time;  // Total idle time across all rotations. This measures the utilization of the terminal.
+    int current_idle_time;  // Total idle time across all rotations. This measures the utilization of the terminal.
+    int potential_idle_time; // Total idle time across all rotations if this were to be a charge station
     std::vector<int> passing_rotation;  // indices passing through the terminal in the current rotation
     std::vector<int> passing_rotation_idle_time;  // Idle time of each trip in the current rotation
 
@@ -81,7 +94,7 @@ public:
 //Create a vehicle class which stores bus rotation details
 class Vehicle {
 public:
-    int id;  // Vehicle ID  TODO: Does this get used anywhere? Since we add and remove rotations, IDs need not be continuous
+    int id;  // Vehicle IDs. Rotations are added and removed and hence these need not be continuous
     std::vector<int> trip_id;  // First and last trips are aliases for depots
     double deadhead_cost;  // Cost of deadheading in the rotation
 
@@ -117,14 +130,10 @@ public:
     }
 
     // Print members of the class
-    void print_members()
+    void log_member_data(Logger& logger)
     {
-        std::cout << std::endl << "Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: ";
-        std::cout << id << " ";
-        std::cout << trip_id.size() << " ";
-        std::cout << deadhead_cost << " ";
-        for (int i = 0; i<trip_id.size(); ++i)
-            std::cout << trip_id[i] << " ";
+        logger.log(LogLevel::Info, "Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: "+std::to_string(id)+" "
+                +std::to_string(trip_id.size())+" "+std::to_string(deadhead_cost)+" "+vector_to_string(trip_id));
     }
 };
 

@@ -20,4 +20,10 @@ constexpr std::array<double, NUM_PRICE_INTERVALS> ENERGY_PRICE = {400.0, 300.0, 
 constexpr double POWER_CAPACITY_PRICE = 600;  // in Euros/kW
 
 constexpr int MAX_ITERATIONS = 1;  // Maximum number of iterations for the VNS algorithm
+
+constexpr double INF = 1e12; // Large number to represent infinity
+constexpr double EPSILON = 1e-6; // Small number to compare doubles
+
+constexpr bool PERFORM_DEPOT_EXCHANGES = true;  // Flag to turn on/off depot exchange operators
+
 #endif //EBUS_VNS_CONSTANTS_H

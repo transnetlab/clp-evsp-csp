@@ -26,31 +26,38 @@ public:
 namespace scheduling {
 double exchange_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Exchange&);
 double shift_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Shift&);
+double exchange_depots(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Exchange&);
+
 void perform_exchange(std::vector<Vehicle>&, Exchange&, Logger&);
 void perform_shift(std::vector<Vehicle>&, Shift&, Logger&);
-void optimize_rotations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger& logger);
+
+void optimize_rotations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
 }
 
-namespace operators {
-void optimize_locations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
-void close_charging_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, Logger&);
-void open_charging_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, Logger&);
-void split_trip(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, int, std::vector<int>&,
+namespace locations {
+void optimize_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
+void close_charging_station(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, Logger&);
+void open_charging_station(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, Logger&);
+void split_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, int, std::vector<int>&,
         Logger&);
 }
 
 namespace evaluation {
 double calculate_objective(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
+void calculate_utilization(std::vector<Vehicle>& vehicle, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
+
 bool is_exchange_compatible(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
 bool is_shift_compatible(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
+
+bool is_charge_adequate_next_trip(std::vector<Trip>&, int, int, bool, bool, int, double&);
 bool are_rotations_charge_feasible(std::vector<Trip>&, std::vector<Terminal>&, std::vector<std::vector<int>>);
+bool check_charge_feasibility_and_split_rotations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&,
+        std::vector<int>&, Logger&);
+
 double calculate_trip_replacement_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
+double calculate_depot_replacement_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
 double calculate_trip_addition_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
 double calculate_trip_removal_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int);
-void calculate_utilization(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
-void check_rotation_feasibility(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, std::vector<int>&,
-        Logger&);
-bool is_charge_adequate_next_trip(std::vector<Trip>& trip, int curr_trip, int next_trip, bool is_curr_trip_end_charge_terminal, bool is_next_trip_start_charge_terminal, int charge_time_window, double& charge_level);
 }
 
 #endif //EBUS_VNS_OPERATORS_H
