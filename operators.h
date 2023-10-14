@@ -31,15 +31,18 @@ double exchange_depots(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Te
 void perform_exchange(std::vector<Vehicle>&, Exchange&, Logger&);
 void perform_shift(std::vector<Vehicle>&, Shift&, Logger&);
 
+void apply_best_improvement(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal,
+        Logger& logger);
 void optimize_rotations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
 }
 
 namespace locations {
-void optimize_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
-void close_charging_station(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, Logger&);
+void split_trips(std::vector<Vehicle>&, std::vector<int>&, int, int, Logger&);
+bool are_rotations_charge_feasible(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal,
+        std::vector<int>& scan_eligible_vehicle_indices, Logger& logger);
 void open_charging_station(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, Logger&);
-void split_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, int, std::vector<int>&,
-        Logger&);
+void close_charging_station(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, Logger&);
+void optimize_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
 }
 
 namespace evaluation {
@@ -51,8 +54,6 @@ bool is_shift_compatible(std::vector<Vehicle>&, std::vector<Trip>&, int, int, in
 
 bool is_charge_adequate_next_trip(std::vector<Trip>&, int, int, bool, bool, int, double&);
 bool are_rotations_charge_feasible(std::vector<Trip>&, std::vector<Terminal>&, std::vector<std::vector<int>>);
-bool check_charge_feasibility_and_split_rotations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&,
-        std::vector<int>&, Logger&);
 
 double calculate_trip_replacement_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
 double calculate_depot_replacement_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);

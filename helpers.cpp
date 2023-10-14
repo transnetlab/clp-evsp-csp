@@ -282,6 +282,58 @@ void preprocessing::initialize_inputs(std::string instance, std::vector<Vehicle>
     logger.log(LogLevel::Info, "Inputs to the model initialized successfully");
 }
 
+// Sanity check for solutions: (1) Single bus for each trip (2) All trips are included (3) Charge feasibility
+void postprocessing::check_solution(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, int num_trips, Logger& logger)
+{
+    logger.log(LogLevel::Info, "Performing sanity checks on the solution...");
+
+    // Check if each trip is assigned to exactly one vehicle
+    logger.log(LogLevel::Info, "Checking if each trip is assigned to exactly one vehicle...");
+    std::vector<bool> is_trip_assigned(num_trips, false);
+    int curr_trip;
+    for (const auto& curr_vehicle : vehicle) {
+        for (int i = 1; i<curr_vehicle.trip_id.size()-1; ++i) {
+            curr_trip = curr_vehicle.trip_id[i];
+            if (is_trip_assigned[curr_trip-1]) {
+                logger.log(LogLevel::Error,
+                        "Trip ID"+std::to_string(curr_trip)+" is in more than one vehicle. Sanity check status: Fail");
+                postprocessing::write_output_data(
+                        "Error: Trip ID"+std::to_string(curr_trip)+" is in more than one vehicle", logger);
+                exit(1);
+            }
+            is_trip_assigned[curr_trip-1] = true;
+        }
+    }
+    logger.log(LogLevel::Info, "Each trip is assigned to exactly one vehicle");
+
+    // Check if all trips are assigned to a vehicle
+    logger.log(LogLevel::Info, "Checking if all trips are assigned to a vehicle...");
+    for (int i = 0; i<num_trips; ++i) {
+        if (!is_trip_assigned[i]) {
+            logger.log(LogLevel::Error,
+                    "Trip "+std::to_string(i+1)+" is not assigned to any vehicle. Sanity check status: Fail");
+            postprocessing::write_output_data(
+                    "Error: Trip "+std::to_string(i+1)+" is not assigned to any vehicle in the final solution", logger);
+            exit(1);
+        }
+    }
+    logger.log(LogLevel::Info, "All trips are assigned to a vehicle");
+
+    // Check if the rotations are charge feasible
+    logger.log(LogLevel::Info, "Checking if the solution is charge feasible...");
+    std::vector<std::vector<int>> rotations;
+    for (const auto& curr_vehicle : vehicle)
+        rotations.push_back(curr_vehicle.trip_id);
+    if (!evaluation::are_rotations_charge_feasible(trip, terminal, rotations)) {
+        logger.log(LogLevel::Error, "Solution is not charge feasible. Sanity check status: Fail");
+        postprocessing::write_output_data("Error: Final solution is not charge feasible", logger);
+        exit(1);
+    }
+    logger.log(LogLevel::Info, "Solution is charge feasible");
+    logger.log(LogLevel::Info, "Sanity check status: Pass");
+}
+
 // Function that saves an error message in the summary file if the code does not run to completion
 void postprocessing::write_output_data(std::string message, Logger& logger)
 {
@@ -336,54 +388,3 @@ void postprocessing::write_output_data(std::vector<Vehicle>& vehicle, std::vecto
     summary_file.close();
 }
 
-// Sanity check for solutions: (1) Single bus for each trip (2) All trips are included (3) Charge feasibility
-void postprocessing::check_solution(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, int num_trips, Logger& logger)
-{
-    logger.log(LogLevel::Info, "Performing sanity checks on the solution...");
-
-    // Check if each trip is assigned to exactly one vehicle
-    logger.log(LogLevel::Info, "Checking if each trip is assigned to exactly one vehicle...");
-    std::vector<bool> is_trip_assigned(num_trips, false);
-    int curr_trip;
-    for (const auto& curr_vehicle : vehicle) {
-        for (int i = 1; i<curr_vehicle.trip_id.size()-1; ++i) {
-            curr_trip = curr_vehicle.trip_id[i];
-            if (is_trip_assigned[curr_trip-1]) {
-                logger.log(LogLevel::Error,
-                        "Trip ID"+std::to_string(curr_trip)+" is in more than one vehicle. Sanity check status: Fail");
-                postprocessing::write_output_data(
-                        "Error: Trip ID"+std::to_string(curr_trip)+" is in more than one vehicle", logger);
-                exit(1);
-            }
-            is_trip_assigned[curr_trip-1] = true;
-        }
-    }
-    logger.log(LogLevel::Info, "Each trip is assigned to exactly one vehicle");
-
-    // Check if all trips are assigned to a vehicle
-    logger.log(LogLevel::Info, "Checking if all trips are assigned to a vehicle...");
-    for (int i = 0; i<num_trips; ++i) {
-        if (!is_trip_assigned[i]) {
-            logger.log(LogLevel::Error,
-                    "Trip "+std::to_string(i+1)+" is not assigned to any vehicle. Sanity check status: Fail");
-            postprocessing::write_output_data(
-                    "Error: Trip "+std::to_string(i+1)+" is not assigned to any vehicle in the final solution", logger);
-            exit(1);
-        }
-    }
-    logger.log(LogLevel::Info, "All trips are assigned to a vehicle");
-
-    // Check if the rotations are charge feasible
-    logger.log(LogLevel::Info, "Checking if the solution is charge feasible...");
-    std::vector<std::vector<int>> rotations;
-    for (const auto& curr_vehicle : vehicle)
-        rotations.push_back(curr_vehicle.trip_id);
-    if (!evaluation::are_rotations_charge_feasible(trip, terminal, rotations)) {
-        logger.log(LogLevel::Error, "Solution is not charge feasible. Sanity check status: Fail");
-        postprocessing::write_output_data("Error: Final solution is not charge feasible", logger);
-        exit(1);
-    }
-    logger.log(LogLevel::Info, "Solution is charge feasible");
-    logger.log(LogLevel::Info, "Sanity check status: Pass");
-}

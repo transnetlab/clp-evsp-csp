@@ -38,7 +38,7 @@ public:
         // Nothing to do here
     };
 
-    Terminal(int stop_id, int trip_id, bool is_depot, bool is_station)
+    Terminal(std::string stop_id, int trip_id, bool is_depot, bool is_station)
     {
         this->stop_id = stop_id;
         this->trip_id = trip_id;
@@ -64,7 +64,7 @@ public:
     double distance;  // Distance in km
     std::vector<bool> is_compatible;  // Booleans to check if a trip is compatible with another (includes depot 'trips')
     std::vector<double> deadhead_distance;  // Vector of deadhead distances (includes depot 'trips')
-    std::vector<double> idle_time;  // Vector of idle times (includes depot 'trips')
+    std::vector<int> idle_time;  // Vector of idle times (includes depot 'trips')
 
     // Constructor
     Trip()
@@ -110,7 +110,7 @@ public:
         deadhead_cost = 0.0;
     }
 
-    // Desctructor
+    // Destructor
     ~Vehicle()
     {
         trip_id.clear();
@@ -130,7 +130,7 @@ public:
     }
 
     // Print members of the class
-    void log_member_data(Logger& logger)
+    void log_member_data(Logger& logger) const
     {
         logger.log(LogLevel::Info, "Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: "+std::to_string(id)+" "
                 +std::to_string(trip_id.size())+" "+std::to_string(deadhead_cost)+" "+vector_to_string(trip_id));
