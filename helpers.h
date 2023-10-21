@@ -9,6 +9,19 @@
 #include <sstream>
 #include <iomanip>
 
+template <typename T, size_t N>
+std::string array_to_string(const std::array<T, N>& arr) {
+    std::ostringstream ss;
+    ss << "{";
+    for (size_t i = 0; i < N; ++i) {
+        ss << arr[i];
+        if (i < N - 1)
+            ss << ", ";
+    }
+    ss << "}";
+    return ss.str();
+}
+
 namespace preprocessing {
 void read_trip_data(std::string, std::vector<Trip>&, int&, Logger&);
 void read_terminal_data(std::string, std::vector<Terminal>&, int&, Logger&);

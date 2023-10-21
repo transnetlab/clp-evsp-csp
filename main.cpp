@@ -16,8 +16,8 @@
 
 /* TODOs:
  * Phase 1:
- * Double check code for two shifts and charging station swaps
- * Create a function for doing this in a greedy manner shifting more than two trips. Can we do this with exchanges as well?
+ * Review code for two shifts and charging station swaps
+ * Create a function for sequential operators shifting more than two trips? Can we do this with exchanges as well?
  * Code review and clean up for consistency
  * Create a pull request and merge with main
  * Phase 2:

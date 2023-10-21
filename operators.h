@@ -68,9 +68,9 @@ void optimize_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Te
 namespace diversification {
 double exchange_three_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ThreeExchange&);
 void shift_two_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
-double shift_all_vehicle_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, Logger&);
-void perform_3exchange(std::vector<Vehicle>&, ThreeExchange&, Logger&);
-void perform_2shift(std::vector<Vehicle>&, TwoShift&, Logger&);
+double shift_all_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal, int source_vehicle_index, Logger& logger);
+void perform_three_exchange(std::vector<Vehicle>& vehicle, ThreeExchange& three_exchange, Logger& logger);
+void perform_two_shift(std::vector<Vehicle>& vehicle, TwoShift& two_shift, Logger& logger);
 
 void apply_operators(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
 void optimize_rotations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
@@ -82,8 +82,8 @@ double calculate_deadheading_cost(std::vector<Vehicle>&, std::vector<Trip>&);
 double calculate_deadheading_cost(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<int>&);
 void calculate_utilization(std::vector<Vehicle>& vehicle, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
 
-bool is_2exchange_compatible(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
-bool is_3exchange_compatible(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int, int, int);
+bool is_two_exchange_compatible(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, int first_vehicle_index, int second_vehicle_index, int first_vehicle_trip_index, int second_vehicle_trip_index);
+bool is_three_exchange_compatible(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, int first_vehicle_index, int second_vehicle_index, int third_vehicle_index, int first_vehicle_trip_index, int second_vehicle_trip_index, int third_vehicle_trip_index);
 bool is_shift_compatible(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
 
 bool is_charge_adequate_next_trip(std::vector<Trip>&, int, int, bool, bool, int, double&);

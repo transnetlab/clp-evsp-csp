@@ -384,7 +384,20 @@ void postprocessing::write_output_data(std::vector<Vehicle>& vehicle, std::vecto
     // Write the cost of the solution and the problem settings
     double cost = evaluation::calculate_objective(vehicle, trip, terminal, logger);
     summary_file << num_trips << ", " << num_terminals << ", " << vehicle.size() << ", " << num_charging_stations
-                 << ", " << std::fixed << std::setprecision(2) << cost << ", " << runtime << std::endl;
+                 << ", " << std::fixed << std::setprecision(2) << cost << ", " << runtime;
+
+    // Write the constants used in the model
+    summary_file << " (Settings: Vehicle cost: " << VEHICLE_COST << ", " << "Charge station cost: " << CHARGE_LOC_COST
+                 << ", " << "Cost per km: " << COST_PER_KM << ", " << "Max charge level: " << MAX_CHARGE_LEVEL << ", "
+                 << "Min charge level: " << MIN_CHARGE_LEVEL << ", " << "Charge rate: " << CHARGE_RATE << ", "
+                 << "Max energy per min: " << MAX_ENERGY_PER_MIN << ", " << "Energy per km: " << ENERGY_PER_KM << ", "
+                 << "Num price intervals: " << NUM_PRICE_INTERVALS << ", " << "Energy left interval: "
+                 << array_to_string(ENERGY_LEFT_INTERVAL) << ", " << "Energy price: " << array_to_string(ENERGY_PRICE)
+                 << ", " << "Power capacity price: " << POWER_CAPACITY_PRICE << ", " << "Idle time threshold: "
+                 << IDLE_TIME_THRESHOLD << ", " << "Perform three exchanges: " << PERFORM_THREE_EXCHANGES << ", "
+                 << "Perform two shifts: " << PERFORM_TWO_SHIFTS << ", " << "Swap charge stations: "
+                 << SWAP_CHARGE_STATIONS << ", " << "Shift all trips threshold: " << SHIFT_ALL_TRIPS_THRESHOLD << ")" << std::endl;
+
     summary_file.close();
 }
 
