@@ -61,6 +61,10 @@ int main(int argc, char* argv[])
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
     diversification::optimize_rotations(vehicle, trip, terminal, logger);
 
+    // Solve the charge scheduling problem
+    initialization::update_vehicles(trip, terminal, vehicle, logger);
+    lp::solve_csp(trip, terminal, vehicle, logger);
+
     // Find runtime
     logger.log(LogLevel::Info, "Finishing local search...");
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();

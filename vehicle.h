@@ -98,10 +98,17 @@ public:
     std::vector<int> trip_id;  // First and last trips are aliases for depots
     double deadhead_cost;  // Cost of deadheading in the rotation
 
+    // Variables for CSP
+    bool is_charging_required = false;  // Updated to true if charging is required in the rotation
+    std::vector<int> charge_terminal;  // Vector of charging station terminal IDs at different opportunities (repeats are allowed)
+    std::vector<int> start_charge_time;  // Vector of start charge times at different opportunities
+    std::vector<int> end_charge_time;  // Vector of end charge times at different opportunities
+    std::vector<double> energy_till_charge_terminal;  // Total energy required to reach the charging terminal. This has an extra element to account for reaching the depot.
+
     // Constructor
     Vehicle()
     {
-        // Nothing to do here
+
     };
 
     Vehicle(int id)
@@ -129,11 +136,100 @@ public:
         }
     }
 
+    // Clear CSP variables
+    void clear_csp_variables()
+    {
+        is_charging_required = false;
+        charge_terminal.clear();
+        start_charge_time.clear();
+        end_charge_time.clear();
+        energy_till_charge_terminal.clear();
+    }
+
     // Print members of the class
     void log_member_data(Logger& logger) const
     {
         logger.log(LogLevel::Info, "Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: "+std::to_string(id)+" "
                 +std::to_string(trip_id.size())+" "+std::to_string(deadhead_cost)+" "+vector_to_string(trip_id));
+    }
+
+    // Populate CSP related variables under the charge and go policy
+    void populate_csp_variables_cag(const std::vector<Trip>& trip, const std::vector<Terminal>& terminal) {
+        // If trip is empty, throw an error and exit
+        if (trip_id.empty()) {
+            std::cerr << "Error: Trip ID is empty for vehicle while populating CSP data " << id << std::endl;
+            exit(1);
+        }
+
+        int curr_trip, next_trip;  // Current trip and next trip IDs
+        int end_terminal_curr_trip, start_terminal_next_trip; // End terminal of current trip and start terminal of the next trip
+        bool is_trip_end_charge_terminal, is_next_trip_start_charge_terminal;
+        int charge_time_window;  // Idle time during which charging is allowed
+
+        int curr_trip_end_time, next_trip_start_time;  // Current trip end time and next trip start time
+        double cumulative_energy; // Cumulative energy required from the start depot
+
+        // Calculate the energy required for deadheading from the depot and the first trip
+        cumulative_energy =
+                (trip[trip_id[0]-1].deadhead_distance[trip_id[1]-1]+trip[trip_id[1]-1].distance)*ENERGY_PER_KM;
+
+        // Iterate across trips and find the charging station terminals
+        // Depots, start terminal of the first trip and end terminal of last trip are excluded
+        for (int i = 1; i<trip_id.size()-2; ++i) {
+            curr_trip = trip_id[i];
+            next_trip = trip_id[i+1];
+
+            end_terminal_curr_trip = trip[curr_trip-1].end_terminal;  // End terminal id of current trip
+            start_terminal_next_trip = trip[next_trip-1].start_terminal;  // Start terminal id of next trip
+
+            is_curr_trip_end_charge_terminal = terminal[end_terminal_curr_trip-1].is_charge_station;
+            is_next_trip_start_charge_terminal = terminal[start_terminal_next_trip-1].is_charge_station;
+
+            curr_trip_end_time = trip[curr_trip-1].end_time;
+            next_trip_start_time = trip[next_trip-1].start_time;
+
+            charge_time_window = trip[curr_trip-1].idle_time[next_trip-1];
+
+            // n: no charging, e: end terminal, s: start terminal; Charging is preferred at the end terminal
+            char scenario = 'n';
+            if (is_curr_trip_end_charge_terminal)
+                scenario = 'e';
+            else if (is_next_trip_start_charge_terminal)
+                scenario = 's';
+
+            switch (scenario) {
+            case 'e':
+                if (charge_time_window > 0) {
+                    charge_terminal.push_back(end_terminal_curr_trip);
+                    start_charge_time.push_back(curr_trip_end_time);
+                    end_charge_time.push_back(curr_trip_end_time+charge_time_window);
+                    energy_till_charge_terminal.push_back(cumulative_energy);
+                }
+                cumulative_energy += trip[curr_trip-1].deadhead_distance[next_trip-1]*ENERGY_PER_KM;
+                break;
+            case 's':
+                cumulative_energy += trip[curr_trip-1].deadhead_distance[next_trip-1]*ENERGY_PER_KM;
+                if (charge_time_window > 0) {
+                    charge_terminal.push_back(start_terminal_next_trip);
+                    start_charge_time.push_back(next_trip_start_time-charge_time_window);
+                    end_charge_time.push_back(next_trip_start_time);
+                    energy_till_charge_terminal.push_back(cumulative_energy);
+                }
+                break;
+            default:  // No charging location is available at either location
+                cumulative_energy += trip[curr_trip-1].deadhead_distance[next_trip-1]*ENERGY_PER_KM;
+            }
+            cumulative_energy += trip[next_trip-1].distance*ENERGY_PER_KM;
+        }
+
+        // Add distance from the last trip to the depot to cumulative_energy
+        int penultimate_trip = trip_id[trip_id.size()-2];
+        int last_trip = trip_id[trip_id.size()-1];
+        cumulative_energy += trip[penultimate_trip-1].deadhead_distance[last_trip-1]*ENERGY_PER_KM;
+        energy_till_charge_terminal.push_back(cumulative_energy);
+
+        // If cumulative energy is less than the maximum charge level, then charging is not required
+        is_charging_required = (cumulative_energy > MAX_CHARGE_LEVEL);
     }
 };
 

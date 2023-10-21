@@ -1200,9 +1200,10 @@ double evaluation::calculate_deadheading_cost(std::vector<Vehicle>& vehicle, std
         std::vector<int>& vehicle_indices)
 {
     double total_deadheading_cost = 0.0;
-    for (int v = 0; v<vehicle_indices.size(); ++v) {
-        vehicle[vehicle_indices[v]].calculate_deadhead_cost(trip);
-        total_deadheading_cost += vehicle[vehicle_indices[v]].deadhead_cost;
+    for (int i = 0; i<vehicle_indices.size(); ++i) {
+        int v = vehicle_indices[i];
+        vehicle[v].calculate_deadhead_cost(trip);
+        total_deadheading_cost += vehicle[v].deadhead_cost;
     }
     return total_deadheading_cost;
 }  // TODO: Check if we want this version at a rotation basis without reference to the full vehicle class
