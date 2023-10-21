@@ -8,6 +8,7 @@ void preprocessing::read_trip_data(std::string instance, std::vector<Trip>& trip
     std::ifstream input_file("../data/"+instance+"/trip_data.txt");
     if (!input_file.is_open()) {
         logger.log(LogLevel::Error, "Unable to open trip data file");
+        postprocessing::write_output_data("Error: Unable to open trip data file", logger);
         exit(1); // Terminate with error
     }
 
@@ -19,8 +20,8 @@ void preprocessing::read_trip_data(std::string instance, std::vector<Trip>& trip
         ++num_trips;
         std::istringstream line_stream(line);
         line_stream >> temp_trip.id;
-        line_stream >> temp_trip.start_stop;
-        line_stream >> temp_trip.end_stop;
+        line_stream >> temp_trip.start_terminal;
+        line_stream >> temp_trip.end_terminal;
         line_stream >> temp_trip.start_time;
         line_stream >> temp_trip.end_time;
         line_stream >> temp_trip.distance;
@@ -34,6 +35,15 @@ void preprocessing::read_trip_data(std::string instance, std::vector<Trip>& trip
     // Log the data read
     logger.log(LogLevel::Info, "Trip data read successfully");
     logger.log(LogLevel::Info, "Number of trips: "+std::to_string(num_trips));
+
+    // Check if trip IDs are continuous. If not, throw an error and exit
+    for (int i = 0; i<num_trips; ++i) {
+        if (trip[i].id!=i+1) {
+            logger.log(LogLevel::Error, "Trip IDs are not continuous");
+            postprocessing::write_output_data("Error: Trip IDs are not continuous", logger);
+            exit(1);
+        }
+    }
 }
 
 // Function that reads data on terminal stops of routes
@@ -45,6 +55,7 @@ void preprocessing::read_terminal_data(std::string instance, std::vector<Termina
     std::ifstream input_file("../data/"+instance+"/terminal_data.txt");
     if (!input_file.is_open()) {
         logger.log(LogLevel::Error, "Unable to open terminal data file");
+        postprocessing::write_output_data("Error: Unable to open terminal data file", logger);
         exit(1); // Terminate with error
     }
 
@@ -76,37 +87,42 @@ void preprocessing::read_terminal_data(std::string instance, std::vector<Termina
 }
 
 // Function to augment trips with depot stops
-void preprocessing::create_depot_trips(std::vector<Trip>& trip, std::vector<Terminal>& terminal, int& num_trips, Logger& logger)
+void preprocessing::create_depot_trips(std::vector<Trip>& trip, std::vector<Terminal>& terminal, int& num_trips,
+        int& num_augmented_trips,
+        Logger& logger)
 {
     // Augment trips with depot stops
     logger.log(LogLevel::Info, "Augmenting trips with depot stops...");
 
     // Add depot stops to the trip vector and update the terminal members with new trip IDs
-    for (auto& current_terminal : terminal) {
+    num_augmented_trips = num_trips;
+    for (auto& curr_terminal : terminal) {
         // Add a new trip to the trip vector
         Trip temp_trip;
-        temp_trip.id = num_trips+1;
-        temp_trip.start_stop = current_terminal.stop_id;
-        temp_trip.end_stop = current_terminal.stop_id;
+        temp_trip.id = num_augmented_trips+1;
+        temp_trip.start_terminal = curr_terminal.id;
+        temp_trip.end_terminal = curr_terminal.id;
         temp_trip.start_time = 0;
         temp_trip.end_time = 0;
         temp_trip.distance = 0.0;
 
         // Add the new trip to the trip vector
         trip.push_back(temp_trip);
-        ++num_trips;
+        ++num_augmented_trips;
 
         // Double check if trip IDs are consistent
-        if (current_terminal.trip_id!=temp_trip.id) {
+        if (curr_terminal.trip_id!=temp_trip.id) {
             logger.log(LogLevel::Error, "Mismatch in trip IDs for depots found");
+            postprocessing::write_output_data("Error: Mismatch in trip IDs for depots found", logger);
             exit(1);
         }
     }
-    logger.log(LogLevel::Info, "Number of trips after augmentation: "+std::to_string(num_trips));
+    logger.log(LogLevel::Info, "Number of trips after augmentation: "+std::to_string(num_augmented_trips));
 }
 
 // Function to read data on trip pairs
-void preprocessing::read_trip_pair_data(std::string instance, std::vector<Trip>& trip, int& num_trips, Logger& logger)
+void preprocessing::read_trip_pair_data(std::string instance, std::vector<Trip>& trip, int& num_augmented_trips,
+        Logger& logger)
 {
     // Read trip pair data from file
     logger.log(LogLevel::Info, "Reading trip pair data from file...");
@@ -117,34 +133,37 @@ void preprocessing::read_trip_pair_data(std::string instance, std::vector<Trip>&
 
     // Terminate with error if the files cannot be opened
     if (!input_file_compatibility.is_open()) {
-        std::cout << "Unable to open compatibility matrix data";
+        logger.log(LogLevel::Error, "Unable to open compatibility matrix data");
+        postprocessing::write_output_data("Error: Unable to open compatibility matrix data", logger);
         exit(1); // terminate with error
     }
 
     if (!input_file_deadheading.is_open()) {
-        std::cout << "Unable to open deadheading matrix data";
+        logger.log(LogLevel::Error, "Unable to open deadheading matrix data");
+        postprocessing::write_output_data("Error: Unable to open deadheading matrix data", logger);
         exit(1); // terminate with error
     }
 
     if (!input_file_idle_time.is_open()) {
-        std::cout << "Unable to open idle time matrix data";
+        logger.log(LogLevel::Error, "Unable to open idle time matrix data");
+        postprocessing::write_output_data("Error: Unable to open idle time matrix data", logger);
         exit(1); // terminate with error
     }
 
     // Read each line and populate members of the trip class
-    for (auto& current_trip : trip) {
-        current_trip.is_compatible.resize(num_trips, false);
-        current_trip.deadhead_distance.resize(num_trips, 0.0);
-        current_trip.idle_time.resize(num_trips, 0.0);
+    for (auto& curr_trip : trip) {
+        curr_trip.is_compatible.resize(num_augmented_trips, false);
+        curr_trip.deadhead_distance.resize(num_augmented_trips, 0.0);
+        curr_trip.idle_time.resize(num_augmented_trips, 0.0);
     }
 
     int value;  // Temporary variable to store the value read from the file
-    for (auto& current_trip : trip) {
-        for (int i = 0; i<num_trips; ++i) {
+    for (auto& curr_trip : trip) {
+        for (int i = 0; i<num_augmented_trips; ++i) {
             input_file_compatibility >> value;
-            current_trip.is_compatible[i] = (value==1) ? true : false;
-            input_file_deadheading >> current_trip.deadhead_distance[i];
-            input_file_idle_time >> current_trip.idle_time[i];
+            curr_trip.is_compatible[i] = (value==1) ? true : false;
+            input_file_deadheading >> curr_trip.deadhead_distance[i];
+            input_file_idle_time >> curr_trip.idle_time[i];
         }
     }
     input_file_compatibility.close(); // Close the files
@@ -153,15 +172,15 @@ void preprocessing::read_trip_pair_data(std::string instance, std::vector<Trip>&
 
     // Logging trip pair data
     logger.log(LogLevel::Info, "Trip pair data read successfully");
-    logger.log(LogLevel::Debug,
-            "Printing trip pair data (Current trip, Next trip, Is compatible?, Deadhead distance, Idle time)");
-    for (const auto& current_trip : trip) {
-        for (int i = 0; i<num_trips; ++i) {
+    logger.log(LogLevel::Verbose,
+            "Printing compatible trip pair data (Current trip, Next trip, Deadhead distance, Idle time)");
+    for (const auto& curr_trip : trip) {
+        for (int i = 0; i<num_augmented_trips; ++i) {
             // Print the current trip and the next trip as an ordered pair only if the trip pair is compatible
-            if (current_trip.is_compatible[i])
-                logger.log(LogLevel::Debug, std::to_string(current_trip.id)+" "+std::to_string(i+1)+" "
-                        +std::to_string(current_trip.is_compatible[i])+" "+std::to_string(current_trip.deadhead_distance[i])
-                        +" "+std::to_string(current_trip.idle_time[i]));
+            if (curr_trip.is_compatible[i])
+                logger.log(LogLevel::Verbose, std::to_string(curr_trip.id)+" "+std::to_string(i+1)+" "
+                        +std::to_string(curr_trip.deadhead_distance[i])+" "
+                        +std::to_string(curr_trip.idle_time[i]));
         }
     }
 }
@@ -175,7 +194,8 @@ void preprocessing::initialize_vehicle_rotations(std::string instance, std::vect
     // Read the initial vehicle rotations from a file
     std::ifstream input_file("../data/"+instance+"/initial_vehicle_rotations.txt");
     if (!input_file.is_open()) {
-        std::cout << "Unable to open vehicle rotations file";
+        logger.log(LogLevel::Error, "Unable to open vehicle rotations file");
+        postprocessing::write_output_data("Error: Unable to open vehicle rotations file", logger);
         exit(1); // terminate with error
     }
 
@@ -190,7 +210,7 @@ void preprocessing::initialize_vehicle_rotations(std::string instance, std::vect
         line_stream >> temp_vehicle.id;
         // If count does not match the temp_vehicle id issue a warning
         if (count!=temp_vehicle.id)
-            logger.log(LogLevel::Warning, "Found continuity ID issue in initial vehicle rotations");
+            logger.log(LogLevel::Warning, "Found continuity issue in IDs of initial vehicle rotations");
 
         // Populate other trip ID elements of the row
         while (line_stream >> temp_trip_id)
@@ -207,88 +227,177 @@ void preprocessing::initialize_vehicle_rotations(std::string instance, std::vect
     logger.log(LogLevel::Info, "Number of vehicles: "+std::to_string(count));
 }
 
-void preprocessing::log_input_data(std::vector<Trip>& trip, std::vector<Terminal>& terminal,
-        std::vector<Vehicle>& vehicle, Logger& logger)
+// Function to log input data
+void preprocessing::log_input_data(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal,
+        Logger& logger)
 {
-    // Log the set of augmented trips
-    logger.log(LogLevel::Debug, "Printing trip data (Trip ID, Start stop, End stop, Start time, End time, Distance)");
-    for (const auto& current_trip : trip) {
-        logger.log(LogLevel::Debug, std::to_string(current_trip.id)+" "+std::to_string(current_trip.start_stop)+" "+
-                std::to_string(current_trip.end_stop)+" "+std::to_string(current_trip.start_time)+" "+
-                std::to_string(current_trip.end_time)+" "+std::to_string(current_trip.distance));
+    // Log the set of trips including the augmented depot trips
+    logger.log(LogLevel::Debug,
+            "Printing trip data (Trip ID, Start terminal, End terminal, Start time, End time, Distance)");
+    for (const auto& curr_trip : trip) {
+        logger.log(LogLevel::Debug,
+                std::to_string(curr_trip.id)+" "+std::to_string(curr_trip.start_terminal)+" "+
+                        std::to_string(curr_trip.end_terminal)+" "+std::to_string(curr_trip.start_time)+" "+
+                        std::to_string(curr_trip.end_time)+" "+std::to_string(curr_trip.distance));
     }
 
     // Additional debug info that prints members of each terminal
     logger.log(LogLevel::Debug, "Printing terminal data (Stop ID, Trip ID, Is depot?, Is charging station?)");
-    for (const auto& current_terminal : terminal) {
-        logger.log(LogLevel::Debug, std::to_string(current_terminal.id)+" "+std::to_string(current_terminal.stop_id)+" "
-                +std::to_string(current_terminal.trip_id)+" "+
-                std::to_string(current_terminal.is_depot)+" "
-                +std::to_string(current_terminal.is_charge_station));
+    for (const auto& curr_terminal : terminal) {
+        logger.log(LogLevel::Debug,
+                std::to_string(curr_terminal.id)+" "+curr_terminal.stop_id+" "
+                        +std::to_string(curr_terminal.trip_id)+" "+
+                        std::to_string(curr_terminal.is_depot)+" "
+                        +std::to_string(curr_terminal.is_charge_station));
     }
 
     // Debug info for vehicle rotations
     logger.log(LogLevel::Debug, "Printing vehicle rotations (Vehicle ID, Trip IDs)");
     std::string trip_list;
-    for (const auto& current_vehicle : vehicle) {
-        trip_list = "";
-        for (const auto& current_trip : current_vehicle.trip_id)
-            trip_list += std::to_string(current_trip)+" ";
-        logger.log(LogLevel::Debug, std::to_string(current_vehicle.id)+" "+trip_list);
-    }
+    for (const auto& curr_vehicle : vehicle)
+        logger.log(LogLevel::Debug, std::to_string(curr_vehicle.id)+" "+vector_to_string(curr_vehicle.trip_id));
 }
 
 // Function to read inputs to the model including GTFS data and initial rotations
-void preprocessing::initialize_inputs(std::string instance, std::vector<Trip>& trip, std::vector<Terminal>& terminal,
-        std::vector<Vehicle>& vehicle, int& num_trips, int& num_terminals,
-        Logger& logger)
+void preprocessing::initialize_inputs(std::string instance, std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, int& num_trips, int& num_augmented_trips, int& num_terminals, Logger& logger)
 {
+    logger.log(LogLevel::Info, "Initializing inputs to the model...");
+
     // Read input data on trips and stops and initialize bus rotations
     preprocessing::read_trip_data(instance, trip, num_trips, logger);
     preprocessing::read_terminal_data(instance, terminal, num_terminals, logger);
-    preprocessing::create_depot_trips(trip, terminal, num_trips, logger);
+    preprocessing::create_depot_trips(trip, terminal, num_trips, num_augmented_trips, logger);
 
     // Populate compatibility, deadheading, and idle time information of trip pairs
-    preprocessing::read_trip_pair_data(instance, trip, num_trips, logger);
+    preprocessing::read_trip_pair_data(instance, trip, num_augmented_trips, logger);
 
     // Initialize bus rotation and charging stations from the solution to the concurrent scheduler algorithm
     preprocessing::initialize_vehicle_rotations(instance, vehicle, logger);
 
     // Log the input data
-    preprocessing::log_input_data(trip, terminal, vehicle, logger);
+    preprocessing::log_input_data(vehicle, trip, terminal, logger);
+
+    logger.log(LogLevel::Info, "Inputs to the model initialized successfully");
 }
 
-void evaluation::calculate_objective(std::vector<Trip>& trip, std::vector<Terminal>& terminal,
-        std::vector<Vehicle>& vehicle,
-        Logger& logger)
+// Sanity check for solutions: (1) Single bus for each trip (2) All trips are included (3) Charge feasibility
+void postprocessing::check_solution(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, int num_trips, Logger& logger)
 {
-    // Calculate the objective value of the initial solution
-    logger.log(LogLevel::Info, "Calculating the objective value of the solution...");
+    logger.log(LogLevel::Info, "Performing sanity checks on the solution...");
 
-    // Calculate fixed costs of opening charging stations
-    // TODO: This can be calculated faster if we keep track of the stations. Do we need to? Only if this is called often.
-    double location_cost = 0.0;
-    for (const auto& current_terminal : terminal)
-        location_cost += (current_terminal.is_charge_station) ? CHARGE_LOC_COST : 0;
+    // Check if each trip is assigned to exactly one vehicle
+    logger.log(LogLevel::Info, "Checking if each trip is assigned to exactly one vehicle...");
+    std::vector<bool> is_trip_assigned(num_trips, false);
+    int curr_trip;
+    for (const auto& curr_vehicle : vehicle) {
+        for (int i = 1; i<curr_vehicle.trip_id.size()-1; ++i) {
+            curr_trip = curr_vehicle.trip_id[i];
+            if (is_trip_assigned[curr_trip-1]) {
+                logger.log(LogLevel::Error,
+                        "Trip ID"+std::to_string(curr_trip)+" is in more than one vehicle. Sanity check status: Fail");
+                postprocessing::write_output_data(
+                        "Error: Trip ID"+std::to_string(curr_trip)+" is in more than one vehicle", logger);
+                exit(1);
+            }
+            is_trip_assigned[curr_trip-1] = true;
+        }
+    }
+    logger.log(LogLevel::Info, "Each trip is assigned to exactly one vehicle");
 
-    // Calculate fixed cost of bus acquisition based on the number of vehicles
-    double vehicle_acquisition_cost = VEHICLE_COST*vehicle.size();
+    // Check if all trips are assigned to a vehicle
+    logger.log(LogLevel::Info, "Checking if all trips are assigned to a vehicle...");
+    for (int i = 0; i<num_trips; ++i) {
+        if (!is_trip_assigned[i]) {
+            logger.log(LogLevel::Error,
+                    "Trip "+std::to_string(i+1)+" is not assigned to any vehicle. Sanity check status: Fail");
+            postprocessing::write_output_data(
+                    "Error: Trip "+std::to_string(i+1)+" is not assigned to any vehicle in the final solution", logger);
+            exit(1);
+        }
+    }
+    logger.log(LogLevel::Info, "All trips are assigned to a vehicle");
 
-    // Calculate variable cost of deadheading
-    double deadhead_cost = 0.0;
-    for (auto& current_vehicle : vehicle) {
-        current_vehicle.update_num_trips();
-        current_vehicle.calculate_deadhead_cost(trip);
-        // Log the deadheading cost of each trip
-        logger.log(LogLevel::Debug, "Deadheading cost of vehicle "+std::to_string(current_vehicle.id)+": "
-                +std::to_string(current_vehicle.deadhead_cost));
-        deadhead_cost += current_vehicle.deadhead_cost;
+    // Check if the rotations are charge feasible
+    logger.log(LogLevel::Info, "Checking if the solution is charge feasible...");
+    std::vector<std::vector<int>> rotations;
+    for (const auto& curr_vehicle : vehicle)
+        rotations.push_back(curr_vehicle.trip_id);
+    if (!evaluation::are_rotations_charge_feasible(trip, terminal, rotations)) {
+        logger.log(LogLevel::Error, "Solution is not charge feasible. Sanity check status: Fail");
+        postprocessing::write_output_data("Error: Final solution is not charge feasible", logger);
+        exit(1);
+    }
+    logger.log(LogLevel::Info, "Solution is charge feasible");
+    logger.log(LogLevel::Info, "Sanity check status: Pass");
+}
+
+// Function that saves an error message in the summary file if the code does not run to completion
+void postprocessing::write_output_data(std::string message, Logger& logger)
+{
+    // Write the error message
+    std::ofstream summary_file("../output/Summary.txt", std::ios_base::app);
+    if (!summary_file.is_open()) {
+        logger.log(LogLevel::Error, "Unable to open summary file");
+        exit(1); // Terminate with error
     }
 
-    // Calculate the total cost and log the cost components
-    double total_cost = location_cost+vehicle_acquisition_cost+deadhead_cost;
-    logger.log(LogLevel::Info, "Fixed cost of opening charging stations: "+std::to_string(location_cost));
-    logger.log(LogLevel::Info, "Fixed cost of bus acquisition: "+std::to_string(vehicle_acquisition_cost));
-    logger.log(LogLevel::Info, "Cost of deadheading: "+std::to_string(deadhead_cost));
-    logger.log(LogLevel::Info, "Total cost: "+std::to_string(total_cost));
+    summary_file << message << std::endl;
+    summary_file.close();
 }
+
+// Function that saves the instance name
+void postprocessing::write_output_data(std::string instance, std::time_t curr_time, Logger& logger)
+{
+    // Write the error message
+    std::ofstream summary_file("../output/Summary.txt", std::ios_base::app);
+    if (!summary_file.is_open()) {
+        logger.log(LogLevel::Error, "Unable to open summary file");
+        exit(1); // Terminate with error
+    }
+
+    summary_file << instance << ", " << std::put_time(std::localtime(&curr_time), "%b %d %H:%M:%S") << ", ";
+    summary_file.close();
+}
+
+// Function to write the summary outputs to a file
+void postprocessing::write_output_data(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, int num_trips, int num_terminals, double runtime, Logger& logger)
+{
+    // Write the output data to a file
+    logger.log(LogLevel::Info, "Writing output summary to file...");
+    std::ofstream summary_file("../output/Summary.txt", std::ios_base::app);
+    if (!summary_file.is_open()) {
+        logger.log(LogLevel::Error, "Unable to open summary file");
+        exit(1); // Terminate with error
+    }
+
+    // Find the number of charging stations
+    int num_charging_stations = 0;
+    for (const auto& curr_terminal : terminal) {
+        if (curr_terminal.is_charge_station)
+            ++num_charging_stations;
+    }
+
+    // Write the cost of the solution and the problem settings
+    double cost = evaluation::calculate_objective(vehicle, trip, terminal, logger);
+    summary_file << num_trips << ", " << num_terminals << ", " << vehicle.size() << ", " << num_charging_stations
+                 << ", " << std::fixed << std::setprecision(2) << cost << ", " << runtime;
+
+    // Write the constants used in the model
+    /*summary_file << " (Settings: Vehicle cost: " << VEHICLE_COST << ", " << "Charge station cost: " << CHARGE_LOC_COST
+                 << ", " << "Cost per km: " << COST_PER_KM << ", " << "Max charge level: " << MAX_CHARGE_LEVEL << ", "
+                 << "Min charge level: " << MIN_CHARGE_LEVEL << ", " << "Charge rate: " << CHARGE_RATE << ", "
+                 << "Max energy per min: " << MAX_ENERGY_PER_MIN << ", " << "Energy per km: " << ENERGY_PER_KM << ", "
+                 << "Num price intervals: " << NUM_PRICE_INTERVALS << ", " << "Energy left interval: "
+                 << array_to_string(ENERGY_LEFT_INTERVAL) << ", " << "Energy price: " << array_to_string(ENERGY_PRICE)
+                 << ", " << "Power capacity price: " << POWER_CAPACITY_PRICE << ", " << "Idle time threshold: "
+                 << IDLE_TIME_THRESHOLD << ", " << "Perform three exchanges: " << PERFORM_THREE_EXCHANGES << ", "
+                 << "Perform two shifts: " << PERFORM_TWO_SHIFTS << ", " << "Swap charge stations: "
+                 << SWAP_CHARGE_STATIONS << ", " << "Shift all trips threshold: " << SHIFT_ALL_TRIPS_THRESHOLD << ")" << std::endl;*/
+
+    summary_file.close();
+}
+
