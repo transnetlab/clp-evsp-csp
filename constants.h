@@ -19,11 +19,12 @@ constexpr std::array<double, NUM_PRICE_INTERVALS> ENERGY_PRICE = {400.0, 300.0, 
 
 constexpr double POWER_CAPACITY_PRICE = 600;  // in Euros/kW
 
-constexpr int MAX_ITERATIONS = 1;  // Maximum number of iterations for the VNS algorithm
-
 constexpr double INF = 1e12; // Large number to represent infinity
 constexpr double EPSILON = 1e-6; // Small number to compare doubles
 
-constexpr bool PERFORM_DEPOT_EXCHANGES = true;  // Flag to turn on/off depot exchange operators
-
+constexpr double IDLE_TIME_THRESHOLD = 0.0;  // Threshold for idle time in minutes used in opening and closing stations
+constexpr bool PERFORM_DEPOT_EXCHANGES_DIVERSIFICATION = true;  // Flag to turn on/off depot exchange operators
+constexpr bool PERFORM_3EXCHANGES= true;  // Flag to turn on/off 3-exchange operators
+constexpr bool PERFORM_2SHIFTS = false;  // Flag to turn on/off 2-shift operators
+constexpr bool SWAP_CHARGE_STATIONS = true; // Flag to turn on/off charge station swap operators
 #endif //EBUS_VNS_CONSTANTS_H

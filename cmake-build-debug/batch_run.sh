@@ -5,18 +5,18 @@ EXECUTABLE="./ebus_vns"
 
 # Array of command-line arguments
 ARGS=(
-    "Ann_Arbor"
-    "Arlington"
-    "Cascades_East"
-    "CityLink"
     "Cornwall"
-    "Denton_County"
-    "Gold_Coast"
-    "Intercity"
-    "LA_Go"
     "Milton"
     "Mountain_Line"
+    "Ann_Arbor"
+    "LA_Go"
+    "Cascades_East"
+    "Denton_County"
+    "Gold_Coast"
+    "CityLink"
+    "Intercity"
     "SCMTD"
+    "Arlington"
 )
 
 # Loop through the arguments and run the program

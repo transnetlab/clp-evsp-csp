@@ -381,7 +381,7 @@ void postprocessing::write_output_data(std::vector<Vehicle>& vehicle, std::vecto
             ++num_charging_stations;
     }
 
-    // Write the cost of the solution
+    // Write the cost of the solution and the problem settings
     double cost = evaluation::calculate_objective(vehicle, trip, terminal, logger);
     summary_file << num_trips << ", " << num_terminals << ", " << vehicle.size() << ", " << num_charging_stations
                  << ", " << std::fixed << std::setprecision(2) << cost << ", " << runtime << std::endl;

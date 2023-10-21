@@ -16,8 +16,9 @@
 
 /* TODOs:
  * Phase 1:
- * Expand operators to three exchanges and two shifts (from the same vehicle). Use flags to turn this feature on and off
- * Expand location operator to swap an open and closed charging station. Or pass it as a parameter to the function
+ * Double check code for two shifts and charging station swaps
+ * Create a function for doing this in a greedy manner shifting more than two trips. Can we do this with exchanges as well?
+ * Code review and clean up for consistency
  * Create a pull request and merge with main
  * Phase 2:
  * Create a skeleton for charge scheduling
@@ -28,15 +29,13 @@
  * Parallelize operators
  * Check logging outputs for different levels
  * Save compatibility checks in scheduling if it is used repeatedly
- * Create a pull request and merge with main
-*/
-
+ * Create a pull request and merge with main*/
 
 int main(int argc, char* argv[])
 {
     // Read the instance as command line argument. If not provided, use the default instance
     std::string instance;
-    instance = (argc>1) ? argv[1] : "Ann_Arbor";
+    instance = (argc>1) ? argv[1] : "Cornwall";
 
     // Delete any old log files if present and create a new one. Set logging level.
     std::remove(("../output/"+instance+"_log.txt").c_str());
@@ -56,11 +55,11 @@ int main(int argc, char* argv[])
     preprocessing::initialize_inputs(instance, vehicle, trip, terminal, num_trips, num_augmented_trips, num_terminals,
             logger);
 
-    // Local search for scheduling
-    scheduling::optimize_rotations(vehicle, trip, terminal, logger);
-
-    // Local search for charging locations
+    // Local search for charging locations which also includes scheduling operators
     locations::optimize_stations(vehicle, trip, terminal, logger);
+
+    // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
+    diversification::optimize_rotations(vehicle, trip, terminal, logger);
 
     // Find runtime
     logger.log(LogLevel::Info, "Finishing local search...");
