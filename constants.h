@@ -23,9 +23,9 @@ constexpr double INF = 1e12; // Large number to represent infinity
 constexpr double EPSILON = 1e-6; // Small number to compare doubles
 
 constexpr double IDLE_TIME_THRESHOLD = 0.0;  // Threshold for idle time in minutes used in opening and closing stations
-constexpr bool PERFORM_THREE_EXCHANGES= true;  // Flag to turn on/off 3-exchange operators
+constexpr bool PERFORM_THREE_EXCHANGES= false;  // Flag to turn on/off 3-exchange operators
 constexpr bool PERFORM_TWO_SHIFTS = false;  // Flag to turn on/off 2-shift operators
-constexpr bool SWAP_CHARGE_STATIONS = true; // Flag to turn on/off charge station swap operators
+constexpr bool SWAP_CHARGE_STATIONS = false; // Flag to turn on/off charge station swap operators
 constexpr int SHIFT_ALL_TRIPS_THRESHOLD = 6; // Threshold for number of trips in a rotation to perform shift all trips
 
 #endif //EBUS_VNS_CONSTANTS_H

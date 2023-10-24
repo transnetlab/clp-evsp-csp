@@ -163,7 +163,7 @@ public:
 
         int curr_trip, next_trip;  // Current trip and next trip IDs
         int end_terminal_curr_trip, start_terminal_next_trip; // End terminal of current trip and start terminal of the next trip
-        bool is_trip_end_charge_terminal, is_next_trip_start_charge_terminal;
+        bool is_curr_trip_end_charge_terminal, is_next_trip_start_charge_terminal;
         int charge_time_window;  // Idle time during which charging is allowed
 
         int curr_trip_end_time, next_trip_start_time;  // Current trip end time and next trip start time

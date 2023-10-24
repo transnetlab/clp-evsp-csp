@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 {
     // Read the instance as command line argument. If not provided, use the default instance
     std::string instance;
-    instance = (argc>1) ? argv[1] : "Cornwall";
+    instance = (argc>1) ? argv[1] : "Ann_Arbor";
 
     // Delete any old log files if present and create a new one. Set logging level.
     std::remove(("../output/"+instance+"_log.txt").c_str());
@@ -56,14 +56,14 @@ int main(int argc, char* argv[])
             logger);
 
     // Local search for charging locations which also includes scheduling operators
-    locations::optimize_stations(vehicle, trip, terminal, logger);
+    // locations::optimize_stations(vehicle, trip, terminal, logger);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
-    diversification::optimize_rotations(vehicle, trip, terminal, logger);
+    // diversification::optimize_rotations(vehicle, trip, terminal, logger);
 
     // Solve the charge scheduling problem
     initialization::update_vehicles(trip, terminal, vehicle, logger);
-    lp::solve_csp(trip, terminal, vehicle, logger);
+    csp::solve_uniform_model(vehicle, terminal, logger);
 
     // Find runtime
     logger.log(LogLevel::Info, "Finishing local search...");
