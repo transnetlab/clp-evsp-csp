@@ -29,7 +29,8 @@
  * Parallelize operators
  * Check logging outputs for different levels
  * Save compatibility checks in scheduling if it is used repeatedly
- * Create a pull request and merge with main*/
+ * Create a pull request and merge with main
+ * Make logger global?*/
 
 int main(int argc, char* argv[])
 {
@@ -56,14 +57,13 @@ int main(int argc, char* argv[])
             logger);
 
     // Local search for charging locations which also includes scheduling operators
-    // locations::optimize_stations(vehicle, trip, terminal, logger);
+    locations::optimize_stations(vehicle, trip, terminal, logger);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
     // diversification::optimize_rotations(vehicle, trip, terminal, logger);
 
     // Solve the charge scheduling problem
-    initialization::update_vehicles(trip, terminal, vehicle, logger);
-    csp::solve_uniform_model(vehicle, terminal, logger);
+    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, logger);
 
     // Find runtime
     logger.log(LogLevel::Info, "Finishing local search...");
@@ -79,5 +79,5 @@ int main(int argc, char* argv[])
 
     // Postprocessing
     postprocessing::check_solution(vehicle, trip, terminal, num_trips, logger);
-    postprocessing::write_output_data(vehicle, trip, terminal, num_trips, num_terminals, runtime, logger);
+    postprocessing::write_output_data(vehicle, trip, terminal, csp_cost, num_trips, num_terminals, runtime, logger);
 }

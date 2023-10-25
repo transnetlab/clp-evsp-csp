@@ -141,7 +141,7 @@ public:
     {
         is_charging_required = false;
         charge_terminal.clear();
-        start_charge_time.clear();
+        start_charge_time.clear();  //TODO: Check if this starts at 0, i.e., are these indices?
         end_charge_time.clear();
         energy_till_charge_terminal.clear();
     }

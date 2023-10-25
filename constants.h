@@ -2,6 +2,7 @@
 #define EBUS_VNS_CONSTANTS_H
 
 #include <array>
+#include <string>
 
 constexpr double VEHICLE_COST = 350000.0; // Acquisition cost of a bus
 constexpr double CHARGE_LOC_COST = 200000.0;  // Cost of opening one charging location
@@ -16,6 +17,7 @@ constexpr double ENERGY_PER_KM = 1.5;  // Energy consumed in kWh/km
 constexpr int NUM_PRICE_INTERVALS = 5;  // Number of energy price points
 constexpr std::array<int, NUM_PRICE_INTERVALS + 1> ENERGY_LEFT_INTERVAL = {0, 540, 840, 960, 1260, 1440};  // TODO: Expand to multi-day operations
 constexpr std::array<double, NUM_PRICE_INTERVALS> ENERGY_PRICE = {400.0, 300.0, 400.0, 1120.0, 400.0};
+constexpr int NUM_TIME_STEPS = 1440;  // This is currently used in defining variables in the split CSP
 
 constexpr double POWER_CAPACITY_PRICE = 600;  // in Euros/kW
 
@@ -27,5 +29,12 @@ constexpr bool PERFORM_THREE_EXCHANGES= false;  // Flag to turn on/off 3-exchang
 constexpr bool PERFORM_TWO_SHIFTS = false;  // Flag to turn on/off 2-shift operators
 constexpr bool SWAP_CHARGE_STATIONS = false; // Flag to turn on/off charge station swap operators
 constexpr int SHIFT_ALL_TRIPS_THRESHOLD = 6; // Threshold for number of trips in a rotation to perform shift all trips
+
+constexpr bool SOLVE_CSP_JOINTLY = true;  // Flag to solve the CSP jointly or separately
+enum class SolutionType : int {
+  Split,
+  Uniform
+};
+constexpr SolutionType CSP_SOLUTION_TYPE = SolutionType::Split; // Solution type for the CSP
 
 #endif //EBUS_VNS_CONSTANTS_H

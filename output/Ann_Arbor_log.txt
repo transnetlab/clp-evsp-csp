@@ -1,128 +1,207 @@
-[2023-10-24 21:58:35] INFO: Starting local search for instance Ann_Arbor...
-[2023-10-24 21:58:35] INFO: Initializing inputs to the model...
-[2023-10-24 21:58:35] INFO: Reading trip data from file...
-[2023-10-24 21:58:35] INFO: Trip data read successfully
-[2023-10-24 21:58:35] INFO: Number of trips: 858
-[2023-10-24 21:58:35] INFO: Reading terminal data from file...
-[2023-10-24 21:58:35] INFO: Terminal data read successfully
-[2023-10-24 21:58:35] INFO: Number of terminals: 29
-[2023-10-24 21:58:35] INFO: Augmenting trips with depot stops...
-[2023-10-24 21:58:35] INFO: Number of trips after augmentation: 887
-[2023-10-24 21:58:35] INFO: Reading trip pair data from file...
-[2023-10-24 21:58:35] INFO: Trip pair data read successfully
-[2023-10-24 21:58:35] INFO: Initializing vehicle rotations from the concurrent scheduler solution...
-[2023-10-24 21:58:35] INFO: Vehicle rotations read successfully
-[2023-10-24 21:58:35] INFO: Number of vehicles: 57
-[2023-10-24 21:58:35] INFO: Inputs to the model initialized successfully
-[2023-10-24 21:58:35] INFO: Updating CSP variables for all vehicles
-[2023-10-24 21:58:35] INFO: CSP variables updated for all vehicles
-[2023-10-24 21:58:35] INFO: Number of vehicles: 57
-[2023-10-24 21:58:35] INFO: Number of vehicles requiring charging: 40
-[2023-10-24 21:58:35] INFO: Solving the CSP problem
-[2023-10-24 21:58:35] INFO: Vehicles requiring charging: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 
-[2023-10-24 21:58:35] INFO: Terminals with charging: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 15 17 19 20 21 22 24 25 26 27 28 
-[2023-10-24 21:58:35] INFO: Creating decision variables
-[2023-10-24 21:58:35] INFO: Adding constraints
-[2023-10-24 21:58:36] INFO: Adding objective function
-[2023-10-24 21:58:36] INFO: Solving the LP
-[2023-10-24 21:58:36] INFO: Solution status = 2
-[2023-10-24 21:58:36] INFO: Solution value = 4814395.532986
-[2023-10-24 21:58:36] INFO: Finishing local search...
-[2023-10-24 21:58:36] INFO: Local search completed in 1.056000 seconds.
-[2023-10-24 21:58:36] INFO: Utilization statistics: (Terminal ID: Is charge station, Current idle time, Potential idle time)
-[2023-10-24 21:58:36] INFO: Terminal 1: 1 1758 0
-[2023-10-24 21:58:36] INFO: Terminal 2: 1 160 0
-[2023-10-24 21:58:36] INFO: Terminal 3: 1 300 0
-[2023-10-24 21:58:36] INFO: Terminal 4: 1 262 0
-[2023-10-24 21:58:36] INFO: Terminal 5: 1 207 0
-[2023-10-24 21:58:36] INFO: Terminal 6: 1 394 0
-[2023-10-24 21:58:36] INFO: Terminal 7: 1 7 0
-[2023-10-24 21:58:36] INFO: Terminal 8: 1 0 0
-[2023-10-24 21:58:36] INFO: Terminal 9: 1 22 0
-[2023-10-24 21:58:36] INFO: Terminal 10: 1 0 0
-[2023-10-24 21:58:36] INFO: Terminal 11: 1 7 0
-[2023-10-24 21:58:36] INFO: Terminal 12: 1 0 0
-[2023-10-24 21:58:36] INFO: Terminal 13: 1 0 0
-[2023-10-24 21:58:36] INFO: Terminal 14: 1 260 0
-[2023-10-24 21:58:36] INFO: Terminal 15: 0 0 1765
-[2023-10-24 21:58:36] INFO: Terminal 16: 1 62 0
-[2023-10-24 21:58:36] INFO: Terminal 17: 0 0 0
-[2023-10-24 21:58:36] INFO: Terminal 18: 1 126 0
-[2023-10-24 21:58:36] INFO: Terminal 19: 0 0 0
-[2023-10-24 21:58:36] INFO: Terminal 20: 1 121 0
-[2023-10-24 21:58:36] INFO: Terminal 21: 1 33 0
-[2023-10-24 21:58:36] INFO: Terminal 22: 1 47 0
-[2023-10-24 21:58:36] INFO: Terminal 23: 1 42 0
-[2023-10-24 21:58:36] INFO: Terminal 24: 0 0 147
-[2023-10-24 21:58:36] INFO: Terminal 25: 1 59 0
-[2023-10-24 21:58:36] INFO: Terminal 26: 1 107 0
-[2023-10-24 21:58:36] INFO: Terminal 27: 1 438 0
-[2023-10-24 21:58:36] INFO: Terminal 28: 1 46 0
-[2023-10-24 21:58:36] INFO: Terminal 29: 1 40 0
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 1 22 0.000000 860 124 661 739 645 396 830 194 565 665 301 2 512 659 662 527 740 71 113 176 157 860 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 2 23 0.000000 860 532 121 473 72 112 387 253 765 445 738 5 225 203 392 251 24 804 391 167 115 394 860 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 3 23 0.000000 860 218 736 328 465 794 240 462 634 169 750 55 476 703 467 424 271 280 139 584 206 70 860 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 4 21 0.000000 860 701 493 460 184 510 808 671 304 408 54 152 817 774 97 325 16 581 340 854 860 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 5 20 0.000000 860 744 587 84 616 471 228 647 691 745 682 439 550 154 223 503 237 526 232 860 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 6 22 0.000000 860 594 789 518 433 741 427 27 40 415 306 829 501 48 183 317 411 838 90 511 482 860 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 7 22 0.000000 860 165 36 602 755 814 166 277 469 590 314 836 190 557 761 284 841 140 386 151 242 860 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 8 18 0.000000 860 506 775 858 103 707 839 615 219 470 735 209 710 845 208 255 182 860 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 9 27 0.000000 859 613 443 592 825 561 818 831 652 716 110 128 14 17 609 181 582 799 694 295 593 722 248 196 417 837 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 10 23 0.000000 859 596 843 324 120 421 359 559 528 504 672 514 451 649 461 318 160 517 234 572 341 486 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 11 28 0.000000 859 732 89 356 805 516 479 521 297 669 499 633 677 370 437 101 78 698 574 453 289 252 637 771 700 696 777 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 12 27 0.000000 859 832 375 13 651 689 658 809 227 334 346 178 531 670 492 98 351 390 86 786 138 355 636 498 748 395 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 13 23 0.000000 859 729 311 323 643 81 835 803 446 513 481 434 457 43 254 308 58 630 646 170 737 690 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 14 19 0.000000 861 143 172 272 220 612 158 570 1 4 663 6 523 458 239 141 520 82 861 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 15 18 0.000000 861 796 631 444 310 800 249 338 192 315 641 294 425 624 601 77 117 861 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 16 23 0.000000 859 302 840 68 783 63 797 76 281 477 718 464 214 224 95 393 261 416 380 383 756 260 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 17 22 0.000000 861 236 268 472 655 382 257 753 685 568 262 632 145 573 853 720 211 428 116 155 250 861 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 18 22 0.000000 861 764 610 73 360 199 235 319 146 187 788 496 321 352 305 785 92 94 365 589 586 861 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 19 22 0.000000 859 400 793 544 695 534 714 42 483 507 676 93 353 371 354 422 827 668 438 562 730 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 20 24 0.000000 859 142 608 509 812 705 575 653 436 717 80 577 133 490 727 811 23 45 9 660 475 537 810 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 21 26 0.000000 859 551 599 378 195 171 623 618 597 683 420 231 556 629 554 38 241 524 288 150 456 686 197 350 770 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 22 21 0.000000 860 790 191 598 567 34 585 576 654 834 74 857 426 642 243 123 107 173 226 515 860 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 23 21 0.000000 860 282 743 802 782 580 505 757 719 485 358 32 326 384 369 213 364 500 591 758 860 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 24 20 0.000000 860 309 33 822 687 263 11 246 419 202 734 667 119 530 333 448 8 816 414 860 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 25 17 0.000000 860 440 245 91 362 28 363 708 134 704 83 447 247 497 552 161 860 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 26 20 0.000000 861 766 26 215 49 779 278 177 815 276 129 405 57 723 819 762 749 100 726 861 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 27 21 0.000000 859 488 403 846 296 628 603 307 10 313 193 721 397 238 546 806 851 442 725 625 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 28 18 0.000000 859 553 349 374 547 136 122 781 650 494 699 824 179 541 270 264 606 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 29 19 0.000000 859 31 752 345 607 640 600 188 186 244 217 67 230 666 298 555 283 657 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 30 21 0.000000 859 588 329 275 344 418 200 50 549 454 320 373 664 731 847 267 468 303 59 849 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 31 19 0.000000 859 37 487 347 52 728 545 125 767 366 221 759 626 674 3 144 137 147 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 32 23 0.000000 859 180 174 540 484 620 784 410 792 12 201 212 342 258 780 357 828 742 795 855 207 175 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 33 17 0.000000 859 132 372 681 15 385 617 153 605 229 88 96 558 680 407 697 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 34 22 0.000000 859 109 571 578 274 564 401 452 222 291 20 316 312 398 332 164 64 233 205 273 130 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 35 20 0.000000 860 18 299 406 87 533 159 702 189 204 56 293 339 712 210 614 754 435 331 860 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 36 16 0.000000 861 791 579 441 429 163 60 377 539 688 62 412 673 474 583 861 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 37 18 0.000000 861 330 105 335 348 538 773 368 216 778 844 381 656 39 823 807 548 861 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 38 18 0.000000 861 724 66 627 46 102 148 850 266 336 287 747 768 343 760 85 706 861 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 39 16 0.000000 861 508 265 127 399 114 25 563 709 856 842 35 379 327 459 861 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 40 16 0.000000 859 131 733 135 833 772 108 713 286 65 569 463 388 149 279 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 41 13 0.000000 859 478 430 198 489 639 79 763 300 185 376 292 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 42 11 0.000000 861 409 432 852 693 449 466 621 611 813 861 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 43 12 0.000000 859 692 389 820 525 413 751 367 168 431 19 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 44 8 0.000000 861 769 675 798 502 622 480 861 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 45 11 0.000000 861 337 111 29 21 536 529 285 715 543 861 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 46 8 0.000000 861 404 269 259 678 566 801 861 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 47 9 0.000000 859 47 826 402 746 455 22 560 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 48 8 0.000000 859 30 711 595 648 53 491 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 49 10 0.000000 859 51 156 162 41 7 75 684 821 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 50 6 0.000000 859 848 118 423 535 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 51 7 0.000000 861 322 104 619 126 61 861 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 52 6 0.000000 859 644 450 604 776 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 53 6 0.000000 859 522 495 106 679 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 54 6 0.000000 859 542 787 638 635 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 55 5 0.000000 859 69 290 361 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 56 5 0.000000 859 519 99 44 859 
-[2023-10-24 21:58:36] INFO: Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: 57 3 0.000000 859 256 859 
-[2023-10-24 21:58:36] INFO: Performing sanity checks on the solution...
-[2023-10-24 21:58:36] INFO: Checking if each trip is assigned to exactly one vehicle...
-[2023-10-24 21:58:36] INFO: Each trip is assigned to exactly one vehicle
-[2023-10-24 21:58:36] INFO: Checking if all trips are assigned to a vehicle...
-[2023-10-24 21:58:36] INFO: All trips are assigned to a vehicle
-[2023-10-24 21:58:36] INFO: Checking if the solution is charge feasible...
-[2023-10-24 21:58:36] INFO: Solution is charge feasible
-[2023-10-24 21:58:36] INFO: Sanity check status: Pass
-[2023-10-24 21:58:36] INFO: Writing output summary to file...
-[2023-10-24 21:58:36] INFO: Total cost: 27088029.898400
+[2023-10-26 01:45:03] INFO: Starting local search for instance Ann_Arbor...
+[2023-10-26 01:45:03] INFO: Initializing inputs to the model...
+[2023-10-26 01:45:03] INFO: Reading trip data from file...
+[2023-10-26 01:45:03] INFO: Trip data read successfully
+[2023-10-26 01:45:03] INFO: Number of trips: 858
+[2023-10-26 01:45:03] INFO: Reading terminal data from file...
+[2023-10-26 01:45:03] INFO: Terminal data read successfully
+[2023-10-26 01:45:03] INFO: Number of terminals: 29
+[2023-10-26 01:45:03] INFO: Augmenting trips with depot stops...
+[2023-10-26 01:45:03] INFO: Number of trips after augmentation: 887
+[2023-10-26 01:45:03] INFO: Reading trip pair data from file...
+[2023-10-26 01:45:03] INFO: Trip pair data read successfully
+[2023-10-26 01:45:04] INFO: Initializing vehicle rotations from the concurrent scheduler solution...
+[2023-10-26 01:45:04] INFO: Vehicle rotations read successfully
+[2023-10-26 01:45:04] INFO: Number of vehicles: 57
+[2023-10-26 01:45:04] INFO: Inputs to the model initialized successfully
+[2023-10-26 01:45:04] INFO: Optimizing locations...
+[2023-10-26 01:45:04] INFO: Checking if charge stations with zero utilization can be closed...
+[2023-10-26 01:45:04] INFO: Utilization statistics: (Terminal ID: Is charge station, Current idle time, Potential idle time)
+[2023-10-26 01:45:04] INFO: Terminal 1: 1 1758 0
+[2023-10-26 01:45:04] INFO: Terminal 2: 1 160 0
+[2023-10-26 01:45:04] INFO: Terminal 3: 1 300 0
+[2023-10-26 01:45:04] INFO: Terminal 4: 1 262 0
+[2023-10-26 01:45:04] INFO: Terminal 5: 1 207 0
+[2023-10-26 01:45:04] INFO: Terminal 6: 1 394 0
+[2023-10-26 01:45:04] INFO: Terminal 7: 1 7 0
+[2023-10-26 01:45:04] INFO: Terminal 8: 1 0 0
+[2023-10-26 01:45:04] INFO: Terminal 9: 1 22 0
+[2023-10-26 01:45:04] INFO: Terminal 10: 1 0 0
+[2023-10-26 01:45:04] INFO: Terminal 11: 1 7 0
+[2023-10-26 01:45:04] INFO: Terminal 12: 1 0 0
+[2023-10-26 01:45:04] INFO: Terminal 13: 1 0 0
+[2023-10-26 01:45:04] INFO: Terminal 14: 1 260 0
+[2023-10-26 01:45:04] INFO: Terminal 15: 0 0 1765
+[2023-10-26 01:45:04] INFO: Terminal 16: 1 62 0
+[2023-10-26 01:45:04] INFO: Terminal 17: 0 0 0
+[2023-10-26 01:45:04] INFO: Terminal 18: 1 126 0
+[2023-10-26 01:45:04] INFO: Terminal 19: 0 0 0
+[2023-10-26 01:45:04] INFO: Terminal 20: 1 121 0
+[2023-10-26 01:45:04] INFO: Terminal 21: 1 33 0
+[2023-10-26 01:45:04] INFO: Terminal 22: 1 47 0
+[2023-10-26 01:45:04] INFO: Terminal 23: 1 42 0
+[2023-10-26 01:45:04] INFO: Terminal 24: 0 0 147
+[2023-10-26 01:45:04] INFO: Terminal 25: 1 59 0
+[2023-10-26 01:45:04] INFO: Terminal 26: 1 107 0
+[2023-10-26 01:45:04] INFO: Terminal 27: 1 438 0
+[2023-10-26 01:45:04] INFO: Terminal 28: 1 46 0
+[2023-10-26 01:45:04] INFO: Terminal 29: 1 40 0
+[2023-10-26 01:45:04] INFO: Number of charge stations closed: 4
+[2023-10-26 01:45:04] INFO: Utilization statistics: (Terminal ID: Is charge station, Current idle time, Potential idle time)
+[2023-10-26 01:45:04] INFO: Terminal 1: 1 1758 0
+[2023-10-26 01:45:04] INFO: Terminal 2: 1 160 0
+[2023-10-26 01:45:04] INFO: Terminal 3: 1 300 0
+[2023-10-26 01:45:04] INFO: Terminal 4: 1 262 0
+[2023-10-26 01:45:04] INFO: Terminal 5: 1 207 0
+[2023-10-26 01:45:04] INFO: Terminal 6: 1 394 0
+[2023-10-26 01:45:04] INFO: Terminal 7: 1 7 0
+[2023-10-26 01:45:04] INFO: Terminal 8: 0 0 0
+[2023-10-26 01:45:04] INFO: Terminal 9: 1 22 0
+[2023-10-26 01:45:04] INFO: Terminal 10: 0 0 0
+[2023-10-26 01:45:04] INFO: Terminal 11: 1 7 0
+[2023-10-26 01:45:04] INFO: Terminal 12: 0 0 0
+[2023-10-26 01:45:04] INFO: Terminal 13: 0 0 0
+[2023-10-26 01:45:04] INFO: Terminal 14: 1 260 0
+[2023-10-26 01:45:04] INFO: Terminal 15: 0 0 1765
+[2023-10-26 01:45:04] INFO: Terminal 16: 1 62 0
+[2023-10-26 01:45:04] INFO: Terminal 17: 0 0 0
+[2023-10-26 01:45:04] INFO: Terminal 18: 1 126 0
+[2023-10-26 01:45:04] INFO: Terminal 19: 0 0 0
+[2023-10-26 01:45:04] INFO: Terminal 20: 1 121 0
+[2023-10-26 01:45:04] INFO: Terminal 21: 1 33 0
+[2023-10-26 01:45:04] INFO: Terminal 22: 1 47 0
+[2023-10-26 01:45:04] INFO: Terminal 23: 1 42 0
+[2023-10-26 01:45:04] INFO: Terminal 24: 0 0 147
+[2023-10-26 01:45:04] INFO: Terminal 25: 1 59 0
+[2023-10-26 01:45:04] INFO: Terminal 26: 1 107 0
+[2023-10-26 01:45:04] INFO: Terminal 27: 1 438 0
+[2023-10-26 01:45:04] INFO: Terminal 28: 1 46 0
+[2023-10-26 01:45:04] INFO: Terminal 29: 1 40 0
+[2023-10-26 01:45:04] INFO: Sorted terminals to be opened: 15 24 
+[2023-10-26 01:45:04] INFO: Checking for improvement from opening charge station at terminal ID 15
+[2023-10-26 01:45:04] INFO: Before opening the charging station...
+[2023-10-26 01:45:04] INFO: Total cost: 26288029.898400
+[2023-10-26 01:45:04] INFO: After opening the charging station...
+[2023-10-26 01:45:04] INFO: Applying local search operators to adjust scheduling...
+[2023-10-26 01:45:04] INFO: Optimizing rotations...
+[2023-10-26 01:45:04] INFO: Total cost: 26488029.898400
+[2023-10-26 01:45:04] INFO: Finding the best improvement operator...
+[2023-10-26 01:46:27] INFO: Savings from exchange operator: 157984.941600
+[2023-10-26 01:46:27] INFO: Savings from shift operator: 364038.809600
+[2023-10-26 01:46:27] INFO: Performing shift...
+[2023-10-26 01:46:27] INFO: Total cost: 26119975.888800
+[2023-10-26 01:46:27] INFO: Finding the best improvement operator...
+[2023-10-26 01:47:39] INFO: Savings from exchange operator: 157984.941600
+[2023-10-26 01:47:39] INFO: Savings from shift operator: 127864.418400
+[2023-10-26 01:47:39] INFO: Performing exchange...
+[2023-10-26 01:47:39] INFO: Total cost: 26099830.867200
+[2023-10-26 01:47:39] INFO: Finding the best improvement operator...
+[2023-10-26 01:48:52] INFO: Savings from exchange operator: 92194.522400
+[2023-10-26 01:48:52] INFO: Savings from shift operator: 127864.418400
+[2023-10-26 01:48:52] INFO: Performing shift...
+[2023-10-26 01:48:52] INFO: Total cost: 26078733.808800
+[2023-10-26 01:48:52] INFO: Finding the best improvement operator...
+[2023-10-26 01:50:05] INFO: Savings from exchange operator: 90313.005376
+[2023-10-26 01:50:05] INFO: Savings from shift operator: 114730.021029
+[2023-10-26 01:50:05] INFO: Performing shift...
+[2023-10-26 01:50:05] INFO: Total cost: 26060679.799200
+[2023-10-26 01:50:05] INFO: Finding the best improvement operator...
+[2023-10-26 01:51:17] INFO: Savings from exchange operator: 86002.862400
+[2023-10-26 01:51:17] INFO: Savings from shift operator: 107701.927855
+[2023-10-26 01:51:17] INFO: Performing shift...
+[2023-10-26 01:51:17] INFO: Total cost: 26036364.316800
+[2023-10-26 01:51:17] INFO: Finding the best improvement operator...
+[2023-10-26 01:52:33] INFO: Savings from exchange operator: 92074.769497
+[2023-10-26 01:52:33] INFO: Savings from shift operator: 101743.432800
+[2023-10-26 01:52:33] INFO: Performing shift...
+[2023-10-26 01:52:33] INFO: Total cost: 25988957.124000
+[2023-10-26 01:52:33] INFO: Finding the best improvement operator...
+[2023-10-26 01:53:48] INFO: Savings from exchange operator: 92074.769497
+[2023-10-26 01:53:48] INFO: Savings from shift operator: 94392.712800
+[2023-10-26 01:53:48] INFO: Performing shift...
+[2023-10-26 01:53:48] INFO: Total cost: 25941549.931200
+[2023-10-26 01:53:48] INFO: Finding the best improvement operator...
+[2023-10-26 01:55:04] INFO: Savings from exchange operator: 92074.769497
+[2023-10-26 01:55:04] INFO: Savings from shift operator: 93197.623200
+[2023-10-26 01:55:04] INFO: Performing shift...
+[2023-10-26 01:55:04] INFO: Total cost: 25920290.988000
+[2023-10-26 01:55:04] INFO: Finding the best improvement operator...
+[2023-10-26 01:56:20] INFO: Savings from exchange operator: 93303.549600
+[2023-10-26 01:56:20] INFO: Savings from shift operator: 89490.976800
+[2023-10-26 01:56:20] INFO: Performing exchange...
+[2023-10-26 01:56:20] INFO: Total cost: 25895541.885600
+[2023-10-26 01:56:20] INFO: Finding the best improvement operator...
+[2023-10-26 01:57:36] INFO: Savings from exchange operator: 73934.671200
+[2023-10-26 01:57:36] INFO: Savings from shift operator: 88711.665600
+[2023-10-26 01:57:36] INFO: Performing shift...
+[2023-10-26 01:57:36] INFO: Total cost: 25874440.972800
+[2023-10-26 01:57:36] INFO: Finding the best improvement operator...
+[2023-10-26 01:58:53] INFO: Savings from exchange operator: 73934.671200
+[2023-10-26 01:58:53] INFO: Savings from shift operator: 87465.473287
+[2023-10-26 01:58:53] INFO: Performing shift...
+[2023-10-26 01:58:53] INFO: Total cost: 25840533.816000
+[2023-10-26 01:58:53] INFO: Finding the best improvement operator...
+[2023-10-26 02:00:11] INFO: Savings from exchange operator: 73934.671200
+[2023-10-26 02:00:11] INFO: Savings from shift operator: 76735.635757
+[2023-10-26 02:00:11] INFO: Performing shift...
+[2023-10-26 02:00:11] INFO: Total cost: 25820182.584000
+[2023-10-26 02:00:11] INFO: Finding the best improvement operator...
+[2023-10-26 02:01:29] INFO: Savings from exchange operator: 73934.671200
+[2023-10-26 02:01:29] INFO: Savings from shift operator: 74513.930400
+[2023-10-26 02:01:29] INFO: Performing shift...
+[2023-10-26 02:01:29] INFO: Total cost: 25802535.213600
+[2023-10-26 02:01:29] INFO: Finding the best improvement operator...
+[2023-10-26 02:02:48] INFO: Savings from exchange operator: 73934.671200
+[2023-10-26 02:02:48] INFO: Savings from shift operator: 71952.356733
+[2023-10-26 02:02:48] INFO: Performing exchange...
+[2023-10-26 02:02:48] INFO: Total cost: 25757687.342400
+[2023-10-26 02:02:48] INFO: Finding the best improvement operator...
+[2023-10-26 02:04:10] INFO: Savings from exchange operator: 68972.356800
+[2023-10-26 02:04:10] INFO: Savings from shift operator: 71952.356733
+[2023-10-26 02:04:10] INFO: Performing shift...
+[2023-10-26 02:04:10] INFO: Total cost: 25786209.902400
+[2023-10-26 02:04:10] INFO: Total cost: 25786209.902400
+[2023-10-26 02:04:10] INFO: Objective improved by 501819.996000
+[2023-10-26 02:04:10] INFO: Checking for improvement from opening charge station at terminal ID 24
+[2023-10-26 02:04:10] INFO: Before opening the charging station...
+[2023-10-26 02:04:10] INFO: Total cost: 25786209.902400
+[2023-10-26 02:04:10] INFO: After opening the charging station...
+[2023-10-26 02:04:10] INFO: Applying local search operators to adjust scheduling...
+[2023-10-26 02:04:10] INFO: Optimizing rotations...
+[2023-10-26 02:04:10] INFO: Total cost: 25986209.902400
+[2023-10-26 02:04:10] INFO: Finding the best improvement operator...
+[2023-10-26 02:05:29] INFO: Savings from exchange operator: 63498.301723
+[2023-10-26 02:05:29] INFO: Savings from shift operator: 61905.711777
+[2023-10-26 02:05:29] INFO: Performing exchange...
+[2023-10-26 02:05:29] INFO: Total cost: 25961453.091200
+[2023-10-26 02:05:29] INFO: Finding the best improvement operator...
+[2023-10-26 02:06:48] INFO: Savings from exchange operator: 48038.032800
+[2023-10-26 02:06:48] INFO: Savings from shift operator: 64952.686248
+[2023-10-26 02:06:48] INFO: Performing shift...
+[2023-10-26 02:06:48] INFO: Total cost: 25928239.726400
+[2023-10-26 02:06:48] INFO: Finding the best improvement operator...
+[2023-10-26 02:08:09] INFO: Savings from exchange operator: 48038.032800
+[2023-10-26 02:08:09] INFO: Savings from shift operator: 59139.516000
+[2023-10-26 02:08:09] INFO: Performing shift...
+[2023-10-26 02:08:09] INFO: Total cost: 25905200.050400
+[2023-10-26 02:08:09] INFO: Finding the best improvement operator...
+[2023-10-26 02:09:32] INFO: Savings from exchange operator: 51865.484211
+[2023-10-26 02:09:32] INFO: Savings from shift operator: 58264.922400
+[2023-10-26 02:09:32] INFO: Performing shift...
+[2023-10-26 02:09:32] INFO: Total cost: 25880884.568000
+[2023-10-26 02:09:32] INFO: Finding the best improvement operator...
+[2023-10-26 02:10:56] INFO: Savings from exchange operator: 51865.484211
+[2023-10-26 02:10:56] INFO: Savings from shift operator: 57419.898482
+[2023-10-26 02:10:56] INFO: Performing shift...
+[2023-10-26 02:10:56] INFO: Total cost: 25861057.534400
+[2023-10-26 02:10:56] INFO: Finding the best improvement operator...
+[2023-10-26 02:12:21] INFO: Savings from exchange operator: 51879.676596
+[2023-10-26 02:12:21] INFO: Savings from shift operator: 56011.641374
+[2023-10-26 02:12:21] INFO: Performing shift...
+[2023-10-26 02:12:21] INFO: Total cost: 25840266.900800
+[2023-10-26 02:12:21] INFO: Finding the best improvement operator...
+[2023-10-26 02:13:50] INFO: Savings from exchange operator: 72215.338596
+[2023-10-26 02:13:50] INFO: Savings from shift operator: 52201.725600
+[2023-10-26 02:13:50] INFO: Performing exchange...
+[2023-10-26 02:13:50] INFO: Total cost: 25811279.885600
+[2023-10-26 02:13:50] INFO: Finding the best improvement operator...

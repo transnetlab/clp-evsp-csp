@@ -54,22 +54,84 @@ public:
 };
 
 namespace initialization {
-void update_vehicles(std::vector<Trip>&, std::vector<Terminal>&, std::vector<Vehicle>&, Logger&);
+void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
+void create_sets(std::vector<Vehicle>&, std::vector<Terminal>&, std::vector<int>&, std::vector<int>&, Logger&);
 }
 
 namespace csp {
-void create_variables_uniform_model(IloEnv&, const std::vector<Vehicle>&, std::vector<std::vector<IloNumVar>>&,
-        std::vector<std::vector<IloNumVar>>&, std::vector<IloNumVar>&, const std::vector<int>&,
+void create_variables_uniform_model(IloEnv&,
+        const std::vector<Vehicle>&,
+        std::vector<std::vector<IloNumVar>>&,
+        std::vector<std::vector<IloNumVar>>&,
+        std::vector<IloNumVar>&,
+        const std::vector<int>&,
         const std::vector<int>&);
-void create_constraints_uniform_model(IloEnv&, IloModel&, const std::vector<Vehicle>&,
-        const std::vector<std::vector<IloNumVar>>&, const std::vector<std::vector<IloNumVar>>&,
-        const std::vector<IloNumVar>&, const std::vector<int>&, const std::vector<int>&);
-void create_objective_uniform_model(IloExpr&, const std::vector<Vehicle>&, const std::vector<std::vector<IloNumVar>>&,
-        const std::vector<IloNumVar>&, const std::vector<int>&, const std::vector<int>&, Logger&);
-void log_solution_uniform_model(IloCplex&, const std::vector<Vehicle>&, const std::vector<std::vector<IloNumVar>>&,
-        const std::vector<std::vector<IloNumVar>>&, const std::vector<IloNumVar>&, const std::vector<int>&,
+void create_constraints_uniform_model(IloEnv&,
+        IloModel&,
+        const std::vector<Vehicle>&,
+        const std::vector<std::vector<IloNumVar>>&,
+        const std::vector<std::vector<IloNumVar>>&,
+        const std::vector<IloNumVar>&,
+        const std::vector<int>&,
+        const std::vector<int>&);
+void create_objective_uniform_model(IloExpr&,
+        const std::vector<Vehicle>&,
+        const std::vector<std::vector<IloNumVar>>&,
+        const std::vector<IloNumVar>&,
+        const std::vector<int>&,
+        const std::vector<int>&,
+        Logger&);
+void log_solution_uniform_model(IloCplex&,
+        const std::vector<Vehicle>&,
+        const std::vector<std::vector<IloNumVar>>&,
+        const std::vector<std::vector<IloNumVar>>&,
+        const std::vector<IloNumVar>&,
+        const std::vector<int>&,
+        const std::vector<int>&,
+        Logger&);
+double solve_uniform_model(std::vector<Vehicle>&,
+        std::vector<Terminal>&,
+        Logger&);
+
+void create_variables_split_model(
+        IloEnv&,
+        const std::vector<Vehicle>&,
+        std::vector<std::vector<IloNumVar>>&,
+        std::vector<std::vector<std::vector<IloNumVar>>>&,
+        std::vector<IloNumVar>&,
+        const std::vector<int>&,
+        const std::vector<int>&);
+void create_constraints_split_model(
+        IloEnv&,
+        IloModel&,
+        const std::vector<Vehicle>&,
+        const std::vector<std::vector<IloNumVar>>&,
+        const std::vector<std::vector<std::vector<IloNumVar>>>&,
+        const std::vector<IloNumVar>&,
+        const std::vector<int>&,
+        const std::vector<int>&,
+        const std::vector<int>&);
+void create_objective_split_model(
+        IloExpr&,
+        const std::vector<Vehicle>&,
+        const std::vector<std::vector<std::vector<IloNumVar>>>&,
+        const std::vector<IloNumVar>&,
+        const std::vector<int>&,
+        const std::vector<int>&,
+        Logger&);
+void log_solution_split_model(
+        IloCplex&,
+        const std::vector<Vehicle>&,
+        const std::vector<std::vector<IloNumVar>>&,
+        const std::vector<std::vector<std::vector<IloNumVar>>>&,
+        const std::vector<IloNumVar>&,
+        const std::vector<int>&,
         const std::vector<int>&, Logger&);
-void solve_uniform_model(std::vector<Vehicle>&, std::vector<Terminal>&, Logger&);
+double solve_split_model(
+        std::vector<Vehicle>&,
+        std::vector<Terminal>&,
+        Logger&);
+double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>& trip, std::vector<Terminal>&, Logger&);
 }
 
 #endif  //EBUS_VNS_CSP_H

@@ -10,7 +10,8 @@
 
 // Function to find the best savings from exchanging trips
 double scheduling::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Exchange& exchange)
+        std::vector<Terminal>& terminal,
+        Exchange& exchange, Logger& logger)
 {
     // Find a pair of vehicle rotation as a set from vehicles
     double max_savings = 0.0;  // Stores the maximum savings among all exchanges
@@ -18,7 +19,14 @@ double scheduling::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Tri
     // Store a vector of trip_id vectors after swapping trips
     std::vector<std::vector<int>> swapped_rotations;
 
+    // If CSP is to be solved jointly with scheduling, find the CSP solution before exchanges
+    double old_csp_cost = 0.0;
+    if (SOLVE_CSP_JOINTLY)
+        old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, logger);
+
+
     //  Exchange trips k and l of vehicles u and v
+    #pragma omp parallel for
     for (int u = 0; u<vehicle.size(); ++u) {
         for (int v = u+1; v<vehicle.size(); ++v) {
             for (int k = 1; k<vehicle[u].trip_id.size()-1; ++k) {
@@ -41,6 +49,20 @@ double scheduling::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Tri
                             savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, u, v, k, l);
                             savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, v, u, l, k);
 
+                            if (SOLVE_CSP_JOINTLY) {
+                                // Update a copy of the vehicle rotations
+                                std::vector<Vehicle> vehicle_copy = vehicle;
+                                vehicle_copy[u].trip_id = swapped_rotations[0];
+                                vehicle_copy[v].trip_id = swapped_rotations[1];
+
+                                // Solve the CSP model for the copy
+                                double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal,
+                                        logger);
+                                savings += old_csp_cost-new_csp_cost;
+
+                                vehicle_copy.clear();
+                            }
+
                             // Check if the exchange is the best so far
                             if (savings>max_savings) {
                                 max_savings = savings;
@@ -60,13 +82,18 @@ double scheduling::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Tri
 
 // Function to find the best savings from shifting trips
 double scheduling::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal,
-        Shift& shift)
+        Shift& shift, Logger& logger)
 {
     // Variables for calculating the savings from trip shifts
     double max_savings = 0.0;
 
     // Store a vector of trip_id vectors after shifting trips
     std::vector<std::vector<int>> shifted_rotations;
+
+    // If CSP is to be solved jointly with scheduling, find the CSP solution before exchanges
+    double old_csp_cost = 0.0;
+    if (SOLVE_CSP_JOINTLY)
+        old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, logger);
 
     //  Insert trip l of vehicle v after trip k of vehicle u
     for (int u = 0; u<vehicle.size(); ++u) {
@@ -100,6 +127,24 @@ double scheduling::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>&
                             savings += evaluation::calculate_trip_removal_cost(vehicle, trip, v,
                                     l);  // TODO: Take it outside the for loops?
 
+                            if (SOLVE_CSP_JOINTLY) {
+                                // Update a copy of the vehicle rotations
+                                std::vector<Vehicle> vehicle_copy = vehicle;
+                                vehicle_copy[u].trip_id = shifted_rotations[0];
+                                // If shifted rotations is a singleton, delete vehicle with index v
+                                if (shifted_rotations.size()==1)
+                                    vehicle_copy.erase(vehicle_copy.begin()+v);
+                                else
+                                    vehicle_copy[v].trip_id = shifted_rotations[1];
+
+                                // Solve the CSP model for the copy
+                                double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal,
+                                        logger);
+                                savings += old_csp_cost-new_csp_cost;
+
+                                vehicle_copy.clear();
+                            }
+
                             // Check if the exchange is the best so far
                             if (savings>max_savings) {
                                 max_savings = savings;
@@ -119,13 +164,18 @@ double scheduling::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>&
 
 // Function to exchange the depot trips of two vehicles
 double scheduling::exchange_depots(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Exchange& exchange)
+        std::vector<Terminal>& terminal, Exchange& exchange, Logger& logger)
 {
     // Find a pair of vehicle rotation as a set from vehicles
     double max_savings = 0.0;  // Stores the maximum savings among all exchanges
 
     // Store a vector of trip_id vectors after swapping trips
     std::vector<std::vector<int>> swapped_rotations;
+
+    // If CSP is to be solved jointly with scheduling, find the CSP solution before exchanges
+    double old_csp_cost = 0.0;
+    if (SOLVE_CSP_JOINTLY)
+        old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, logger);
 
     //  Exchange the last trips of vehicles u and v. Depot trips are always compatible.
     for (int u = 0; u<vehicle.size(); ++u) {
@@ -147,6 +197,19 @@ double scheduling::exchange_depots(std::vector<Vehicle>& vehicle, std::vector<Tr
                 // Calculate savings in deadheading from performing the exchange
                 savings += evaluation::calculate_depot_replacement_cost(vehicle, trip, u, v, k, l);
                 savings += evaluation::calculate_depot_replacement_cost(vehicle, trip, v, u, l, k);
+
+                if (SOLVE_CSP_JOINTLY) {
+                    // Update a copy of the vehicle rotations
+                    std::vector<Vehicle> vehicle_copy = vehicle;
+                    vehicle_copy[u].trip_id = swapped_rotations[0];
+                    vehicle_copy[v].trip_id = swapped_rotations[1];
+
+                    // Solve the CSP model for the copy
+                    double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal, logger);
+                    savings += old_csp_cost-new_csp_cost;
+
+                    vehicle_copy.clear();
+                }
 
                 // Check if the exchange is the best so far
                 if (savings>max_savings) {
@@ -250,8 +313,8 @@ void scheduling::apply_best_improvement(std::vector<Vehicle>& vehicle, std::vect
     Shift shift;
 
     // Run the exchange and shift locations
-    double exchange_savings = exchange_trips(vehicle, trip, terminal, exchange);
-    double shift_savings = shift_trips(vehicle, trip, terminal, shift);
+    double exchange_savings = exchange_trips(vehicle, trip, terminal, exchange, logger);
+    double shift_savings = shift_trips(vehicle, trip, terminal, shift, logger);
 
     // Check if the exchanges operator is better than the shifts operator
     logger.log(LogLevel::Info, "Savings from exchange operator: "+std::to_string(exchange_savings));
@@ -262,7 +325,7 @@ void scheduling::apply_best_improvement(std::vector<Vehicle>& vehicle, std::vect
         logger.log(LogLevel::Info, "No improvement possible from trip exchanges or shifts...");
 
         logger.log(LogLevel::Info, "Checking for improvement from depot exchanges...");
-        double depot_exchange_savings = exchange_depots(vehicle, trip, terminal, exchange);
+        double depot_exchange_savings = exchange_depots(vehicle, trip, terminal, exchange, logger);
         logger.log(LogLevel::Info,
                 "Savings from depot exchange operator: "+std::to_string(depot_exchange_savings));
         (depot_exchange_savings>EPSILON) ? perform_exchange(vehicle, exchange, logger) : logger.log(LogLevel::Info,

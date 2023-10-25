@@ -4,6 +4,8 @@
 #include "logger.h"
 #include "constants.h"
 #include "vehicle.h"
+#include "csp.h"
+#include <omp.h>
 #include <random>
 #include <sstream>
 
@@ -45,9 +47,9 @@ public:
 };
 
 namespace scheduling {
-double exchange_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Exchange&);
-double exchange_depots(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Exchange&);
-double shift_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Shift&);
+double exchange_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Exchange&, Logger&);
+double exchange_depots(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Exchange&, Logger&);
+double shift_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Shift&, Logger&);
 
 void perform_exchange(std::vector<Vehicle>&, Exchange&, Logger&);
 void perform_shift(std::vector<Vehicle>&, Shift&, Logger&);

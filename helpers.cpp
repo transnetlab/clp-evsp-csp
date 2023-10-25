@@ -364,7 +364,8 @@ void postprocessing::write_output_data(std::string instance, std::time_t curr_ti
 
 // Function to write the summary outputs to a file
 void postprocessing::write_output_data(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, int num_trips, int num_terminals, double runtime, Logger& logger)
+        std::vector<Terminal>& terminal, double csp_cost, int num_trips, int num_terminals, double runtime,
+        Logger& logger)
 {
     // Write the output data to a file
     logger.log(LogLevel::Info, "Writing output summary to file...");
@@ -384,7 +385,8 @@ void postprocessing::write_output_data(std::vector<Vehicle>& vehicle, std::vecto
     // Write the cost of the solution and the problem settings
     double cost = evaluation::calculate_objective(vehicle, trip, terminal, logger);
     summary_file << num_trips << ", " << num_terminals << ", " << vehicle.size() << ", " << num_charging_stations
-                 << ", " << std::fixed << std::setprecision(2) << cost << ", " << runtime;
+                 << ", " << std::fixed << std::setprecision(2) << cost << ", " << csp_cost << ", " << cost+csp_cost
+                 << ", " << runtime << std::endl;
 
     // Write the constants used in the model
     /*summary_file << " (Settings: Vehicle cost: " << VEHICLE_COST << ", " << "Charge station cost: " << CHARGE_LOC_COST

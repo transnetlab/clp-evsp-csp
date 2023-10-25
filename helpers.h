@@ -37,7 +37,7 @@ namespace postprocessing {
 void check_solution(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, Logger&);
 void write_output_data(std::string, Logger&);
 void write_output_data(std::string, std::time_t, Logger&);
-void write_output_data(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int, int, double, Logger&);
+void write_output_data(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, double, int, int, double, Logger&);
 }
 
 #endif //EBUS_VNS_HELPERS_H
