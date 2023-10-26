@@ -32,6 +32,21 @@ public:
     }
 };
 
+// Function object to handle found cliques
+class CliqueCollector {
+public:
+    std::vector<std::vector<int>> cliques;
+
+    template <typename Clique, typename Graph>
+    void operator()(const Clique& c, Graph& /* g */) {
+        std::vector<int> temp;
+        for (auto iter = c.begin(); iter != c.end(); ++iter) {
+            temp.push_back(static_cast<int>(*iter));
+        }
+        cliques.push_back(temp);
+    }
+};
+
 // This class splits the charge opportunity into sub-intervals where price is constant
 class ChargeInterval {
 public:
@@ -55,6 +70,7 @@ public:
 
 namespace initialization {
 void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
+void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, std::vector<int>&,  Logger&);
 void create_sets(std::vector<Vehicle>&, std::vector<Terminal>&, std::vector<int>&, std::vector<int>&, Logger&);
 }
 
@@ -132,6 +148,7 @@ double solve_split_model(
         std::vector<Terminal>&,
         Logger&);
 double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>& trip, std::vector<Terminal>&, Logger&);
+double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>& trip, std::vector<Terminal>&, std::vector<int>&, Logger&);
 }
 
 #endif  //EBUS_VNS_CSP_H

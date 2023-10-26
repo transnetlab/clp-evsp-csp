@@ -1,15 +1,46 @@
 // CPLEX code for charge scheduling problem
 #include "csp.h"
 
+// This function updates the CSP members of the vehicle class for all vehicles
 void initialization::update_vehicles(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
         std::vector<Terminal>& terminal, Logger& logger)
 {
     logger.log(LogLevel::Debug, "Updating CSP variables for all vehicles");
 
     // Clear old CSP variables (if any) and update them
-    for (auto& curr_vehicle : vehicle) {
-        curr_vehicle.clear_csp_variables();
-        curr_vehicle.populate_csp_variables_cag(trip, terminal);
+    for (int v = 0; v<vehicle.size(); v++) {
+        vehicle[v].clear_csp_variables();
+        vehicle[v].populate_csp_variables_cag(trip, terminal);
+    }
+
+    // Log the results from the initialization step
+    logger.log(LogLevel::Debug, "CSP variables updated for all vehicles");
+    logger.log(LogLevel::Debug, "Number of vehicles: "+std::to_string(vehicle.size()));
+    logger.log(LogLevel::Debug,
+            "Number of vehicles requiring charging: "+std::to_string(std::count_if(vehicle.begin(), vehicle.end(),
+                    [](Vehicle& bus) { return bus.is_charging_required; })));
+    for (const auto& curr_vehicle : vehicle) {
+        logger.log(LogLevel::Debug, "Vehicle ID: "+std::to_string(curr_vehicle.id));
+        logger.log(LogLevel::Debug, "Is charging required: "+std::to_string(curr_vehicle.is_charging_required));
+        logger.log(LogLevel::Debug, "Charge opportunity terminals: "+vector_to_string(curr_vehicle.charge_terminal));
+        logger.log(LogLevel::Debug,
+                "Charge opportunity start times: "+vector_to_string(curr_vehicle.start_charge_time));
+        logger.log(LogLevel::Debug, "Charge opportunity end times: "+vector_to_string(curr_vehicle.end_charge_time));
+        logger.log(LogLevel::Debug,
+                "Vehicle energy till charge terminals: "+vector_to_string(curr_vehicle.energy_till_charge_terminal));
+    }
+}
+
+// Function to update the CSP members of the vehicle class for a subset of vehicles
+void initialization::update_vehicles(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, std::vector<int>& update_vehicle_indices, Logger& logger)
+{
+    logger.log(LogLevel::Debug, "Updating CSP variables for all vehicles");
+
+    // Clear old CSP variables (if any) and update them
+    for (int v = 0; v<update_vehicle_indices.size(); v++) {
+        vehicle[v].clear_csp_variables();
+        vehicle[v].populate_csp_variables_cag(trip, terminal);
     }
 
     // Log the results from the initialization step
@@ -42,6 +73,7 @@ void initialization::create_sets(std::vector<Vehicle>& vehicle, std::vector<Term
 
     // Determine the terminal indices with charging stations
     // TODO: Not all terminals are used since all vehicles do not require charging
+    // TODO: This can go outside the loop in exchanges and shifts since it does not change
     // Initialize a terminal to index vector with -1s and length equal to the number of terminals
     std::vector<int> terminal_to_index(terminal.size(), -1);
     int index = 0;
@@ -447,11 +479,10 @@ void csp::create_variables_split_model(IloEnv& env, const std::vector<Vehicle>& 
         std::vector<IloNumVar>& charge_terminal_capacity_var, const std::vector<int>& vehicles_requiring_charging,
         const std::vector<int>& terminals_with_charging_station)
 {
-    std::string var_name;
-
     // Charging level of vehicle with index v and after charging at opportunity k
     // CPLEX index is b since some of the vehicles do not require charging
     int v;
+    std::string var_name;
     for (int b = 0; b<vehicles_requiring_charging.size(); ++b) {
         v = vehicles_requiring_charging[b];  // Vehicle index
         charge_level_var[b].resize(vehicle[v].charge_terminal.size());  // No. of terminal IDs at charge opportunities
@@ -544,7 +575,7 @@ void csp::create_constraints_split_model(IloEnv& env, IloModel& model, const std
     IloArray<IloExprArray> total_energy_input(env, terminals_with_charging_station.size());
     for (s = 0; s<terminals_with_charging_station.size(); ++s) {
         total_energy_input[s] = IloExprArray(env, NUM_TIME_STEPS);
-        for (int t=0; t<NUM_TIME_STEPS; ++t)
+        for (int t = 0; t<NUM_TIME_STEPS; ++t)
             total_energy_input[s][t] = IloExpr(env);
     }
 
@@ -569,8 +600,10 @@ void csp::create_constraints_split_model(IloEnv& env, IloModel& model, const std
     for (s = 0; s<terminals_with_charging_station.size(); ++s) {
         for (int t = 0; t<NUM_TIME_STEPS; ++t) {
             if (include_lhs[s][t]) {
-                constraint_name = "max_power("+std::to_string(terminals_with_charging_station[s])+","+std::to_string(t)+")";
-                model.add(total_energy_input[s][t]<=charge_terminal_capacity_var[s]/60.0).setName(constraint_name.c_str());
+                constraint_name =
+                        "max_power("+std::to_string(terminals_with_charging_station[s])+","+std::to_string(t)+")";
+                model.add(total_energy_input[s][t]<=charge_terminal_capacity_var[s]/60.0).setName(
+                        constraint_name.c_str());
             }
         }
     }
@@ -636,20 +669,20 @@ void csp::log_solution_split_model(IloCplex& cplex, const std::vector<Vehicle>& 
     for (int b = 0; b<vehicles_requiring_charging.size(); ++b) {
         v = vehicles_requiring_charging[b];
         for (int k = 0; k<vehicle[v].charge_terminal.size(); ++k) {
-            logger.log(LogLevel::Debug, "Charge level for vehicle "+std::to_string(v+1)+" at opportunity "
+            logger.log(LogLevel::Debug, "Charge level for vehicle index "+std::to_string(v)+" at opportunity "
                     +std::to_string(k)+" = "+std::to_string(cplex.getValue(charge_level_var[b][k])));
         }
     }
 
     // Log the energy input solution
-    logger.log(LogLevel::Debug, "Energy level solution");
+    int charge_time_window;
     for (int b = 0; b<vehicles_requiring_charging.size(); ++b) {
         v = vehicles_requiring_charging[b];
-        for (int s = 0; s<terminals_with_charging_station.size(); ++s) {
-            for (int t = 0; t<NUM_TIME_STEPS; ++t) {
-                logger.log(LogLevel::Debug, "Energy input for vehicle "+std::to_string(v+1)+" at terminal "
-                        +std::to_string(terminals_with_charging_station[s])+" at time "+std::to_string(t)
-                        +" = "+std::to_string(cplex.getValue(energy_input_var[b][s][t])));
+        for (int k = 0; k<vehicle[v].charge_terminal.size(); ++k) {  // Iterate over charging opportunities
+            charge_time_window = vehicle[v].end_charge_time[k]-vehicle[v].start_charge_time[k];
+            for (int t = 0; t<charge_time_window; ++t) {
+                logger.log(LogLevel::Debug, "Energy input for vehicle index "+std::to_string(v)+" at terminal index "
+                        +std::to_string(vehicle[v].charge_terminal[k]-1)+" at time "+std::to_string(vehicle[v].start_charge_time[k]+t));
             }
         }
     }
@@ -657,7 +690,7 @@ void csp::log_solution_split_model(IloCplex& cplex, const std::vector<Vehicle>& 
     // Log the power limit solutions
     logger.log(LogLevel::Debug, "Power limit solution");
     for (int s = 0; s<terminals_with_charging_station.size(); ++s) {
-        logger.log(LogLevel::Debug, "Power limit for terminal "+std::to_string(terminals_with_charging_station[s])
+        logger.log(LogLevel::Debug, "Power limit for terminal index"+std::to_string(terminals_with_charging_station[s])
                 +" = "+std::to_string(cplex.getValue(charge_terminal_capacity_var[s])));
     }
 }
@@ -726,8 +759,8 @@ double csp::solve_split_model(std::vector<Vehicle>& vehicle, std::vector<Termina
         optimal_objective = cplex.getObjValue();
         logger.log(LogLevel::Debug, "Solution status = "+std::to_string(cplex.getStatus()));
         logger.log(LogLevel::Debug, "Solution value = "+std::to_string(cplex.getObjValue()));
-        // csp::log_solution_split_model(cplex, vehicle, charge_level_var, energy_input_var,
-        //       charge_terminal_capacity_var, vehicles_requiring_charging, terminals_with_charging_station, logger);*/
+        csp::log_solution_split_model(cplex, vehicle, charge_level_var, energy_input_var,
+               charge_terminal_capacity_var, vehicles_requiring_charging, terminals_with_charging_station, logger);*/
     }
         // Catch exceptions thrown by CPLEX
     catch (IloException& exception) {
@@ -741,6 +774,21 @@ double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector
         std::vector<Terminal>& terminal, Logger& logger)
 {
     initialization::update_vehicles(vehicle, trip, terminal, logger);
+
+    if (CSP_SOLUTION_TYPE==SolutionType::Uniform)
+        return csp::solve_uniform_model(vehicle, terminal, logger);
+    if (CSP_SOLUTION_TYPE==SolutionType::Split)
+        return csp::solve_split_model(vehicle, terminal, logger);
+    else {
+        std::cerr << "Error: Invalid charging model" << std::endl;
+        exit(1);
+    }
+}
+
+double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, std::vector<int>& update_vehicle_indices, Logger& logger)
+{
+    initialization::update_vehicles(vehicle, trip, terminal, update_vehicle_indices, logger);
 
     if (CSP_SOLUTION_TYPE==SolutionType::Uniform)
         return csp::solve_uniform_model(vehicle, terminal, logger);

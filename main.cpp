@@ -15,20 +15,11 @@
 #include <iomanip>
 
 /* TODOs:
- * Phase 1:
- * Review code for two shifts and charging station swaps
  * Create a function for sequential operators shifting more than two trips? Can we do this with exchanges as well?
- * Code review and clean up for consistency
- * Create a pull request and merge with main
- * Phase 2:
- * Create a skeleton for charge scheduling
- * Implement and integrate CSP code and its variants for a given set of rotations
- * Add CSP to scheduling operators
- * Create a pull request and merge with main
- * Phase 3:
+ * Run profiler
  * Parallelize operators
  * Check logging outputs for different levels
- * Save compatibility checks in scheduling if it is used repeatedly
+ * Save compatibility checks in scheduling if it is used repeatedly. Use profile results to take a call.
  * Create a pull request and merge with main
  * Make logger global?*/
 
@@ -57,7 +48,8 @@ int main(int argc, char* argv[])
             logger);
 
     // Local search for charging locations which also includes scheduling operators
-    locations::optimize_stations(vehicle, trip, terminal, logger);
+    //locations::optimize_stations(vehicle, trip, terminal, logger);
+    scheduling::optimize_rotations(vehicle, trip, terminal, logger);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
     // diversification::optimize_rotations(vehicle, trip, terminal, logger);
