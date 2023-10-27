@@ -30,7 +30,7 @@ public:
     int current_idle_time;  // Total idle time across all rotations. This measures the utilization of the terminal.
     int potential_idle_time; // Total idle time across all rotations if this were to be a charge station
     std::vector<int> passing_rotation;  // indices passing through the terminal in the current rotation
-    std::vector<int> passing_rotation_idle_time;  // Idle time of each trip in the current rotation
+    std::vector<int> passing_rotation_idle_time;  // Idle time of each trip in the current rotation  TODO: Where is this used?
 
     // Constructor
     Terminal()
@@ -50,6 +50,13 @@ public:
     ~Terminal()
     {
         // Nothing to do here
+    }
+
+    // Log members of terminal data
+    void log_member_data(Logger& logger) const
+    {
+        logger.log(LogLevel::Info, "Terminal ID, Stop ID, Trip ID, Is depot, Is charge station: "+std::to_string(id)+" "
+                +stop_id+" "+std::to_string(trip_id)+" "+std::to_string(is_depot)+" "+std::to_string(is_charge_station));
     }
 };
 
@@ -153,8 +160,20 @@ public:
                 +std::to_string(trip_id.size())+" "+std::to_string(deadhead_cost)+" "+vector_to_string(trip_id));
     }
 
+    // Log CSP class members
+    void log_csp_member_data(Logger& logger) const
+    {
+        logger.log(LogLevel::Info, "Vehicle ID: "+std::to_string(id));
+        logger.log(LogLevel::Info, "Is charging required: "+std::to_string(is_charging_required));
+        logger.log(LogLevel::Info, "Charge terminal "+vector_to_string(charge_terminal));
+        logger.log(LogLevel::Info, "Start charge time "+vector_to_string(start_charge_time));
+        logger.log(LogLevel::Info, "End charge time "+vector_to_string(end_charge_time));
+        logger.log(LogLevel::Info, "Energy till charge terminal "+vector_to_string(energy_till_charge_terminal));
+    }
+
     // Populate CSP related variables under the charge and go policy
-    void populate_csp_variables_cag(const std::vector<Trip>& trip, const std::vector<Terminal>& terminal) {
+    void populate_csp_variables_cag(const std::vector<Trip>& trip, const std::vector<Terminal>& terminal)
+    {
         // If trip is empty, throw an error and exit
         if (trip_id.empty()) {
             std::cerr << "Error: Trip ID is empty for vehicle while populating CSP data " << id << std::endl;
@@ -199,7 +218,7 @@ public:
 
             switch (scenario) {
             case 'e':
-                if (charge_time_window > 0) {
+                if (charge_time_window>0) {
                     charge_terminal.push_back(end_terminal_curr_trip);
                     start_charge_time.push_back(curr_trip_end_time);
                     end_charge_time.push_back(curr_trip_end_time+charge_time_window);
@@ -207,9 +226,8 @@ public:
                 }
                 cumulative_energy += trip[curr_trip-1].deadhead_distance[next_trip-1]*ENERGY_PER_KM;
                 break;
-            case 's':
-                cumulative_energy += trip[curr_trip-1].deadhead_distance[next_trip-1]*ENERGY_PER_KM;
-                if (charge_time_window > 0) {
+            case 's':cumulative_energy += trip[curr_trip-1].deadhead_distance[next_trip-1]*ENERGY_PER_KM;
+                if (charge_time_window>0) {
                     charge_terminal.push_back(start_terminal_next_trip);
                     start_charge_time.push_back(next_trip_start_time-charge_time_window);
                     end_charge_time.push_back(next_trip_start_time);
@@ -229,7 +247,7 @@ public:
         energy_till_charge_terminal.push_back(cumulative_energy);
 
         // If cumulative energy is less than the maximum charge level, then charging is not required
-        is_charging_required = (cumulative_energy > MAX_CHARGE_LEVEL);
+        is_charging_required = (cumulative_energy>MAX_CHARGE_LEVEL);
     }
 };
 

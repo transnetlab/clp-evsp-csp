@@ -3,6 +3,9 @@ project(ebus_vns)
 
 set(CMAKE_CXX_STANDARD 23)
 
+# Find OpenMP package
+find_package(OpenMP REQUIRED)
+
 # Compiler options
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
@@ -39,4 +42,7 @@ add_executable(ebus_vns main.cpp
 )
 
 # Link the executable with required libraries
-target_link_libraries(ebus_vns PRIVATE ${CCLNFLAGS})
+
+if(OpenMP_CXX_FOUND)
+target_link_libraries(ebus_vns PRIVATE ${CCLNFLAGS} OpenMP::OpenMP_CXX)
+endif()

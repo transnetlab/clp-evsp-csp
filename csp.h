@@ -4,12 +4,14 @@
 #include "logger.h"
 #include "constants.h"
 #include "vehicle.h"
+#include "helpers.h"
 #include <sstream>
 #include <ilcplex/ilocplex.h>
 #include <vector>
 #include <set>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/bron_kerbosch_all_cliques.hpp>
+
 
 class Visitor {
 public:

@@ -637,6 +637,7 @@ void csp::create_objective_split_model(IloExpr& objective, const std::vector<Veh
     }
 
     // Populate energy price vector using the constants defined in the header file
+    // TODO: This can be moved out of the loop since the energy prices are constant
     std::vector<double> energy_price_per_min(NUM_TIME_STEPS);
     for (int p = 0; p<NUM_PRICE_INTERVALS; ++p)
         std::fill(energy_price_per_min.begin()+ENERGY_LEFT_INTERVAL[p],
@@ -748,10 +749,24 @@ double csp::solve_split_model(std::vector<Vehicle>& vehicle, std::vector<Termina
         IloObjective obj = IloMinimize(env, objective);
         model.add(obj);
         objective.end();
-        cplex.exportModel("../output/csp_split.lp");  // Write the LP to a .lp file
+
         logger.log(LogLevel::Debug, "Solving the LP");
         if (!cplex.solve()) {
+            cplex.exportModel("../output/csp_split.lp");  // Write the LP to a .lp file
             logger.log(LogLevel::Error, "Failed to optimize LP");
+
+            // Log terminal data
+            logger.log(LogLevel::Info, "Terminal data and utilization");
+            for (const auto& curr_terminal : terminal)
+                curr_terminal.log_member_data(logger);
+
+            // Log the vehicle rotations
+            logger.log(LogLevel::Info, "Vehicle rotations");
+            for (const auto& curr_vehicle : vehicle)
+                curr_vehicle.log_member_data(logger);
+            logger.log(LogLevel::Info, "Vehicle CSP member data");
+            for (const auto& curr_vehicle : vehicle)
+                curr_vehicle.log_csp_member_data(logger);
             throw (-1);
         }
 
@@ -760,9 +775,9 @@ double csp::solve_split_model(std::vector<Vehicle>& vehicle, std::vector<Termina
         logger.log(LogLevel::Debug, "Solution status = "+std::to_string(cplex.getStatus()));
         logger.log(LogLevel::Debug, "Solution value = "+std::to_string(cplex.getObjValue()));
         csp::log_solution_split_model(cplex, vehicle, charge_level_var, energy_input_var,
-               charge_terminal_capacity_var, vehicles_requiring_charging, terminals_with_charging_station, logger);*/
+               charge_terminal_capacity_var, vehicles_requiring_charging, terminals_with_charging_station, logger);
     }
-        // Catch exceptions thrown by CPLEX
+    // Catch exceptions thrown by CPLEX
     catch (IloException& exception) {
         std::cerr << "Error: " << exception << std::endl;
     }

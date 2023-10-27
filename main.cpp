@@ -18,9 +18,12 @@
  * Create a function for sequential operators shifting more than two trips? Can we do this with exchanges as well?
  * Run profiler
  * Parallelize operators
+ * Modify bash files to run concurrently on Gandalf
  * Check logging outputs for different levels
  * Save compatibility checks in scheduling if it is used repeatedly. Use profile results to take a call.
  * Create a pull request and merge with main
+ * Log results at every exit point
+ * Break ties lexicographically in exchanges and shifts to make parallel results match the serial code?
  * Make logger global?*/
 
 int main(int argc, char* argv[])
@@ -48,14 +51,14 @@ int main(int argc, char* argv[])
             logger);
 
     // Local search for charging locations which also includes scheduling operators
-    //locations::optimize_stations(vehicle, trip, terminal, logger);
-    scheduling::optimize_rotations(vehicle, trip, terminal, logger);
+    locations::optimize_stations(vehicle, trip, terminal, logger);
+    // scheduling::optimize_rotations(vehicle, trip, terminal, logger);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
     // diversification::optimize_rotations(vehicle, trip, terminal, logger);
 
     // Solve the charge scheduling problem
-    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, logger);
+    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, logger);  // TODO: Do we need both versions?
 
     // Find runtime
     logger.log(LogLevel::Info, "Finishing local search...");
