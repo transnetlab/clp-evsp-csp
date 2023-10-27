@@ -16,15 +16,13 @@ double scheduling::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Tri
     // Find a pair of vehicle rotation as a set from vehicles
     double max_savings = 0.0;  // Stores the maximum savings among all exchanges
 
-
-
     // If CSP is to be solved jointly with scheduling, find the CSP solution before exchanges
     double old_csp_cost = 0.0;
     if (SOLVE_CSP_JOINTLY)
         old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, logger);
 
     //  Exchange trips k and l of vehicles u and v
-    #pragma omp parallel for collapse(2)
+    // #pragma omp parallel for collapse(2)
     for (int u = 0; u<vehicle.size(); ++u) {
         for (int v = u+1; v<vehicle.size(); ++v) {
             std::vector<int> update_vehicle_indices = {u, v};
@@ -63,7 +61,7 @@ double scheduling::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Tri
                             }
 
                             // Check if the exchange is the best so far
-                            #pragma omp critical
+                            // #pragma omp critical
                             if (savings>max_savings) {
                                 max_savings = savings;
                                 exchange.first_vehicle_index = u;
@@ -87,15 +85,13 @@ double scheduling::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>&
     // Variables for calculating the savings from trip shifts
     double max_savings = 0.0;
 
-
-
     // If CSP is to be solved jointly with scheduling, find the CSP solution before exchanges
     double old_csp_cost = 0.0;
     if (SOLVE_CSP_JOINTLY)
         old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, logger);
 
     //  Insert trip l of vehicle v after trip k of vehicle u
-    #pragma omp parallel for collapse(2)
+    // #pragma omp parallel for collapse(2)
     for (int u = 0; u<vehicle.size(); ++u) {
         for (int v = 0; v<vehicle.size(); ++v) {
             for (int k = 1; k<vehicle[u].trip_id.size()-1; ++k) {
@@ -148,7 +144,7 @@ double scheduling::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>&
 
                                 // Check if the exchange is the best so far
                                 // Perform this check in a critical section
-                                #pragma omp critical
+                                // #pragma omp critical
                                 if (savings>max_savings) {
                                     max_savings = savings;
                                     shift.dest_vehicle_index = u;
@@ -179,7 +175,7 @@ double scheduling::exchange_depots(std::vector<Vehicle>& vehicle, std::vector<Tr
         old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, logger);
 
     //  Exchange the last trips of vehicles u and v. Depot trips are always compatible.
-    #pragma omp parallel for collapse(2)
+    // #pragma omp parallel for collapse(2)
     for (int u = 0; u<vehicle.size(); ++u) {
         for (int v = u+1; v<vehicle.size(); ++v) {
             // Store a vector of trip_id vectors after swapping trips
@@ -216,7 +212,7 @@ double scheduling::exchange_depots(std::vector<Vehicle>& vehicle, std::vector<Tr
                 }
 
                 // Check if the exchange is the best so far
-                #pragma omp critical
+                // #pragma omp critical
                 if (savings>max_savings) {
                     max_savings = savings;
                     exchange.first_vehicle_index = u;
@@ -1245,17 +1241,27 @@ double evaluation::calculate_objective(std::vector<Vehicle>& vehicle, std::vecto
         deadhead_cost += curr_vehicle.deadhead_cost;
     }
 
+    double csp_cost;
     // Calculate CSP cost
-    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, logger);
+    if (SOLVE_CSP_JOINTLY)
+        csp_cost = csp::select_optimization_model(vehicle, trip, terminal, logger);
 
     // Calculate the total cost and log the cost components
-    double total_cost = location_cost+vehicle_acquisition_cost+deadhead_cost+csp_cost;
+    double total_cost;
+    if (SOLVE_CSP_JOINTLY)
+        total_cost = location_cost+vehicle_acquisition_cost+deadhead_cost+csp_cost;
+    else
+        total_cost = location_cost+vehicle_acquisition_cost+deadhead_cost;
     logger.log(LogLevel::Debug, "Fixed cost of opening charging stations: "+std::to_string(location_cost));
     logger.log(LogLevel::Debug, "Fixed cost of vehicle acquisition: "+std::to_string(vehicle_acquisition_cost));
     logger.log(LogLevel::Debug, "Total cost of deadheading: "+std::to_string(deadhead_cost));
-    logger.log(LogLevel::Debug, "CSP cost: "+std::to_string(csp_cost));
     logger.log(LogLevel::Debug, "Number of charging stations: "+std::to_string(int(location_cost/CHARGE_LOC_COST)));
     logger.log(LogLevel::Debug, "Number of vehicles used: "+std::to_string(vehicle.size()));
+
+    logger.log(LogLevel::Info, "Non-CSP cost: "+std::to_string(location_cost+vehicle_acquisition_cost+deadhead_cost));
+    if (SOLVE_CSP_JOINTLY)
+        logger.log(LogLevel::Info, "CSP cost: "+std::to_string(csp_cost));
+
     logger.log(LogLevel::Info, "Total cost: "+std::to_string(total_cost));
 
     return total_cost;
