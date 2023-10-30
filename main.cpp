@@ -1,78 +1,76 @@
-#include "constants.h"
 #include "csp.h"
 #include "operators.h"
 #include "logger.h"
 #include "vehicle.h"
 #include "helpers.h"
-#include <iostream>
-#include <fstream>
 #include <string>
 #include <vector>
-#include <cstdlib>
-#include <sstream>
 #include <chrono>
-#include <algorithm>
-#include <iomanip>
 
 /* TODOs:
+ * Find the first and last time steps and use them in the CSP
+ * Use static variables in functions to count the number of times certain functions were used
  * Create a function for sequential operators shifting more than two trips? Can we do this with exchanges as well?
  * Run profiler
  * Parallelize operators
  * Modify bash files to run concurrently on Gandalf
  * Check logging outputs for different levels
- * Save compatibility checks in scheduling if it is used repeatedly. Use profile results to take a call.
  * Create a pull request and merge with main
  * Log results at every exit point
  * Break ties lexicographically in exchanges and shifts to make parallel results match the serial code?
- * Make logger global?*/
+ * Check if the version where opening gives savings and we break works better*/
+
+Logger logger(true);
+int test;
 
 int main(int argc, char* argv[])
 {
     // Read the instance as command line argument. If not provided, use the default instance
-    std::string instance;
-    instance = (argc>1) ? argv[1] : "Ann_Arbor";
+    Data data; // Vector of parameters
+    data.instance = (argc>1) ? argv[1] : "Gold_Coast";
 
     // Delete any old log files if present and create a new one. Set logging level.
-    std::remove(("../output/"+instance+"_log.txt").c_str());
-    Logger logger("../output/"+instance+"_log.txt", true);
+    std::remove(("../output/"+data.instance+"_log.txt").c_str());
+    logger.set_file_path("../output/"+data.instance+"_log.txt");
     logger.set_log_level_threshold(LogLevel::Info);
-    logger.log(LogLevel::Info, "Starting local search for instance "+instance+"...");
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    postprocessing::write_output_data(instance, std::time(nullptr), logger);
+
+    logger.log(LogLevel::Info, "Starting local search for instance "+data.instance+"...");
+    data.start_time_stamp = std::chrono::steady_clock::now();
+    postprocessing::write_output_data(data.instance, std::time(nullptr));  // TODO: Check if this is needed
 
     // Initialize variables
-    int num_trips, num_augmented_trips, num_terminals;  // Number of trips and terminals in the network
     std::vector<Trip> trip;  // Vector of trips
     std::vector<Terminal> terminal;  // Vector of terminals
     std::vector<Vehicle> vehicle;  // Vector of vehicles
 
     // Read input data on trips and stops and initialize bus rotations
-    preprocessing::initialize_inputs(instance, vehicle, trip, terminal, num_trips, num_augmented_trips, num_terminals,
-            logger);
+    preprocessing::initialize_inputs(vehicle, trip, terminal, data);
 
     // Local search for charging locations which also includes scheduling operators
-    locations::optimize_stations(vehicle, trip, terminal, logger);
-    // scheduling::optimize_rotations(vehicle, trip, terminal, logger);
+    locations::optimize_stations(vehicle, trip, terminal, data);
+
+    // Only optimize rotations. No changes to charging locations are made here.
+    // scheduling::optimize_rotations(vehicle, trip, terminal, data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
-    // diversification::optimize_rotations(vehicle, trip, terminal, logger);
+    // diversification::optimize_rotations(vehicle, trip, terminal, data);
 
     // Solve the charge scheduling problem
-    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, logger);  // TODO: Do we need both versions?
+    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data);  // TODO: Do we need both versions?
 
     // Find runtime
     logger.log(LogLevel::Info, "Finishing local search...");
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    double runtime =
-            double(std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count())/1000.0; // in seconds
-    logger.log(LogLevel::Info, "Local search completed in "+std::to_string(runtime)+" seconds.");
+    data.end_time_stamp = std::chrono::steady_clock::now();
+    data.runtime = double(std::chrono::duration_cast<std::chrono::milliseconds>(
+            data.end_time_stamp-data.start_time_stamp).count())/1000.0; // in seconds
+    logger.log(LogLevel::Info, "Local search completed in "+std::to_string(data.runtime)+" seconds.");
 
     // Log final vehicle rotations
-    evaluation::calculate_utilization(vehicle, trip, terminal, logger);
+    evaluation::calculate_utilization(vehicle, trip, terminal);
     for (auto& curr_vehicle : vehicle)
-        curr_vehicle.log_member_data(logger);
+        curr_vehicle.log_member_data();
 
     // Postprocessing
-    postprocessing::check_solution(vehicle, trip, terminal, num_trips, logger);
-    postprocessing::write_output_data(vehicle, trip, terminal, csp_cost, num_trips, num_terminals, runtime, logger);
+    postprocessing::check_solution(vehicle, trip, terminal, data);
+    postprocessing::write_output_data(vehicle, trip, terminal, csp_cost, data);
 }

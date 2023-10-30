@@ -8,10 +8,25 @@
 #include <sstream>
 #include <ilcplex/ilocplex.h>
 #include <vector>
+#include <map>
 #include <set>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/bron_kerbosch_all_cliques.hpp>
 
+class SplitModelVariable {
+public:
+    std::vector<std::vector<IloNumVar>> charge_level_var;
+    std::vector<std::vector<std::vector<IloNumVar>>> energy_input_var;
+    std::vector<IloNumVar> charge_terminal_capacity_var;
+
+    SplitModelVariable(int num_vehicles, int num_terminals)
+            :charge_level_var(num_vehicles),
+             energy_input_var(num_vehicles),
+             charge_terminal_capacity_var(num_terminals)
+    {
+
+    }
+};
 
 class Visitor {
 public:
@@ -39,10 +54,11 @@ class CliqueCollector {
 public:
     std::vector<std::vector<int>> cliques;
 
-    template <typename Clique, typename Graph>
-    void operator()(const Clique& c, Graph& /* g */) {
+    template<typename Clique, typename Graph>
+    void operator()(const Clique& c, Graph& /* g */)
+    {
         std::vector<int> temp;
-        for (auto iter = c.begin(); iter != c.end(); ++iter) {
+        for (auto iter = c.begin(); iter!=c.end(); ++iter) {
             temp.push_back(static_cast<int>(*iter));
         }
         cliques.push_back(temp);
@@ -71,8 +87,9 @@ public:
 };
 
 namespace initialization {
-void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Logger&);
-void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, std::vector<int>&,  Logger&);
+void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&);
+void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data& data,
+        std::vector<int>&);
 void create_sets(std::vector<Vehicle>&, std::vector<Terminal>&, std::vector<int>&, std::vector<int>&, Logger&);
 }
 
@@ -107,50 +124,17 @@ void log_solution_uniform_model(IloCplex&,
         const std::vector<int>&,
         const std::vector<int>&,
         Logger&);
-double solve_uniform_model(std::vector<Vehicle>&,
-        std::vector<Terminal>&,
-        Logger&);
+double solve_uniform_model(std::vector<Vehicle>&, std::vector<Terminal>&, Data& data);
 
-void create_variables_split_model(
-        IloEnv&,
-        const std::vector<Vehicle>&,
-        std::vector<std::vector<IloNumVar>>&,
-        std::vector<std::vector<std::vector<IloNumVar>>>&,
-        std::vector<IloNumVar>&,
-        const std::vector<int>&,
-        const std::vector<int>&);
-void create_constraints_split_model(
-        IloEnv&,
-        IloModel&,
-        const std::vector<Vehicle>&,
-        const std::vector<std::vector<IloNumVar>>&,
-        const std::vector<std::vector<std::vector<IloNumVar>>>&,
-        const std::vector<IloNumVar>&,
-        const std::vector<int>&,
-        const std::vector<int>&,
-        const std::vector<int>&);
-void create_objective_split_model(
-        IloExpr&,
-        const std::vector<Vehicle>&,
-        const std::vector<std::vector<std::vector<IloNumVar>>>&,
-        const std::vector<IloNumVar>&,
-        const std::vector<int>&,
-        const std::vector<int>&,
-        Logger&);
-void log_solution_split_model(
-        IloCplex&,
-        const std::vector<Vehicle>&,
-        const std::vector<std::vector<IloNumVar>>&,
-        const std::vector<std::vector<std::vector<IloNumVar>>>&,
-        const std::vector<IloNumVar>&,
-        const std::vector<int>&,
-        const std::vector<int>&, Logger&);
-double solve_split_model(
-        std::vector<Vehicle>&,
-        std::vector<Terminal>&,
-        Logger&);
-double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>& trip, std::vector<Terminal>&, Logger&);
-double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>& trip, std::vector<Terminal>&, std::vector<int>&, Logger&);
+void create_variables_split_model(IloEnv&, const std::vector<Vehicle>&, SplitModelVariable&, const std::vector<int>&, const std::vector<int>&);
+void create_constraints_split_model(IloEnv&, IloModel&, const std::vector<Vehicle>&, const Data&, SplitModelVariable&, const std::vector<int>&, const std::vector<int>&, const std::vector<int>&);
+void create_objective_split_model(IloExpr&, const std::vector<Vehicle>&, Data&, SplitModelVariable&,  const std::vector<int>&, const std::vector<int>&);
+void log_solution_split_model(IloCplex&, const std::vector<Vehicle>&, SplitModelVariable&, const std::vector<int>&, const std::vector<int>&);
+double solve_split_model(std::vector<Vehicle>&, std::vector<Terminal>&, Data& data);
+
+double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
+double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&,
+        std::vector<int>&);
 }
 
 #endif  //EBUS_VNS_CSP_H

@@ -4,7 +4,9 @@
 #include "constants.h"
 #include "logger.h"
 #include <string>
+#include <chrono>
 #include <vector>
+#include <map>
 #include <iostream>
 #include <sstream>
 
@@ -18,7 +20,33 @@ std::string vector_to_string(const std::vector<T>& input_vector)
     return ss.str();
 }
 
-//Create a stops class with potential charging locations
+// Create a class of problem parameters that are processed from the data and used in different parts of the code
+class Data {  // TODO: Add comments on where these variables are set
+public:
+    std::string instance;
+    std::chrono::steady_clock::time_point start_time_stamp;
+    std::chrono::steady_clock::time_point end_time_stamp;
+
+    // Number of trips and terminals in the network
+    int num_trips;
+    int num_augmented_trips;
+    int num_terminals;
+
+    int first_trip_start_time;  // Earliest time step across all trips
+    int last_trip_end_time;  // Latest time step across all trips
+    int time_steps_length;  // Time window of the problem
+    std::map<int, double> energy_price_per_min;  // Tracks the energy price value at different time steps
+
+    double runtime;
+
+    // Constructor
+    Data()
+    {
+        // Nothing to do here
+    }
+};
+
+// Create a stops class with potential charging locations
 class Terminal {
 public:
     int id;  // Terminal ID
@@ -29,8 +57,6 @@ public:
 
     int current_idle_time;  // Total idle time across all rotations. This measures the utilization of the terminal.
     int potential_idle_time; // Total idle time across all rotations if this were to be a charge station
-    std::vector<int> passing_rotation;  // indices passing through the terminal in the current rotation
-    std::vector<int> passing_rotation_idle_time;  // Idle time of each trip in the current rotation  TODO: Where is this used?
 
     // Constructor
     Terminal()
@@ -53,7 +79,7 @@ public:
     }
 
     // Log members of terminal data
-    void log_member_data(Logger& logger) const
+    void log_member_data() const
     {
         logger.log(LogLevel::Info, "Terminal ID, Stop ID, Trip ID, Is depot, Is charge station: "+std::to_string(id)+" "
                 +stop_id+" "+std::to_string(trip_id)+" "+std::to_string(is_depot)+" "+std::to_string(is_charge_station));
@@ -148,20 +174,20 @@ public:
     {
         is_charging_required = false;
         charge_terminal.clear();
-        start_charge_time.clear();  //TODO: Check if this starts at 0, i.e., are these indices?
+        start_charge_time.clear();
         end_charge_time.clear();
         energy_till_charge_terminal.clear();
     }
 
     // Print members of the class
-    void log_member_data(Logger& logger) const
+    void log_member_data() const
     {
         logger.log(LogLevel::Info, "Vehicle ID, No. of Trips, Deadhead cost, Trip IDs: "+std::to_string(id)+" "
                 +std::to_string(trip_id.size())+" "+std::to_string(deadhead_cost)+" "+vector_to_string(trip_id));
     }
 
     // Log CSP class members
-    void log_csp_member_data(Logger& logger) const
+    void log_csp_member_data() const
     {
         logger.log(LogLevel::Info, "Vehicle ID: "+std::to_string(id));
         logger.log(LogLevel::Info, "Is charging required: "+std::to_string(is_charging_required));
