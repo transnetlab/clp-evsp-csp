@@ -11,7 +11,7 @@
  * Find the first and last time steps and use them in the CSP
  * Use static variables in functions to count the number of times certain functions were used
  * Create a function for sequential operators shifting more than two trips? Can we do this with exchanges as well?
- * Run profiler
+ * Run profiler https://www.jetbrains.com/help/clion/cmake-profiling.html
  * Parallelize operators
  * Modify bash files to run concurrently on Gandalf
  * Check logging outputs for different levels
@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 {
     // Read the instance as command line argument. If not provided, use the default instance
     Data data; // Vector of parameters
-    data.instance = (argc>1) ? argv[1] : "Gold_Coast";
+    data.instance = (argc>1) ? argv[1] : "Ann_Arbor";
 
     // Delete any old log files if present and create a new one. Set logging level.
     std::remove(("../output/"+data.instance+"_log.txt").c_str());
