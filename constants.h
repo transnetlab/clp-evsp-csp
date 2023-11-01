@@ -31,7 +31,7 @@ constexpr bool PERFORM_TWO_SHIFTS = false;  // Flag to turn on/off 2-shift opera
 constexpr bool SWAP_CHARGE_STATIONS = false; // Flag to turn on/off charge station swap operators
 constexpr int SHIFT_ALL_TRIPS_THRESHOLD = 6; // Threshold for number of trips in a rotation to perform shift all trips
 
-constexpr bool SOLVE_CSP_JOINTLY = true;  // Flag to solve the CSP jointly or separately
+constexpr bool SOLVE_CSP_JOINTLY = false;  // Flag to solve the CSP jointly or separately
 enum class SolutionType : int {
   Split,
   Uniform

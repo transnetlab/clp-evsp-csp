@@ -20,6 +20,21 @@ double scheduling::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Tri
     if (SOLVE_CSP_JOINTLY)
         old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data);
 
+    // Create variables to store savings for u, k, v, l
+    std::vector<std::vector<std::vector<std::vector<double>>>> savings_vector(vehicle.size());
+    for (int u=0;u<vehicle.size();++u) {
+        savings_vector[u].resize(vehicle[u].trip_id.size());
+        for (int k=0;k<vehicle[u].trip_id.size();++k) {
+            savings_vector[u][k].resize(vehicle.size());
+            for (int v=0;v<vehicle.size();++v) {
+                savings_vector[u][k][v].resize(vehicle[v].trip_id.size());
+                for (int l=0;l<vehicle[v].trip_id.size();++l) {
+                    savings_vector[u][k][v][l] = 0.0;
+                }
+            }
+        }
+    }
+
     //  Exchange trips k and l of vehicles u and v
     #pragma omp parallel for collapse(2)
     for (int u = 0; u<vehicle.size(); ++u) {
@@ -60,21 +75,37 @@ double scheduling::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Tri
                                 savings += old_csp_cost-new_csp_cost;
                             }
 
+                            // Save the savings in the vector
+                            if (savings > 0)
+                                savings_vector[u][k][v][l] = savings;
+
                             // Check if the exchange is the best so far
-                            #pragma omp critical
+                            /*#pragma omp critical
                             if (evaluation::is_savings_maximum(savings, max_savings, u, v, k, l, exchange)) {
-                                /*logger.log(LogLevel::Debug, "Savings: "+std::to_string(savings));
-                                logger.log(LogLevel::Debug, "Max savings: "+std::to_string(max_savings));
-                                logger.log(LogLevel::Debug, "Exchange: "+std::to_string(exchange.first_vehicle_index)+" "+std::to_string(exchange.first_trip_index)+" "+std::to_string(exchange.second_vehicle_index)+" "+std::to_string(exchange.second_trip_index)); TODO: Delete*/
-
-
                                 max_savings = savings;
                                 exchange.first_vehicle_index = u;
-                                exchange.second_vehicle_index = v;
                                 exchange.first_trip_index = k;
+                                exchange.second_vehicle_index = v;
                                 exchange.second_trip_index = l;
-                          }
+                          }*/
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    // Find the indices with the maximum savings and record that in the exchange object
+    for (int u = 0; u<vehicle.size(); ++u) {
+        for (int v = u+1; v<vehicle.size(); ++v) {
+            for (int k = 1; k<vehicle[u].trip_id.size()-1; ++k) {
+                for (int l = 1; l<vehicle[v].trip_id.size()-1; ++l) {
+                    if (savings_vector[u][k][v][l] > max_savings) {
+                        max_savings = savings_vector[u][k][v][l];
+                        exchange.first_vehicle_index = u;
+                        exchange.first_trip_index = k;
+                        exchange.second_vehicle_index = v;
+                        exchange.second_trip_index = l;
                     }
                 }
             }
@@ -96,7 +127,7 @@ double scheduling::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>&
         old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data);
 
     // Create variables to store savings for u, k, v, l
-    /*std::vector<std::vector<std::vector<std::vector<double>>>> savings_vector(vehicle.size());
+    std::vector<std::vector<std::vector<std::vector<double>>>> savings_vector(vehicle.size());
     for (int u=0;u<vehicle.size();++u) {
         savings_vector[u].resize(vehicle[u].trip_id.size());
         for (int k=0;k<vehicle[u].trip_id.size();++k) {
@@ -108,7 +139,7 @@ double scheduling::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>&
                 }
             }
         }
-    }*/
+    }
 
 
     //  Insert trip l of vehicle v after trip k of vehicle u
@@ -164,23 +195,19 @@ double scheduling::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>&
                                 }
 
                                 // Save the savings in the vector
-                                //if (savings > 0)
-                                //    savings_vector[u][k][v][l] = savings;
+                                if (savings > 0)
+                                    savings_vector[u][k][v][l] = savings;
 
                                 // Check if the exchange is the best so far
                                 // Perform this check in a critical section
-                                #pragma omp critical
+                                /*#pragma omp critical
                                 if (evaluation::is_savings_maximum(savings, max_savings, u, v, k, l, shift)) {
-                                    /*logger.log(LogLevel::Info, "Savings: "+std::to_string(savings));
-                                    logger.log(LogLevel::Info, "Max savings: "+std::to_string(max_savings));
-                                    logger.log(LogLevel::Info, "Shift: "+std::to_string(shift.dest_vehicle_index)+" "+std::to_string(shift.dest_trip_index)+" "+std::to_string(shift.source_vehicle_index)+" "+std::to_string(shift.source_trip_index));*/
-
                                     max_savings = savings;
                                     shift.dest_vehicle_index = u;
                                     shift.dest_trip_index = k;
                                     shift.source_vehicle_index = v;
                                     shift.source_trip_index = l;
-                                }
+                                }*/
                             }
                         }
                     }
@@ -193,14 +220,24 @@ double scheduling::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>&
     /*for (auto& curr_vehicle:vehicle)
         curr_vehicle.log_member_data();*/
 
-    // Log the savings vector along with the indices
-    /*logger.log(LogLevel::Info, "Savings vector: ");
-    for (int u=0;u<vehicle.size();++u)
-        for (int k=0;k<vehicle[u].trip_id.size();++k)
-            for (int v=0;v<vehicle.size();++v)
-                for (int l=0;l<vehicle[v].trip_id.size();++l)
-                    if (savings_vector[u][k][v][l]>0)
-                        logger.log(LogLevel::Info, std::to_string(u)+" "+std::to_string(k)+" "+std::to_string(v)+" "+std::to_string(l)+" "+std::to_string(savings_vector[u][k][v][l]));*/
+    // Find the indices with the maximum savings and record that in the Shift object
+    for (int u = 0; u<vehicle.size(); ++u) {
+        for (int v = 0; v<vehicle.size(); ++v) {
+            for (int k = 1; k<vehicle[u].trip_id.size()-1; ++k) {
+                for (int l = 1; l<vehicle[v].trip_id.size()-1; ++l) {
+                    if (u!=v) {
+                        if (savings_vector[u][k][v][l] > max_savings) {
+                            max_savings = savings_vector[u][k][v][l];
+                            shift.dest_vehicle_index = u;
+                            shift.dest_trip_index = k;
+                            shift.source_vehicle_index = v;
+                            shift.source_trip_index = l;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     return max_savings;
 }
@@ -216,6 +253,15 @@ double scheduling::exchange_depots(std::vector<Vehicle>& vehicle, std::vector<Tr
     double old_csp_cost = 0.0;
     if (SOLVE_CSP_JOINTLY)
         old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data);
+
+    // Create variables to store savings for u and v
+    std::vector<std::vector<double>> savings_vector(vehicle.size());
+    for (int u=0;u<vehicle.size();++u) {
+        savings_vector[u].resize(vehicle.size());
+        for (int v=0;v<vehicle.size();++v) {
+            savings_vector[u][v] = 0.0;
+        }
+    }
 
     //  Exchange the last trips of vehicles u and v. Depot trips are always compatible.
     #pragma omp parallel for collapse(2)
@@ -254,22 +300,36 @@ double scheduling::exchange_depots(std::vector<Vehicle>& vehicle, std::vector<Tr
                     savings += old_csp_cost-new_csp_cost;
                 }
 
-                // Check if the exchange is the best so far
-                #pragma omp critical
-                if (evaluation::is_savings_maximum(savings, max_savings, u, v, k, l, exchange)) {
-                    /*logger.log(LogLevel::Debug, "Savings: "+std::to_string(savings));
-                    logger.log(LogLevel::Debug, "Max savings: "+std::to_string(max_savings));
-                    logger.log(LogLevel::Debug, "Exchange: "+std::to_string(exchange.first_vehicle_index)+" "+std::to_string(exchange.first_trip_index)+" "+std::to_string(exchange.second_vehicle_index)+" "+std::to_string(exchange.second_trip_index));*/ // TODO: Delete
+                // Save the savings in the vector
+                if (savings > 0)
+                    savings_vector[u][v] = savings;
 
+                // Check if the exchange is the best so far
+                /*#pragma omp critical
+                if (evaluation::is_savings_maximum(savings, max_savings, u, v, k, l, exchange)) {
                     max_savings = savings;
                     exchange.first_vehicle_index = u;
-                    exchange.second_vehicle_index = v;
                     exchange.first_trip_index = k;
+                    exchange.second_vehicle_index = v;
                     exchange.second_trip_index = l;
-               }
+               }*/
             }
         }
     }
+
+    // Find the indices with the maximum savings and record that in the exchange object
+    for (int u = 0; u<vehicle.size(); ++u) {
+        for (int v = u+1; v<vehicle.size(); ++v) {
+            if (savings_vector[u][v] > max_savings) {
+                max_savings = savings_vector[u][v];
+                exchange.first_vehicle_index = u;
+                exchange.first_trip_index = vehicle[u].trip_id.size()-1;
+                exchange.second_vehicle_index = v;
+                exchange.second_trip_index = vehicle[v].trip_id.size()-1;
+            }
+        }
+    }
+
     return max_savings;
 }
 
