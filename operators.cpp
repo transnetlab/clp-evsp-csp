@@ -43,9 +43,9 @@ double scheduling::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Tri
 
     // Exchange trips k and l of vehicles u and v. Pairs are created as collapse throws errors depending on the compiler
     #pragma omp parallel for
-    for (const auto &p : pairs) {
-        int u = p.first;
-        int v = p.second;
+    for (int p = 0; p<pairs.size(); ++p) {
+        int u = pairs[p].first;
+        int v = pairs[p].second;
         // Log which thread is solving which exchange
         /*int thread_id = omp_get_thread_num();
         #pragma omp critical
@@ -283,9 +283,9 @@ double scheduling::exchange_depots(std::vector<Vehicle>& vehicle, std::vector<Tr
 
     // Exchange trips k and l of vehicles u and v. Pairs are created as collapse throws errors depending on the compiler
     #pragma omp parallel for
-    for (const auto &p : pairs) {
-        int u = p.first;
-        int v = p.second;
+    for (int p = 0; p<pairs.size(); ++p) {
+        int u = pairs[p].first;
+        int v = pairs[p].second;
         // Store a vector of trip_id vectors after swapping trips
         std::vector<std::vector<int>> swapped_rotations;
 
