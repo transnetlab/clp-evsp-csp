@@ -414,10 +414,15 @@ void postprocessing::write_output_data(std::vector<Vehicle>& vehicle, std::vecto
 
     // Write the cost of the solution and the problem settings
     double cost = evaluation::calculate_objective(vehicle, trip, terminal, data);
-    summary_file << data.num_trips << ", " << data.num_terminals << ", " << vehicle.size() << ", "
-                 << num_charging_stations
-                 << ", " << std::fixed << std::setprecision(2) << cost << ", " << csp_cost << ", " << cost+csp_cost
-                 << ", " << data.runtime << std::endl;
+
+    if (SOLVE_CSP_JOINTLY)
+        summary_file << data.num_trips << ", " << data.num_terminals << ", " << num_charging_stations << ", "
+                     << vehicle.size() << ", " << std::fixed << std::setprecision(2) << cost-csp_cost << ", "
+                     << csp_cost << ", " << cost << ", " << data.runtime << std::endl;
+    else
+        summary_file << data.num_trips << ", " << data.num_terminals << ", " << num_charging_stations << ", "
+                     << vehicle.size() << ", " << std::fixed << std::setprecision(2) << cost << ", "
+                     << csp_cost << ", " << cost+csp_cost << ", " << data.runtime << std::endl;
 
     // Write the constants used in the model
     /*summary_file << " (Settings: Vehicle cost: " << VEHICLE_COST << ", " << "Charge station cost: " << CHARGE_LOC_COST

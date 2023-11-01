@@ -27,12 +27,13 @@
 
 Logger logger(true);
 int test;
+bool SOLVE_CSP_JOINTLY = false;
 
 int main(int argc, char* argv[])
 {
     // Read the instance as command line argument. If not provided, use the default instance
     Data data; // Vector of parameters
-    data.instance = (argc>1) ? argv[1] : "Cornwall";
+    data.instance = (argc>1) ? argv[1] : "Ann_Arbor";
 
     // Delete any old log files if present and create a new one. Set logging level.
     std::remove(("../output/"+data.instance+"_log.txt").c_str());
@@ -54,8 +55,17 @@ int main(int argc, char* argv[])
     // Local search for charging locations which also includes scheduling operators
     // locations::optimize_stations(vehicle, trip, terminal, data);
 
+    // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
+    diversification::optimize_rotations(vehicle, trip, terminal, data);
+
     // Only optimize rotations. No changes to charging locations are made here.
     scheduling::optimize_rotations(vehicle, trip, terminal, data);
+
+    logger.log(LogLevel::Info, "Restarting scheduling with warm start solution...");
+
+    // Only optimize rotations. No changes to charging locations are made here.
+    // SOLVE_CSP_JOINTLY = true;
+    // scheduling::optimize_rotations(vehicle, trip, terminal, data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
     // diversification::optimize_rotations(vehicle, trip, terminal, data);
@@ -68,7 +78,6 @@ int main(int argc, char* argv[])
     data.end_time_stamp = std::chrono::steady_clock::now();
     data.runtime = double(std::chrono::duration_cast<std::chrono::milliseconds>(
             data.end_time_stamp-data.start_time_stamp).count())/1000.0; // in seconds
-    logger.log(LogLevel::Info, "Local search completed in "+std::to_string(data.runtime)+" seconds.");
 
     // Log final vehicle rotations
     evaluation::calculate_utilization(vehicle, trip, terminal);
@@ -78,4 +87,5 @@ int main(int argc, char* argv[])
     // Postprocessing
     postprocessing::check_solution(vehicle, trip, terminal, data);
     postprocessing::write_output_data(vehicle, trip, terminal, csp_cost, data);
+    logger.log(LogLevel::Info, "Local search completed in "+std::to_string(data.runtime)+" seconds.");
 }
