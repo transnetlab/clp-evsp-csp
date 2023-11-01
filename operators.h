@@ -9,6 +9,7 @@
 #include <random>
 #include <sstream>
 #include <climits>
+#include <utility>
 #include <map>
 
 class Exchange {

@@ -20,6 +20,11 @@
  * Break ties lexicographically in exchanges and shifts to make parallel results match the serial code?
  * Check if the version where opening gives savings and we break works better*/
 
+/* Solve joint problem from the starting point of the sequential problem. What is the %savings
+ * Integrate CSP in objective function calculation
+ * Try variants of scheduling -- shift first and exchange later, random between the two, integrate diversification
+*/
+
 Logger logger(true);
 int test;
 
@@ -27,7 +32,7 @@ int main(int argc, char* argv[])
 {
     // Read the instance as command line argument. If not provided, use the default instance
     Data data; // Vector of parameters
-    data.instance = (argc>1) ? argv[1] : "Ann_Arbor";
+    data.instance = (argc>1) ? argv[1] : "Cornwall";
 
     // Delete any old log files if present and create a new one. Set logging level.
     std::remove(("../output/"+data.instance+"_log.txt").c_str());

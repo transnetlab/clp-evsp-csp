@@ -35,60 +35,72 @@ double scheduling::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Tri
         }
     }
 
-    //  Exchange trips k and l of vehicles u and v
-    #pragma omp parallel for collapse(2)
-    for (int u = 0; u<vehicle.size(); ++u) {
-        for (int v = u+1; v<vehicle.size(); ++v) {
-            std::vector<int> update_vehicle_indices = {u, v};
-            for (int k = 1; k<vehicle[u].trip_id.size()-1; ++k) {
-                for (int l = 1; l<vehicle[v].trip_id.size()-1; ++l) {
-                    // Store a vector of trip_id vectors after swapping trips
-                    std::vector<std::vector<int>> swapped_rotations;
+    // Pre-compute the pairs
+    std::vector<std::pair<int, int>> pairs;
+    for (int u = 0; u<vehicle.size(); ++u)
+        for (int v = u+1; v<vehicle.size(); ++v)
+            pairs.emplace_back(u, v);
 
-                    double savings = 0.0;
-                    // Check if the exchanges is time compatible
-                    if (evaluation::is_two_exchange_compatible(vehicle, trip, u, v, k, l)) {
-                        // Check if exchanges are charge feasible. Push the original trip_ids to swapped_rotations
-                        swapped_rotations.clear();
-                        swapped_rotations.push_back(vehicle[u].trip_id);  // This has index 0 in swapped_rotations
-                        swapped_rotations.push_back(vehicle[v].trip_id);  // This has index 1 in swapped_rotations
+    // Exchange trips k and l of vehicles u and v. Pairs are created as collapse throws errors depending on the compiler
+    #pragma omp parallel for
+    for (const auto &p : pairs) {
+        int u = p.first;
+        int v = p.second;
+        // Log which thread is solving which exchange
+        /*int thread_id = omp_get_thread_num();
+        #pragma omp critical
+        logger.log(LogLevel::Info, "Thread "+std::to_string(thread_id)+" solving exchange between vehicles "
+            +std::to_string(u)+" and "+std::to_string(v));*/
 
-                        // Exchange trips k and l of vehicles u and v in swapped_rotations
-                        int temp = swapped_rotations[0][k];
-                        swapped_rotations[0][k] = swapped_rotations[1][l];
-                        swapped_rotations[1][l] = temp;
+        std::vector<int> update_vehicle_indices = {u, v};
+        for (int k = 1; k<vehicle[u].trip_id.size()-1; ++k) {
+            for (int l = 1; l<vehicle[v].trip_id.size()-1; ++l) {
+                // Store a vector of trip_id vectors after swapping trips
+                std::vector<std::vector<int>> swapped_rotations;
 
-                        if (evaluation::are_rotations_charge_feasible(trip, terminal, swapped_rotations)) {
-                            // Calculate savings in deadheading from performing the exchange
-                            savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, u, v, k, l);
-                            savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, v, u, l, k);
+                double savings = 0.0;
+                // Check if the exchanges is time compatible
+                if (evaluation::is_two_exchange_compatible(vehicle, trip, u, v, k, l)) {
+                    // Check if exchanges are charge feasible. Push the original trip_ids to swapped_rotations
+                    swapped_rotations.clear();
+                    swapped_rotations.push_back(vehicle[u].trip_id);  // This has index 0 in swapped_rotations
+                    swapped_rotations.push_back(vehicle[v].trip_id);  // This has index 1 in swapped_rotations
 
-                            if (SOLVE_CSP_JOINTLY) {
-                                // Update a copy of the vehicle rotations
-                                std::vector<Vehicle> vehicle_copy = vehicle;
-                                vehicle_copy[u].trip_id = swapped_rotations[0];
-                                vehicle_copy[v].trip_id = swapped_rotations[1];
+                    // Exchange trips k and l of vehicles u and v in swapped_rotations
+                    int temp = swapped_rotations[0][k];
+                    swapped_rotations[0][k] = swapped_rotations[1][l];
+                    swapped_rotations[1][l] = temp;
 
-                                // Solve the CSP model for the copy
-                                double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal,
-                                        data);
-                                savings += old_csp_cost-new_csp_cost;
-                            }
+                    if (evaluation::are_rotations_charge_feasible(trip, terminal, swapped_rotations)) {
+                        // Calculate savings in deadheading from performing the exchange
+                        savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, u, v, k, l);
+                        savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, v, u, l, k);
 
-                            // Save the savings in the vector
-                            if (savings > 0)
-                                savings_vector[u][k][v][l] = savings;
+                        if (SOLVE_CSP_JOINTLY) {
+                            // Update a copy of the vehicle rotations
+                            std::vector<Vehicle> vehicle_copy = vehicle;
+                            vehicle_copy[u].trip_id = swapped_rotations[0];
+                            vehicle_copy[v].trip_id = swapped_rotations[1];
 
-                            // Check if the exchange is the best so far
-                            /*#pragma omp critical
-                            if (evaluation::is_savings_maximum(savings, max_savings, u, v, k, l, exchange)) {
-                                max_savings = savings;
-                                exchange.first_vehicle_index = u;
-                                exchange.first_trip_index = k;
-                                exchange.second_vehicle_index = v;
-                                exchange.second_trip_index = l;
-                          }*/
+                            // Solve the CSP model for the copy
+                            double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal,
+                                    data);
+                            savings += old_csp_cost-new_csp_cost;
                         }
+
+                        // Save the savings in the vector
+                        if (savings > 0)
+                            savings_vector[u][k][v][l] = savings;
+
+                        // Check if the exchange is the best so far
+                        /*#pragma omp critical
+                        if (evaluation::is_savings_maximum(savings, max_savings, u, v, k, l, exchange)) {
+                            max_savings = savings;
+                            exchange.first_vehicle_index = u;
+                            exchange.first_trip_index = k;
+                            exchange.second_vehicle_index = v;
+                            exchange.second_trip_index = l;
+                      }*/
                     }
                 }
             }
@@ -263,57 +275,63 @@ double scheduling::exchange_depots(std::vector<Vehicle>& vehicle, std::vector<Tr
         }
     }
 
-    //  Exchange the last trips of vehicles u and v. Depot trips are always compatible.
-    #pragma omp parallel for collapse(2)
-    for (int u = 0; u<vehicle.size(); ++u) {
-        for (int v = u+1; v<vehicle.size(); ++v) {
-            // Store a vector of trip_id vectors after swapping trips
-            std::vector<std::vector<int>> swapped_rotations;
+    // Pre-compute the pairs
+    std::vector<std::pair<int, int>> pairs;
+    for (int u = 0; u<vehicle.size(); ++u)
+        for (int v = u+1; v<vehicle.size(); ++v)
+            pairs.emplace_back(u, v);
 
-            std::vector<int> update_vehicle_indices = {u, v};
-            int k = vehicle[u].trip_id.size()-1;
-            int l = vehicle[v].trip_id.size()-1;
-            double savings = 0.0;
+    // Exchange trips k and l of vehicles u and v. Pairs are created as collapse throws errors depending on the compiler
+    #pragma omp parallel for
+    for (const auto &p : pairs) {
+        int u = p.first;
+        int v = p.second;
+        // Store a vector of trip_id vectors after swapping trips
+        std::vector<std::vector<int>> swapped_rotations;
 
-            swapped_rotations.clear();
-            swapped_rotations.push_back(vehicle[u].trip_id);  // This has index 0 in swapped_rotations
-            swapped_rotations.push_back(vehicle[v].trip_id);  // This has index 1 in swapped_rotations
+        std::vector<int> update_vehicle_indices = {u, v};
+        int k = vehicle[u].trip_id.size()-1;
+        int l = vehicle[v].trip_id.size()-1;
+        double savings = 0.0;
 
-            // Exchange trips k and l of vehicles u and v in swapped_rotations
-            int temp = swapped_rotations[0][k];
-            swapped_rotations[0][k] = swapped_rotations[1][l];
-            swapped_rotations[1][l] = temp;
+        swapped_rotations.clear();
+        swapped_rotations.push_back(vehicle[u].trip_id);  // This has index 0 in swapped_rotations
+        swapped_rotations.push_back(vehicle[v].trip_id);  // This has index 1 in swapped_rotations
 
-            if (evaluation::are_rotations_charge_feasible(trip, terminal, swapped_rotations)) {
-                // Calculate savings in deadheading from performing the exchange
-                savings += evaluation::calculate_depot_replacement_cost(vehicle, trip, u, v, k, l);
-                savings += evaluation::calculate_depot_replacement_cost(vehicle, trip, v, u, l, k);
+        // Exchange trips k and l of vehicles u and v in swapped_rotations
+        int temp = swapped_rotations[0][k];
+        swapped_rotations[0][k] = swapped_rotations[1][l];
+        swapped_rotations[1][l] = temp;
 
-                if (SOLVE_CSP_JOINTLY) {
-                    // Update a copy of the vehicle rotations
-                    std::vector<Vehicle> vehicle_copy = vehicle;
-                    vehicle_copy[u].trip_id = swapped_rotations[0];
-                    vehicle_copy[v].trip_id = swapped_rotations[1];
+        if (evaluation::are_rotations_charge_feasible(trip, terminal, swapped_rotations)) {
+            // Calculate savings in deadheading from performing the exchange
+            savings += evaluation::calculate_depot_replacement_cost(vehicle, trip, u, v, k, l);
+            savings += evaluation::calculate_depot_replacement_cost(vehicle, trip, v, u, l, k);
 
-                    // Solve the CSP model for the copy
-                    double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal, data);
-                    savings += old_csp_cost-new_csp_cost;
-                }
+            if (SOLVE_CSP_JOINTLY) {
+                // Update a copy of the vehicle rotations
+                std::vector<Vehicle> vehicle_copy = vehicle;
+                vehicle_copy[u].trip_id = swapped_rotations[0];
+                vehicle_copy[v].trip_id = swapped_rotations[1];
 
-                // Save the savings in the vector
-                if (savings > 0)
-                    savings_vector[u][v] = savings;
-
-                // Check if the exchange is the best so far
-                /*#pragma omp critical
-                if (evaluation::is_savings_maximum(savings, max_savings, u, v, k, l, exchange)) {
-                    max_savings = savings;
-                    exchange.first_vehicle_index = u;
-                    exchange.first_trip_index = k;
-                    exchange.second_vehicle_index = v;
-                    exchange.second_trip_index = l;
-               }*/
+                // Solve the CSP model for the copy
+                double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal, data);
+                savings += old_csp_cost-new_csp_cost;
             }
+
+            // Save the savings in the vector
+            if (savings > 0)
+                savings_vector[u][v] = savings;
+
+            // Check if the exchange is the best so far
+            /*#pragma omp critical
+            if (evaluation::is_savings_maximum(savings, max_savings, u, v, k, l, exchange)) {
+                max_savings = savings;
+                exchange.first_vehicle_index = u;
+                exchange.first_trip_index = k;
+                exchange.second_vehicle_index = v;
+                exchange.second_trip_index = l;
+           }*/
         }
     }
 
