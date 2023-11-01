@@ -47,10 +47,10 @@ int main(int argc, char* argv[])
     preprocessing::initialize_inputs(vehicle, trip, terminal, data);
 
     // Local search for charging locations which also includes scheduling operators
-    locations::optimize_stations(vehicle, trip, terminal, data);
+    // locations::optimize_stations(vehicle, trip, terminal, data);
 
     // Only optimize rotations. No changes to charging locations are made here.
-    // scheduling::optimize_rotations(vehicle, trip, terminal, data);
+    scheduling::optimize_rotations(vehicle, trip, terminal, data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
     // diversification::optimize_rotations(vehicle, trip, terminal, data);
