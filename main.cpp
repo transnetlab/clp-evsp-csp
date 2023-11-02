@@ -10,13 +10,13 @@
 /* TODOs:
  * Find the first and last time steps and use them in the CSP
  * Use static variables in functions to count the number of times certain functions were used
- * Create a function for sequential operators shifting more than two trips? Can we do this with exchanges as well?
  * Run profiler https://www.jetbrains.com/help/clion/cmake-profiling.html
  * Parallelize operators
  * Modify bash files to run concurrently on Gandalf
  * Check logging outputs for different levels
  * Create a pull request and merge with main
  * Log results at every exit point
+ * Enforce time budgets for each operator
  * Break ties lexicographically in exchanges and shifts to make parallel results match the serial code?
  * Check if the version where opening gives savings and we break works better*/
 
@@ -26,14 +26,15 @@
 */
 
 Logger logger(true);
-int test;
-bool SOLVE_CSP_JOINTLY = false;
+bool SOLVE_CSP_JOINTLY = true;
+bool PERFORM_THREE_EXCHANGES = false;
+bool SHIFT_ALL_TRIPS = true;
 
 int main(int argc, char* argv[])
 {
     // Read the instance as command line argument. If not provided, use the default instance
     Data data; // Vector of parameters
-    data.instance = (argc>1) ? argv[1] : "Ann_Arbor";
+    data.instance = (argc>1) ? argv[1] : "CityLink";
 
     // Delete any old log files if present and create a new one. Set logging level.
     std::remove(("../output/"+data.instance+"_log.txt").c_str());
@@ -52,20 +53,19 @@ int main(int argc, char* argv[])
     // Read input data on trips and stops and initialize bus rotations
     preprocessing::initialize_inputs(vehicle, trip, terminal, data);
 
-    // Local search for charging locations which also includes scheduling operators
-    // locations::optimize_stations(vehicle, trip, terminal, data);
-
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
     diversification::optimize_rotations(vehicle, trip, terminal, data);
 
     // Only optimize rotations. No changes to charging locations are made here.
-    scheduling::optimize_rotations(vehicle, trip, terminal, data);
-
-    logger.log(LogLevel::Info, "Restarting scheduling with warm start solution...");
-
-    // Only optimize rotations. No changes to charging locations are made here.
-    // SOLVE_CSP_JOINTLY = true;
     // scheduling::optimize_rotations(vehicle, trip, terminal, data);
+
+    // Local search for charging locations which also includes scheduling operators
+    locations::optimize_stations(vehicle, trip, terminal, data);
+
+    // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
+    // PERFORM_THREE_EXCHANGES = true;
+    // SHIFT_ALL_TRIPS = false;
+    // diversification::optimize_rotations(vehicle, trip, terminal, data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
     // diversification::optimize_rotations(vehicle, trip, terminal, data);

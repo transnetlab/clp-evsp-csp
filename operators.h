@@ -13,6 +13,8 @@
 #include <map>
 
 bool extern SOLVE_CSP_JOINTLY;
+bool extern PERFORM_THREE_EXCHANGES;  // Flag to turn on/off 3-exchange operators
+bool extern SHIFT_ALL_TRIPS;  // Flag to turn on/off 2-shift operators
 
 class Exchange {
 public:

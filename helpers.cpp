@@ -433,7 +433,7 @@ void postprocessing::write_output_data(std::vector<Vehicle>& vehicle, std::vecto
                  << array_to_string(ENERGY_LEFT_INTERVAL) << ", " << "Energy price: " << array_to_string(ENERGY_PRICE)
                  << ", " << "Power capacity price: " << POWER_CAPACITY_PRICE << ", " << "Idle time threshold: "
                  << IDLE_TIME_THRESHOLD << ", " << "Perform three exchanges: " << PERFORM_THREE_EXCHANGES << ", "
-                 << "Perform two shifts: " << PERFORM_TWO_SHIFTS << ", " << "Swap charge stations: "
+                 << "Perform two shifts: " << SHIFT_ALL_TRIPS << ", " << "Swap charge stations: "
                  << SWAP_CHARGE_STATIONS << ", " << "Shift all trips threshold: " << SHIFT_ALL_TRIPS_THRESHOLD << ")" << std::endl;*/
 
     summary_file.close();
