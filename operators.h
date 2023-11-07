@@ -9,7 +9,12 @@
 #include <random>
 #include <sstream>
 #include <climits>
+#include <utility>
 #include <map>
+
+bool extern SOLVE_CSP_JOINTLY;
+bool extern PERFORM_THREE_EXCHANGES;  // Flag to turn on/off 3-exchange operators
+bool extern SHIFT_ALL_TRIPS;  // Flag to turn on/off 2-shift operators
 
 class Exchange {
 public:
@@ -84,12 +89,11 @@ void optimize_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Te
 
 namespace diversification {
 double exchange_three_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ThreeExchange&);
-void shift_two_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
-double shift_all_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int);
+double shift_all_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data& data,
+        int);
 void perform_three_exchange(std::vector<Vehicle>&, ThreeExchange&);
-void perform_two_shift(std::vector<Vehicle>&, TwoShift&);
 
-void apply_operators(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&);
+void apply_operators(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
 void optimize_rotations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
 }
 
@@ -111,7 +115,6 @@ double calculate_depot_replacement_cost(std::vector<Vehicle>&, std::vector<Trip>
 double calculate_trip_addition_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
 double calculate_trip_removal_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int);
 
-double should_update_exchange(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&, Exchange&);
 bool is_savings_maximum(double, double, int, int, int, int, Exchange&);
 bool is_savings_maximum(double, double, int, int, int, int, Shift&);
 }

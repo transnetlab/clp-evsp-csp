@@ -8,7 +8,7 @@ void preprocessing::read_trip_data(std::vector<Trip>& trip, Data& data)
     std::ifstream input_file("../data/"+data.instance+"/trip_data.txt");
     if (!input_file.is_open()) {
         logger.log(LogLevel::Error, "Unable to open trip data file");
-        postprocessing::write_output_data("Error: Unable to open trip data file");
+        postprocessing::write_summary("Error: Unable to open trip data file");
         exit(1); // Terminate with error
     }
 
@@ -52,7 +52,7 @@ void preprocessing::read_trip_data(std::vector<Trip>& trip, Data& data)
     for (int i = 0; i<data.num_trips; ++i) {
         if (trip[i].id!=i+1) {
             logger.log(LogLevel::Error, "Trip IDs are not continuous");
-            postprocessing::write_output_data("Error: Trip IDs are not continuous");
+            postprocessing::write_summary("Error: Trip IDs are not continuous");
             exit(1);
         }
     }
@@ -66,7 +66,7 @@ void preprocessing::read_terminal_data(std::vector<Terminal>& terminal, Data& da
     std::ifstream input_file("../data/"+data.instance+"/terminal_data.txt");
     if (!input_file.is_open()) {
         logger.log(LogLevel::Error, "Unable to open terminal data file");
-        postprocessing::write_output_data("Error: Unable to open terminal data file");
+        postprocessing::write_summary("Error: Unable to open terminal data file");
         exit(1); // Terminate with error
     }
 
@@ -122,7 +122,7 @@ void preprocessing::create_depot_trips(std::vector<Trip>& trip, std::vector<Term
         // Double check if trip IDs are consistent
         if (curr_terminal.trip_id!=temp_trip.id) {
             logger.log(LogLevel::Error, "Mismatch in trip IDs for depots found");
-            postprocessing::write_output_data("Error: Mismatch in trip IDs for depots found");
+            postprocessing::write_summary("Error: Mismatch in trip IDs for depots found");
             exit(1);
         }
     }
@@ -142,19 +142,19 @@ void preprocessing::read_trip_pair_data(std::vector<Trip>& trip, Data& data)
     // Terminate with error if the files cannot be opened
     if (!input_file_compatibility.is_open()) {
         logger.log(LogLevel::Error, "Unable to open compatibility matrix data");
-        postprocessing::write_output_data("Error: Unable to open compatibility matrix data");
+        postprocessing::write_summary("Error: Unable to open compatibility matrix data");
         exit(1); // terminate with error
     }
 
     if (!input_file_deadheading.is_open()) {
         logger.log(LogLevel::Error, "Unable to open deadheading matrix data");
-        postprocessing::write_output_data("Error: Unable to open deadheading matrix data");
+        postprocessing::write_summary("Error: Unable to open deadheading matrix data");
         exit(1); // terminate with error
     }
 
     if (!input_file_idle_time.is_open()) {
         logger.log(LogLevel::Error, "Unable to open idle time matrix data");
-        postprocessing::write_output_data("Error: Unable to open idle time matrix data");
+        postprocessing::write_summary("Error: Unable to open idle time matrix data");
         exit(1); // terminate with error
     }
 
@@ -203,7 +203,7 @@ void preprocessing::initialize_vehicle_rotations(std::vector<Vehicle>& vehicle, 
     std::ifstream input_file("../data/"+data.instance+"/initial_vehicle_rotations.txt");
     if (!input_file.is_open()) {
         logger.log(LogLevel::Error, "Unable to open vehicle rotations file");
-        postprocessing::write_output_data("Error: Unable to open vehicle rotations file");
+        postprocessing::write_summary("Error: Unable to open vehicle rotations file");
         exit(1); // terminate with error
     }
 
@@ -258,7 +258,7 @@ void preprocessing::create_energy_price_intervals(Data& data)
 
 // Function to log input data
 void preprocessing::log_input_data(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data)
+        std::vector<Terminal>& terminal)
 { // TODO: Log data members
     // Log the set of trips including the augmented depot trips
     logger.log(LogLevel::Debug,
@@ -308,7 +308,7 @@ void preprocessing::initialize_inputs(std::vector<Vehicle>& vehicle, std::vector
     preprocessing::create_energy_price_intervals(data);
 
     // Log the input data
-    preprocessing::log_input_data(vehicle, trip, terminal, data);
+    preprocessing::log_input_data(vehicle, trip, terminal);
 
     logger.log(LogLevel::Info, "Inputs to the model initialized successfully");
 }
@@ -329,7 +329,7 @@ void postprocessing::check_solution(std::vector<Vehicle>& vehicle, std::vector<T
             if (is_trip_assigned[curr_trip-1]) {
                 logger.log(LogLevel::Error,
                         "Trip ID"+std::to_string(curr_trip)+" is in more than one vehicle. Sanity check status: Fail");
-                postprocessing::write_output_data(
+                postprocessing::write_summary(
                         "Error: Trip ID"+std::to_string(curr_trip)+" is in more than one vehicle");
                 exit(1);
             }
@@ -344,7 +344,7 @@ void postprocessing::check_solution(std::vector<Vehicle>& vehicle, std::vector<T
         if (!is_trip_assigned[i]) {
             logger.log(LogLevel::Error,
                     "Trip "+std::to_string(i+1)+" is not assigned to any vehicle. Sanity check status: Fail");
-            postprocessing::write_output_data(
+            postprocessing::write_summary(
                     "Error: Trip "+std::to_string(i+1)+" is not assigned to any vehicle in the final solution");
             exit(1);
         }
@@ -358,7 +358,7 @@ void postprocessing::check_solution(std::vector<Vehicle>& vehicle, std::vector<T
         rotations.push_back(curr_vehicle.trip_id);
     if (!evaluation::are_rotations_charge_feasible(trip, terminal, rotations)) {
         logger.log(LogLevel::Error, "Solution is not charge feasible. Sanity check status: Fail");
-        postprocessing::write_output_data("Error: Final solution is not charge feasible");
+        postprocessing::write_summary("Error: Final solution is not charge feasible");
         exit(1);
     }
     logger.log(LogLevel::Info, "Solution is charge feasible");
@@ -366,7 +366,7 @@ void postprocessing::check_solution(std::vector<Vehicle>& vehicle, std::vector<T
 }
 
 // Function that saves an error message in the summary file if the code does not run to completion
-void postprocessing::write_output_data(std::string message)
+void postprocessing::write_summary(std::string message)
 {
     // Write the error message
     std::ofstream summary_file("../output/Summary.txt", std::ios_base::app);
@@ -380,7 +380,7 @@ void postprocessing::write_output_data(std::string message)
 }
 
 // Function that saves the instance name
-void postprocessing::write_output_data(std::string instance, std::time_t curr_time)
+void postprocessing::write_summary(std::string instance, std::time_t curr_time)
 {
     // Write the error message
     std::ofstream summary_file("../output/Summary.txt", std::ios_base::app);
@@ -394,7 +394,7 @@ void postprocessing::write_output_data(std::string instance, std::time_t curr_ti
 }
 
 // Function to write the summary outputs to a file
-void postprocessing::write_output_data(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+void postprocessing::write_summary(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
         std::vector<Terminal>& terminal, double csp_cost, Data& data)
 {
     // Write the output data to a file
@@ -414,10 +414,15 @@ void postprocessing::write_output_data(std::vector<Vehicle>& vehicle, std::vecto
 
     // Write the cost of the solution and the problem settings
     double cost = evaluation::calculate_objective(vehicle, trip, terminal, data);
-    summary_file << data.num_trips << ", " << data.num_terminals << ", " << vehicle.size() << ", "
-                 << num_charging_stations
-                 << ", " << std::fixed << std::setprecision(2) << cost << ", " << csp_cost << ", " << cost+csp_cost
-                 << ", " << data.runtime << std::endl;
+
+    if (SOLVE_CSP_JOINTLY)
+        summary_file << data.num_trips << ", " << data.num_terminals << ", " << num_charging_stations << ", "
+                     << vehicle.size() << ", " << std::fixed << std::setprecision(2) << cost-csp_cost << ", "
+                     << csp_cost << ", " << cost << ", " << data.runtime << std::endl;
+    else
+        summary_file << data.num_trips << ", " << data.num_terminals << ", " << num_charging_stations << ", "
+                     << vehicle.size() << ", " << std::fixed << std::setprecision(2) << cost << ", "
+                     << csp_cost << ", " << cost+csp_cost << ", " << data.runtime << std::endl;
 
     // Write the constants used in the model
     /*summary_file << " (Settings: Vehicle cost: " << VEHICLE_COST << ", " << "Charge station cost: " << CHARGE_LOC_COST
@@ -428,9 +433,57 @@ void postprocessing::write_output_data(std::vector<Vehicle>& vehicle, std::vecto
                  << array_to_string(ENERGY_LEFT_INTERVAL) << ", " << "Energy price: " << array_to_string(ENERGY_PRICE)
                  << ", " << "Power capacity price: " << POWER_CAPACITY_PRICE << ", " << "Idle time threshold: "
                  << IDLE_TIME_THRESHOLD << ", " << "Perform three exchanges: " << PERFORM_THREE_EXCHANGES << ", "
-                 << "Perform two shifts: " << PERFORM_TWO_SHIFTS << ", " << "Swap charge stations: "
+                 << "Perform two shifts: " << SHIFT_ALL_TRIPS << ", " << "Swap charge stations: "
                  << SWAP_CHARGE_STATIONS << ", " << "Shift all trips threshold: " << SHIFT_ALL_TRIPS_THRESHOLD << ")" << std::endl;*/
 
     summary_file.close();
 }
 
+
+// Function to write the summary outputs to a file
+void postprocessing::write_vehicle_results(std::vector<Vehicle>& vehicle, Data& data)
+{
+    // Write the vehicle rotation data to a file
+    logger.log(LogLevel::Info, "Writing vehicle rotation results to file...");
+    std::ofstream vehicle_results_file("../output/"+data.instance+"_vehicle_results.txt");
+    if (!vehicle_results_file.is_open()) {
+        logger.log(LogLevel::Error, "Unable to open summary file");
+        exit(1); // Terminate with error
+    }
+
+    // Write the vehicle rotation data to a file
+    int id = 1;  // New IDs are created since splitting trips can lead to non-continguous IDs
+    for (const auto& curr_vehicle : vehicle) {
+        vehicle_results_file << id << " ";
+        for (const auto& curr_trip : curr_vehicle.trip_id)
+            vehicle_results_file << curr_trip << " ";
+        vehicle_results_file << std::endl;
+        ++id;
+    }
+
+    vehicle_results_file.close();
+}
+
+// Function to write the summary outputs to a file
+void postprocessing::write_terminal_results(std::vector<Terminal>& terminal, Data& data)
+{
+    // Write the terminal data to a file
+    logger.log(LogLevel::Info, "Writing charging station location results to file...");
+    std::ofstream terminal_results_file("../output/"+data.instance+"_terminal_results.txt");
+    if (!terminal_results_file.is_open()) {
+        logger.log(LogLevel::Error, "Unable to open summary file");
+        exit(1); // Terminate with error
+    }
+
+    // Write the vehicle rotation data to a file
+    for (const auto& curr_terminal : terminal) {
+        terminal_results_file << curr_terminal.id << " ";
+        terminal_results_file << curr_terminal.stop_id << " ";
+        terminal_results_file << curr_terminal.trip_id << " ";
+        terminal_results_file << curr_terminal.is_depot << " ";
+        terminal_results_file << curr_terminal.is_charge_station;
+        terminal_results_file << std::endl;
+    }
+
+    terminal_results_file.close();
+}

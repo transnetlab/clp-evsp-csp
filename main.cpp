@@ -8,20 +8,26 @@
 #include <chrono>
 
 /* TODOs:
- * Find the first and last time steps and use them in the CSP
+ * Perform sanity checks by adding up all the savings using static double variables
  * Use static variables in functions to count the number of times certain functions were used
- * Create a function for sequential operators shifting more than two trips? Can we do this with exchanges as well?
  * Run profiler https://www.jetbrains.com/help/clion/cmake-profiling.html
- * Parallelize operators
  * Modify bash files to run concurrently on Gandalf
  * Check logging outputs for different levels
- * Create a pull request and merge with main
  * Log results at every exit point
- * Break ties lexicographically in exchanges and shifts to make parallel results match the serial code?
- * Check if the version where opening gives savings and we break works better*/
+ * Test results for a few iterations by replacing update vehicle indices with a full update
+ * Enforce time budgets for each operator
+ * Check if the version where opening gives savings, and we break works better*/
+
+/* Solve joint problem from the starting point of the sequential problem. What is the %savings
+ * Combine regular and depot exchanges
+ * Run an experiment to copy MIP models vs. creating them from scratch
+ * Try variants of scheduling -- Shift first and exchange later, random between the two, integrate diversification
+*/
 
 Logger logger(true);
-int test;
+bool SOLVE_CSP_JOINTLY = true;
+bool PERFORM_THREE_EXCHANGES = false;
+bool SHIFT_ALL_TRIPS = true;
 
 int main(int argc, char* argv[])
 {
@@ -36,7 +42,7 @@ int main(int argc, char* argv[])
 
     logger.log(LogLevel::Info, "Starting local search for instance "+data.instance+"...");
     data.start_time_stamp = std::chrono::steady_clock::now();
-    postprocessing::write_output_data(data.instance, std::time(nullptr));  // TODO: Check if this is needed
+    postprocessing::write_summary(data.instance, std::time(nullptr));  // TODO: Check if this is needed
 
     // Initialize variables
     std::vector<Trip> trip;  // Vector of trips
@@ -46,24 +52,33 @@ int main(int argc, char* argv[])
     // Read input data on trips and stops and initialize bus rotations
     preprocessing::initialize_inputs(vehicle, trip, terminal, data);
 
-    // Local search for charging locations which also includes scheduling operators
-    // locations::optimize_stations(vehicle, trip, terminal, data);
+    // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
+    diversification::optimize_rotations(vehicle, trip, terminal, data);
 
     // Only optimize rotations. No changes to charging locations are made here.
-    scheduling::optimize_rotations(vehicle, trip, terminal, data);
+    // scheduling::optimize_rotations(vehicle, trip, terminal, data);
+
+    // Local search for charging locations which also includes scheduling operators
+    locations::optimize_stations(vehicle, trip, terminal, data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
+    // PERFORM_THREE_EXCHANGES = true;
+    // SHIFT_ALL_TRIPS = false;
     // diversification::optimize_rotations(vehicle, trip, terminal, data);
 
     // Solve the charge scheduling problem
-    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data);  // TODO: Do we need both versions?
+    data.log_csp_solution = true;
+    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data);
+
+    // Log number of successful and unsuccessful openings from data
+    logger.log(LogLevel::Info, "Number of successful openings: "+std::to_string(data.num_successful_openings));
+    logger.log(LogLevel::Info, "Number of successful closures: "+std::to_string(data.num_successful_closures));
 
     // Find runtime
     logger.log(LogLevel::Info, "Finishing local search...");
     data.end_time_stamp = std::chrono::steady_clock::now();
     data.runtime = double(std::chrono::duration_cast<std::chrono::milliseconds>(
             data.end_time_stamp-data.start_time_stamp).count())/1000.0; // in seconds
-    logger.log(LogLevel::Info, "Local search completed in "+std::to_string(data.runtime)+" seconds.");
 
     // Log final vehicle rotations
     evaluation::calculate_utilization(vehicle, trip, terminal);
@@ -72,5 +87,8 @@ int main(int argc, char* argv[])
 
     // Postprocessing
     postprocessing::check_solution(vehicle, trip, terminal, data);
-    postprocessing::write_output_data(vehicle, trip, terminal, csp_cost, data);
+    postprocessing::write_summary(vehicle, trip, terminal, csp_cost, data);
+    postprocessing::write_vehicle_results(vehicle, data);
+    postprocessing::write_terminal_results(terminal, data);
+    logger.log(LogLevel::Info, "Local search completed in "+std::to_string(data.runtime)+" seconds.");
 }
