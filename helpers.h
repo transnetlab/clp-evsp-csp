@@ -31,15 +31,17 @@ void create_depot_trips(std::vector<Trip>&, std::vector<Terminal>&, Data&);
 void read_trip_pair_data(std::vector<Trip>&, Data&);
 void initialize_vehicle_rotations(std::vector<Vehicle>&, Data&);
 void create_energy_price_intervals(Data&);
-void log_input_data(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
+void log_input_data(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&);
 void initialize_inputs(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
 }
 
 namespace postprocessing {
 void check_solution(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
-void write_output_data(std::string);
-void write_output_data(std::string, std::time_t);
-void write_output_data(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, double, Data&);
+void write_summary(std::string message);
+void write_summary(std::string instance, std::time_t curr_time);
+void write_summary(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal, double csp_cost, Data& data);
+void write_vehicle_results(std::vector<Vehicle>&, Data&);
+void write_terminal_results(std::vector<Terminal>&, Data&);
 }
 
 #endif //EBUS_VNS_HELPERS_H

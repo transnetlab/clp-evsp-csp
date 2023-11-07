@@ -39,6 +39,11 @@ public:
 
     double runtime;
 
+    int num_successful_openings;  // TODO: Log more fine grained stats such as what was the utilization and how many vehicles had to be adjusted.
+    int num_successful_closures;
+
+    bool log_csp_solution = false;  // Flag to log the CSP solution
+
     // Constructor
     Data()
     {
