@@ -445,7 +445,7 @@ void postprocessing::write_vehicle_results(std::vector<Vehicle>& vehicle, Data& 
 {
     // Write the vehicle rotation data to a file
     logger.log(LogLevel::Info, "Writing vehicle rotation results to file...");
-    std::ofstream vehicle_results_file("../output/"+data.instance+"_vehicle_results.txt", std::ios_base::app);
+    std::ofstream vehicle_results_file("../output/"+data.instance+"_vehicle_results.txt");
     if (!vehicle_results_file.is_open()) {
         logger.log(LogLevel::Error, "Unable to open summary file");
         exit(1); // Terminate with error
@@ -469,7 +469,7 @@ void postprocessing::write_terminal_results(std::vector<Terminal>& terminal, Dat
 {
     // Write the terminal data to a file
     logger.log(LogLevel::Info, "Writing charging station location results to file...");
-    std::ofstream terminal_results_file("../output/"+data.instance+"_terminal_results.txt", std::ios_base::app);
+    std::ofstream terminal_results_file("../output/"+data.instance+"_terminal_results.txt");
     if (!terminal_results_file.is_open()) {
         logger.log(LogLevel::Error, "Unable to open summary file");
         exit(1); // Terminate with error

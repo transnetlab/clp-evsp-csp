@@ -89,7 +89,8 @@ void optimize_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Te
 
 namespace diversification {
 double exchange_three_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ThreeExchange&);
-double shift_all_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, int);
+double shift_all_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data& data,
+        int);
 void perform_three_exchange(std::vector<Vehicle>&, ThreeExchange&);
 
 void apply_operators(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);

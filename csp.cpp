@@ -8,7 +8,7 @@ void initialization::update_vehicles(std::vector<Vehicle>& vehicle, std::vector<
     //logger.log(LogLevel::Debug, "Updating CSP variables for all vehicles");
 
     // Clear old CSP variables (if any) and update them
-    for (int v = 0; v<vehicle.size(); v++) {
+    for (int v = 0; v<vehicle.size(); ++v) {
         vehicle[v].clear_csp_variables();
         vehicle[v].populate_csp_variables_cag(trip, terminal);
     }
@@ -38,9 +38,9 @@ void initialization::update_vehicles(std::vector<Vehicle>& vehicle, std::vector<
     //logger.log(LogLevel::Info, "Updating CSP variables for all vehicles");
 
     // Clear old CSP variables (if any) and update them
-    for (int i = 0; i<update_vehicle_indices.size(); i++) {
-        vehicle[update_vehicle_indices[i]].clear_csp_variables();
-        vehicle[update_vehicle_indices[i]].populate_csp_variables_cag(trip, terminal);
+    for (int index = 0; index<update_vehicle_indices.size(); ++index) {
+        vehicle[update_vehicle_indices[index]].clear_csp_variables();
+        vehicle[update_vehicle_indices[index]].populate_csp_variables_cag(trip, terminal);
     }
 
     // Log the results from the initialization step

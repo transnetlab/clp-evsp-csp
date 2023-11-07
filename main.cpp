@@ -14,6 +14,7 @@
  * Modify bash files to run concurrently on Gandalf
  * Check logging outputs for different levels
  * Log results at every exit point
+ * Test results for a few iterations by replacing update vehicle indices with a full update
  * Enforce time budgets for each operator
  * Check if the version where opening gives savings, and we break works better*/
 
@@ -24,7 +25,7 @@
 */
 
 Logger logger(true);
-bool SOLVE_CSP_JOINTLY = false;
+bool SOLVE_CSP_JOINTLY = true;
 bool PERFORM_THREE_EXCHANGES = false;
 bool SHIFT_ALL_TRIPS = true;
 
@@ -55,13 +56,10 @@ int main(int argc, char* argv[])
     diversification::optimize_rotations(vehicle, trip, terminal, data);
 
     // Only optimize rotations. No changes to charging locations are made here.
-    scheduling::optimize_rotations(vehicle, trip, terminal, data);
-
-    SOLVE_CSP_JOINTLY = true;
-    scheduling::optimize_rotations(vehicle, trip, terminal, data);
+    // scheduling::optimize_rotations(vehicle, trip, terminal, data);
 
     // Local search for charging locations which also includes scheduling operators
-    // locations::optimize_stations(vehicle, trip, terminal, data);
+    locations::optimize_stations(vehicle, trip, terminal, data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
     // PERFORM_THREE_EXCHANGES = true;
@@ -71,6 +69,10 @@ int main(int argc, char* argv[])
     // Solve the charge scheduling problem
     data.log_csp_solution = true;
     double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data);
+
+    // Log number of successful and unsuccessful openings from data
+    logger.log(LogLevel::Info, "Number of successful openings: "+std::to_string(data.num_successful_openings));
+    logger.log(LogLevel::Info, "Number of successful closures: "+std::to_string(data.num_successful_closures));
 
     // Find runtime
     logger.log(LogLevel::Info, "Finishing local search...");
