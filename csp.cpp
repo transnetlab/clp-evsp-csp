@@ -757,9 +757,38 @@ double csp::solve_split_model(std::vector<Vehicle>& vehicle, std::vector<Termina
         //Display results and log the solution
         optimal_objective = cplex.getObjValue();
         /*logger.log(LogLevel::Debug, "Solution status = "+std::to_string(cplex.getStatus()));
-        logger.log(LogLevel::Debug, "Solution value = "+std::to_string(cplex.getObjValue()));
-        csp::log_solution_split_model(cplex, vehicle, variable, vehicles_requiring_charging,
-                terminals_with_charging_station);*/
+        logger.log(LogLevel::Debug, "Solution value = "+std::to_string(cplex.getObjValue()));*/
+        //csp::log_solution_split_model(cplex, vehicle, variable, vehicles_requiring_charging,
+        //        terminals_with_charging_station);
+
+        int v,s;
+        double charge_level;
+        int charge_time_window;
+        for (int b = 0; b<vehicles_requiring_charging.size(); ++b) {
+            v = vehicles_requiring_charging[b];
+            for (int k = 0; k<vehicle[v].charge_terminal.size()-1; ++k) {
+                s = terminal_to_index[vehicle[v].charge_terminal[k]-1];  // Terminal index in the subset of indices
+                if (k==0) {  // First opportunity
+                    // Run a loop from start charge time to end charge time at this opportunity
+                    IloExpr lhs(env);
+                    charge_level = cplex.getValue(variable.charge_level_var[b][k]);
+                    charge_time_window = vehicle[v].end_charge_time[k]-vehicle[v].start_charge_time[k];
+                    for (int t = 0; t<charge_time_window; ++t)
+                        charge_level -= cplex.getValue(variable.energy_input_var[b][k][t]);
+
+                    // Print the charge level and the indices b and k
+                    std::cout <<  v << " " << k << " " << charge_level << std::endl;
+                }  // Not the first opportunity
+                // Run a loop from start charge time to end charge time at this opportunity
+                charge_level = cplex.getValue(variable.charge_level_var[b][k+1]);
+                charge_time_window = vehicle[v].end_charge_time[k+1]-vehicle[v].start_charge_time[k+1];
+                for (int t = 0; t<charge_time_window; ++t)
+                    charge_level -= cplex.getValue(variable.energy_input_var[b][k+1][t]);
+
+                // Print the charge level and the indices b and k
+                std::cout <<  v << " " << k+1 << " " << charge_level << std::endl;
+            }
+        }
     }
         // Catch exceptions thrown by CPLEX
     catch (IloException& exception) {

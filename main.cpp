@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 {
     // Read the instance as command line argument. If not provided, use the default instance
     Data data; // Vector of parameters
-    data.instance = (argc>1) ? argv[1] : "Ann_Arbor";
+    data.instance = (argc>1) ? argv[1] : "Cascades_East";
 
     // Delete any old log files if present and create a new one. Set logging level.
     std::remove(("../output/"+data.instance+"_log.txt").c_str());
@@ -53,13 +53,13 @@ int main(int argc, char* argv[])
     preprocessing::initialize_inputs(vehicle, trip, terminal, data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
-    diversification::optimize_rotations(vehicle, trip, terminal, data);
+    // diversification::optimize_rotations(vehicle, trip, terminal, data);
 
     // Only optimize rotations. No changes to charging locations are made here.
     // scheduling::optimize_rotations(vehicle, trip, terminal, data);
 
     // Local search for charging locations which also includes scheduling operators
-    locations::optimize_stations(vehicle, trip, terminal, data);
+    // locations::optimize_stations(vehicle, trip, terminal, data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
     // PERFORM_THREE_EXCHANGES = true;
