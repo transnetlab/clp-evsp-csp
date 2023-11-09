@@ -14,6 +14,7 @@
  * Modify bash files to run concurrently on Gandalf
  * Check logging outputs for different levels
  * Log results at every exit point
+ * Switch to plurals for vectors
  * Test results for a few iterations by replacing update vehicle indices with a full update
  * Enforce time budgets for each operator
  * Check if the version where opening gives savings, and we break works better*/
@@ -33,7 +34,7 @@ int main(int argc, char* argv[])
 {
     // Read the instance as command line argument. If not provided, use the default instance
     Data data; // Vector of parameters
-    data.instance = (argc>1) ? argv[1] : "Cascades_East";
+    data.instance = (argc>1) ? argv[1] : "Intercity";
 
     // Delete any old log files if present and create a new one. Set logging level.
     std::remove(("../output/"+data.instance+"_log.txt").c_str());
@@ -68,7 +69,9 @@ int main(int argc, char* argv[])
 
     // Solve the charge scheduling problem
     data.log_csp_solution = true;
-    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data);
+    double csp_cost;
+    for (int iter=0;iter<100;++iter)
+        csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data);
 
     // Log number of successful and unsuccessful openings from data
     logger.log(LogLevel::Info, "Number of successful openings: "+std::to_string(data.num_successful_openings));
