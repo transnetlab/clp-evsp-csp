@@ -117,6 +117,9 @@ double solve_split_model(std::vector<Vehicle>&, std::vector<Terminal>&, Data& da
 double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
 double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&,
         std::vector<int>&);
+double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&, std::string);
+double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&,
+        std::vector<int>&, std::string);
 }
 
 #endif  //EBUS_VNS_CSP_H

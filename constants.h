@@ -15,9 +15,9 @@ constexpr double CHARGE_RATE = 1.67;  // Rate at which charging happens km/min
 constexpr double MAX_ENERGY_PER_MIN = 2.505;  // Maximum energy IN kWh that can be charged in a minute
 constexpr double ENERGY_PER_KM = 1.5;  // Energy consumed in kWh/km
 
-constexpr int NUM_PRICE_INTERVALS = 5;  // Number of energy price points
-constexpr std::array<int, NUM_PRICE_INTERVALS + 1> ENERGY_LEFT_INTERVAL = {0, 540, 840, 960, 1260, 1440};
-constexpr std::array<double, NUM_PRICE_INTERVALS> ENERGY_PRICE = {400.0, 300.0, 400.0, 1120.0, 400.0};
+constexpr int NUM_PRICE_INTERVALS = 6;  // Number of energy price points
+constexpr std::array<int, NUM_PRICE_INTERVALS + 1> ENERGY_LEFT_INTERVAL = {0, 540, 840, 960, 1260, 1440, 1840};
+constexpr std::array<double, NUM_PRICE_INTERVALS> ENERGY_PRICE = {400.0, 300.0, 400.0, 1120.0, 400.0, 400.0};
 
 constexpr double POWER_CAPACITY_PRICE = 600;  // in Euros/kW
 

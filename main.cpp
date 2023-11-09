@@ -21,12 +21,11 @@
 
 /* Solve joint problem from the starting point of the sequential problem. What is the %savings
  * Combine regular and depot exchanges
- * Run an experiment to copy MIP models vs. creating them from scratch
  * Try variants of scheduling -- Shift first and exchange later, random between the two, integrate diversification
 */
 
 Logger logger(true);
-bool SOLVE_CSP_JOINTLY = true;
+bool SOLVE_CSP_JOINTLY = false;
 bool PERFORM_THREE_EXCHANGES = false;
 bool SHIFT_ALL_TRIPS = true;
 
@@ -34,7 +33,7 @@ int main(int argc, char* argv[])
 {
     // Read the instance as command line argument. If not provided, use the default instance
     Data data; // Vector of parameters
-    data.instance = (argc>1) ? argv[1] : "Intercity";
+    data.instance = (argc>1) ? argv[1] : "Ann_Arbor";
 
     // Delete any old log files if present and create a new one. Set logging level.
     std::remove(("../output/"+data.instance+"_log.txt").c_str());
@@ -69,9 +68,7 @@ int main(int argc, char* argv[])
 
     // Solve the charge scheduling problem
     data.log_csp_solution = true;
-    double csp_cost;
-    for (int iter=0;iter<100;++iter)
-        csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data);
+    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data, "Uniform");
 
     // Log number of successful and unsuccessful openings from data
     logger.log(LogLevel::Info, "Number of successful openings: "+std::to_string(data.num_successful_openings));

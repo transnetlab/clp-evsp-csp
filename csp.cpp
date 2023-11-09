@@ -102,8 +102,8 @@ void csp::create_variables_uniform_model(IloEnv& env, const std::vector<Vehicle>
                 vehicle[v].charge_terminal.size());  // No. of terminal IDs at charge opportunities
         for (int k = 0; k<vehicle[v].charge_terminal.size(); ++k) {  // Iterate over charging opportunities
             variable.charge_level[b][k] = IloNumVar(env, MIN_CHARGE_LEVEL, MAX_CHARGE_LEVEL, IloNumVar::Float);
-            // var_name = "l("+std::to_string(v)+","+std::to_string(k)+")";  // Names are wrt original indices
-            // variable.charge_level[b][k].setName(var_name.c_str());
+            //var_name = "l("+std::to_string(v)+","+std::to_string(k)+")";  // Names are wrt original indices
+            //variable.charge_level[b][k].setName(var_name.c_str());
         }
     }
 
@@ -115,16 +115,16 @@ void csp::create_variables_uniform_model(IloEnv& env, const std::vector<Vehicle>
         for (int k = 0; k<vehicle[v].charge_terminal.size(); ++k) {
             charge_time_window = vehicle[v].end_charge_time[k]-vehicle[v].start_charge_time[k];
             variable.energy_input[b][k] = IloNumVar(env, 0.00, MAX_ENERGY_PER_MIN*charge_time_window, IloNumVar::Float);
-            // var_name = "w("+std::to_string(v)+","+std::to_string(k)+")";  // Names are wrt original indices
-            // variable.energy_input[b][k].setName(var_name.c_str());
+            //var_name = "w("+std::to_string(v)+","+std::to_string(k)+")";  // Names are wrt original indices
+            //variable.energy_input[b][k].setName(var_name.c_str());
         }
     }
 
     // Power input variables for each charging terminal. Names are wrt original indices
     for (int s = 0; s<terminals_with_charging_station.size(); ++s) {
         variable.terminal_charge_capacity[s] = IloNumVar(env, 0.00, IloInfinity, IloNumVar::Float);
-        // var_name = "z("+std::to_string(terminals_with_charging_station[s])+")";
-        // variable.terminal_charge_capacity[s].setName(var_name.c_str());
+        //var_name = "z("+std::to_string(terminals_with_charging_station[s])+")";
+        //variable.terminal_charge_capacity[s].setName(var_name.c_str());
     }
 }
 
@@ -138,18 +138,20 @@ void csp::create_constraints_uniform_model(IloEnv& env, IloModel& model, const s
     // Constraint 1: Energy balance constraint
     for (int b = 0; b<vehicles_requiring_charging.size(); ++b) {
         v = vehicles_requiring_charging[b];
-        for (int k = 0; k<vehicle[v].charge_terminal.size()-1; ++k) {
-            if (k==0) {  // First opportunity
-                // constraint_name = "energy_balance("+std::to_string(v)+","+std::to_string(k)+")";
-                // model.add(variable.charge_level[b][k]-variable.energy_input[b][k]==
-                //        MAX_CHARGE_LEVEL-vehicle[v].energy_till_charge_terminal[k]).setName(constraint_name.c_str());
 
-                model.add(variable.charge_level[b][k]-variable.energy_input[b][k]==
-                        MAX_CHARGE_LEVEL-vehicle[v].energy_till_charge_terminal[k]);
-            }  // Not the first opportunity
-            // constraint_name = "energy_balance("+std::to_string(v)+","+std::to_string(k+1)+")";
-            // model.add(variable.charge_level[b][k+1]-variable.charge_level[b][k]-variable.energy_input[b][k+1]==
-            // vehicle[v].energy_till_charge_terminal[k]-vehicle[v].energy_till_charge_terminal[k+1]).setName(
+        // First opportunity
+        //constraint_name = "energy_balance("+std::to_string(v)+","+std::to_string(k)+")";
+        //model.add(variable.charge_level[b][k]-variable.energy_input[b][k]==
+        //        MAX_CHARGE_LEVEL-vehicle[v].energy_till_charge_terminal[k]).setName(constraint_name.c_str());
+
+        model.add(variable.charge_level[b][0]-variable.energy_input[b][0]
+                ==MAX_CHARGE_LEVEL-vehicle[v].energy_till_charge_terminal[0]);
+
+        // Not the first opportunity
+        for (int k = 0; k<vehicle[v].charge_terminal.size()-1; ++k) {
+            //constraint_name = "energy_balance("+std::to_string(v)+","+std::to_string(k+1)+")";
+            //model.add(variable.charge_level[b][k+1]-variable.charge_level[b][k]-variable.energy_input[b][k+1]==
+            //vehicle[v].energy_till_charge_terminal[k]-vehicle[v].energy_till_charge_terminal[k+1]).setName(
             //        constraint_name.c_str());
             model.add(variable.charge_level[b][k+1]-variable.charge_level[b][k]-variable.energy_input[b][k+1]==
                     vehicle[v].energy_till_charge_terminal[k]-vehicle[v].energy_till_charge_terminal[k+1]);
@@ -160,8 +162,8 @@ void csp::create_constraints_uniform_model(IloEnv& env, IloModel& model, const s
     for (int b = 0; b<vehicles_requiring_charging.size(); ++b) {
         v = vehicles_requiring_charging[b];
         for (int k = 0; k<vehicle[v].charge_terminal.size(); ++k) { // Includes trip to the depot, hence +1
-            // constraint_name = "min_charge_level("+std::to_string(v)+","+std::to_string(k)+")";
-            // model.add(variable.charge_level[b][k]>=MIN_CHARGE_LEVEL+vehicle[v].energy_till_charge_terminal[k+1]
+            //constraint_name = "min_charge_level("+std::to_string(v)+","+std::to_string(k)+")";
+            //model.add(variable.charge_level[b][k]>=MIN_CHARGE_LEVEL+vehicle[v].energy_till_charge_terminal[k+1]
             //        -vehicle[v].energy_till_charge_terminal[k]).setName(constraint_name.c_str());
             model.add(variable.charge_level[b][k]>=MIN_CHARGE_LEVEL+vehicle[v].energy_till_charge_terminal[k+1]
                     -vehicle[v].energy_till_charge_terminal[k]);
@@ -242,8 +244,8 @@ void csp::create_constraints_uniform_model(IloEnv& env, IloModel& model, const s
             }
 
             // Add the max power constraint to the model
-            // constraint_name = "max_power("+std::to_string(terminals_with_charging_station[s])+","+std::to_string(c)+")";
-            // model.add(max_power<=variable.terminal_charge_capacity[s]).setName(constraint_name.c_str());
+            //constraint_name = "max_power("+std::to_string(terminals_with_charging_station[s])+","+std::to_string(c)+")";
+            //model.add(max_power<=variable.terminal_charge_capacity[s]).setName(constraint_name.c_str());
             model.add(max_power<=variable.terminal_charge_capacity[s]);
             max_power.end();
         }
@@ -259,16 +261,16 @@ void csp::create_objective_uniform_model(IloExpr& objective, const std::vector<V
         v = vehicles_requiring_charging[b];
 
         // Find the last end charging time across all vehicles and all opportunities
-        int last_end_charge_time = vehicle[v].end_charge_time[vehicle[v].charge_terminal.size()-1];
+        //int last_end_charge_time = vehicle[v].end_charge_time[vehicle[v].charge_terminal.size()-1];
 
         // If last charge time is greater than 1440, throw an error and exit
-        if (last_end_charge_time>1440) {
+        /*if (last_end_charge_time>1440) {
             std::cerr << "Error: Operations extend beyond a day to " << last_end_charge_time;
             std::cerr << "Adjust pricing in the constants file..." << std::endl;
             exit(1);
-        }
+        }*/
 
-        /*int k = 0;
+        int k = 0;
         int left_marker = vehicle[v].start_charge_time[k];
         std::vector<ChargeInterval> charge_interval(vehicle[v].charge_terminal.size());
         // Code to populate sub-intervals of the charging opportunities where prices are the same
@@ -297,9 +299,9 @@ void csp::create_objective_uniform_model(IloExpr& objective, const std::vector<V
                     left_marker = ENERGY_LEFT_INTERVAL[p+1];
                 }
             }
-        }*/
+        }
 
-        std::vector<ChargeInterval> charge_interval(vehicle[v].charge_terminal.size());
+        /*std::vector<ChargeInterval> charge_interval(vehicle[v].charge_terminal.size());
         // Code to populate sub-intervals of the charging opportunities where prices are the same
         for (int k = 0; k<vehicle[v].charge_terminal.size(); ++k) {
             int left_marker = vehicle[v].start_charge_time[k];
@@ -324,7 +326,7 @@ void csp::create_objective_uniform_model(IloExpr& objective, const std::vector<V
                     }
                 }
             }
-        }
+        }*/
 
         // Log vector members of charge opportunities
         logger.log(LogLevel::Verbose, "Charging opportunities for vehicle index "+std::to_string(v));
@@ -459,8 +461,8 @@ double csp::solve_uniform_model(std::vector<Vehicle>& vehicle, std::vector<Termi
 
         //Display results and log the solution
         optimal_objective = cplex.getObjValue();
-        logger.log(LogLevel::Debug, "Solution status = "+std::to_string(cplex.getStatus()));
-        logger.log(LogLevel::Debug, "Solution value = "+std::to_string(cplex.getObjValue()));
+        //logger.log(LogLevel::Debug, "Solution status = "+std::to_string(cplex.getStatus()));
+        //logger.log(LogLevel::Debug, "Solution value = "+std::to_string(cplex.getObjValue()));
         //csp::log_solution_uniform_model(cplex, vehicle, variable, vehicles_requiring_charging, terminals_with_charging_station);
     }
         // Catch exceptions thrown by CPLEX
@@ -484,7 +486,7 @@ void csp::create_variables_split_model(IloEnv& env, const std::vector<Vehicle>& 
     // Charging level of vehicle with index v and after charging at opportunity k
     // CPLEX index is b since some of the vehicles do not require charging
     int v;
-    std::string var_name;
+    //std::string var_name;
     for (int b = 0; b<vehicles_requiring_charging.size(); ++b) {
         v = vehicles_requiring_charging[b];  // Vehicle index
         variable.charge_level[b].resize(
@@ -530,29 +532,29 @@ void csp::create_constraints_split_model(IloEnv& env, IloModel& model, const std
         const std::vector<int>& terminals_with_charging_station, const std::vector<int>& terminal_to_index)
 {
     int v, s;
-    std::string constraint_name;
+    //std::string constraint_name;
 
     // Constraint 1: Energy balance constraint
     int charge_time_window;
     for (int b = 0; b<vehicles_requiring_charging.size(); ++b) {
         v = vehicles_requiring_charging[b];
+
+        // First opportunity -- run a loop from start charge time to end charge time at this opportunity
+        IloExpr lhs(env);
+        lhs += variable.charge_level[b][0];
+        charge_time_window = vehicle[v].end_charge_time[0]-vehicle[v].start_charge_time[0];
+        for (int t = 0; t<charge_time_window; ++t)
+            lhs -= variable.energy_input[b][0][t];
+
+        //constraint_name = "energy_balance("+std::to_string(v)+","+std::to_string(0)+")";
+        //model.add(lhs==MAX_CHARGE_LEVEL-vehicle[v].energy_till_charge_terminal[0]).setName(
+        //        constraint_name.c_str());
+        model.add(lhs==MAX_CHARGE_LEVEL-vehicle[v].energy_till_charge_terminal[0]);
+        lhs.end();
+
+        // Not the first opportunity -- run a loop from start charge time to end charge time at this opportunity
         for (int k = 0; k<vehicle[v].charge_terminal.size()-1; ++k) {
             s = terminal_to_index[vehicle[v].charge_terminal[k]-1];  // Terminal index in the subset of indices
-            if (k==0) {  // First opportunity
-                // Run a loop from start charge time to end charge time at this opportunity
-                IloExpr lhs(env);
-                lhs += variable.charge_level[b][k];
-                charge_time_window = vehicle[v].end_charge_time[k]-vehicle[v].start_charge_time[k];
-                for (int t = 0; t<charge_time_window; ++t)
-                    lhs -= variable.energy_input[b][k][t];
-
-                // constraint_name = "energy_balance("+std::to_string(v)+","+std::to_string(k)+")";
-                // model.add(lhs==MAX_CHARGE_LEVEL-vehicle[v].energy_till_charge_terminal[k]).setName(
-                //        constraint_name.c_str());
-                model.add(lhs==MAX_CHARGE_LEVEL-vehicle[v].energy_till_charge_terminal[k]);
-                lhs.end();
-            }  // Not the first opportunity
-            // Run a loop from start charge time to end charge time at this opportunity
             IloExpr lhs(env);
             lhs += variable.charge_level[b][k+1];
             lhs -= variable.charge_level[b][k];
@@ -767,53 +769,6 @@ double csp::solve_split_model(std::vector<Vehicle>& vehicle, std::vector<Termina
         logger.log(LogLevel::Debug, "Solution value = "+std::to_string(cplex.getObjValue()));*/
         //csp::log_solution_split_model(cplex, vehicle, variable, vehicles_requiring_charging,
         //        terminals_with_charging_station);
-
-        /*int v,s;
-        double charge_level;
-        int charge_time_window;
-        for (int b = 0; b<vehicles_requiring_charging.size(); ++b) {
-            v = vehicles_requiring_charging[b];
-            for (int k = 0; k<vehicle[v].charge_terminal.size()-1; ++k) {
-                s = terminal_to_index[vehicle[v].charge_terminal[k]-1];  // Terminal index in the subset of indices
-                if (k==0) {  // First opportunity
-                    // Run a loop from start charge time to end charge time at this opportunity
-                    IloExpr lhs(env);
-                    charge_level = cplex.getValue(variable.charge_level[b][k]);
-                    charge_time_window = vehicle[v].end_charge_time[k]-vehicle[v].start_charge_time[k];
-                    for (int t = 0; t<charge_time_window; ++t)
-                        charge_level -= cplex.getValue(variable.energy_input[b][k][t]);
-
-                    // Print the charge level and the indices b and k
-                    std::cout <<  v << " " << k << " " << charge_level << std::endl;
-                }  // Not the first opportunity
-                // Run a loop from start charge time to end charge time at this opportunity
-                charge_level = cplex.getValue(variable.charge_level[b][k+1]);
-                charge_time_window = vehicle[v].end_charge_time[k+1]-vehicle[v].start_charge_time[k+1];
-                for (int t = 0; t<charge_time_window; ++t)
-                    charge_level -= cplex.getValue(variable.energy_input[b][k+1][t]);
-
-                // Print the charge level and the indices b and k
-                std::cout <<  v << " " << k+1 << " " << charge_level << std::endl;
-            }
-        }
-
-        // Calculate the objective across stations
-        double objective_across_vehicles = 0.0;
-        for (int b = 0; b<vehicles_requiring_charging.size(); ++b) {
-            objective_across_vehicles = 0.0;
-            v = vehicles_requiring_charging[b];
-            for (int k = 0; k<vehicle[v].charge_terminal.size(); ++k) {
-                int charge_time_window = vehicle[v].end_charge_time[k]-vehicle[v].start_charge_time[k];
-                for (int t = 0; t<charge_time_window; ++t)
-                    objective_across_vehicles +=
-                            cplex.getValue(variable.energy_input[b][k][t])*data.energy_price_per_min[vehicle[v].start_charge_time[k]+t];
-            }
-            std::cout << "Objective for vehicle index " << v << " = " << objective_across_vehicles << std::endl;
-        }
-
-        for (const auto& curr_vehicle: vehicle)
-            curr_vehicle.log_csp_member_data();*/
-
     }
         // Catch exceptions thrown by CPLEX
     catch (IloException& exception) {
@@ -848,6 +803,38 @@ double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector
     if (CSP_SOLUTION_TYPE==SolutionType::Uniform)
         return csp::solve_uniform_model(vehicle, terminal, data);
     if (CSP_SOLUTION_TYPE==SolutionType::Split)
+        return csp::solve_split_model(vehicle, terminal, data);
+    else {
+        std::cerr << "Error: Invalid charging model" << std::endl;
+        exit(1);
+    }
+}
+
+// Function that updates all vehicle rotations with CSP data and selects the CSP model based on user parameters
+double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, Data& data, std::string type)
+{
+    initialization::update_vehicles(vehicle, trip, terminal);
+
+    if (type=="Uniform")
+        return csp::solve_uniform_model(vehicle, terminal, data);
+    if (type=="Split")
+        return csp::solve_split_model(vehicle, terminal, data);
+    else {
+        std::cerr << "Error: Invalid charging model" << std::endl;
+        exit(1);
+    }
+}
+
+// Function that updates a subset of vehicle rotations with CSP data and selects the CSP model based on user parameters
+double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, Data& data, std::vector<int>& update_vehicle_indices, std::string type)
+{
+    initialization::update_vehicles(vehicle, trip, terminal, data, update_vehicle_indices);
+
+    if (type=="Uniform")
+        return csp::solve_uniform_model(vehicle, terminal, data);
+    if (type=="Split")
         return csp::solve_split_model(vehicle, terminal, data);
     else {
         std::cerr << "Error: Invalid charging model" << std::endl;
