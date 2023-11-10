@@ -278,7 +278,7 @@ public:
         energy_till_charge_terminal.push_back(cumulative_energy);
 
         // If cumulative energy is less than the maximum charge level, then charging is not required
-        is_charging_required = (cumulative_energy>MAX_CHARGE_LEVEL);
+        is_charging_required = (cumulative_energy>(MAX_CHARGE_LEVEL-MIN_CHARGE_LEVEL));
     }
 };
 
