@@ -88,6 +88,8 @@ void initialization::create_sets(std::vector<Vehicle>& vehicle, std::vector<Term
     logger.log(LogLevel::Debug, "Terminals with charging: "+vector_to_string(terminals_with_charging_station));*/
 }
 
+// This function is used to create three types of variables -- charge levels after different opportunities, energy
+// input during different opportunities, and power capacity at charging stations.
 void csp::create_variables_uniform_model(IloEnv& env, const std::vector<Vehicle>& vehicle,
         UniformModelVariable& variable, const std::vector<int>& vehicles_requiring_charging,
         const std::vector<int>& terminals_with_charging_station)
@@ -140,16 +142,16 @@ void csp::create_constraints_uniform_model(IloEnv& env, IloModel& model, const s
         v = vehicles_requiring_charging[b];
 
         // First opportunity
-        //constraint_name = "energy_balance("+std::to_string(v)+","+std::to_string(k)+")";
-        //model.add(variable.charge_level[b][k]-variable.energy_input[b][k]==
-        //        MAX_CHARGE_LEVEL-vehicle[v].energy_till_charge_terminal[k]).setName(constraint_name.c_str());
+        // constraint_name = "energy_balance("+std::to_string(v)+","+std::to_string(0)+")";
+        //model.add(variable.charge_level[b][0]-variable.energy_input[b][0]==
+        //        MAX_CHARGE_LEVEL-vehicle[v].energy_till_charge_terminal[0]).setName(constraint_name.c_str());
 
         model.add(variable.charge_level[b][0]-variable.energy_input[b][0]
                 ==MAX_CHARGE_LEVEL-vehicle[v].energy_till_charge_terminal[0]);
 
         // Not the first opportunity
         for (int k = 0; k<vehicle[v].charge_terminal.size()-1; ++k) {
-            //constraint_name = "energy_balance("+std::to_string(v)+","+std::to_string(k+1)+")";
+            // constraint_name = "energy_balance("+std::to_string(v)+","+std::to_string(k+1)+")";
             //model.add(variable.charge_level[b][k+1]-variable.charge_level[b][k]-variable.energy_input[b][k+1]==
             //vehicle[v].energy_till_charge_terminal[k]-vehicle[v].energy_till_charge_terminal[k+1]).setName(
             //        constraint_name.c_str());
@@ -270,7 +272,7 @@ void csp::create_objective_uniform_model(IloExpr& objective, const std::vector<V
             exit(1);
         }*/
 
-        int k = 0;
+        /*int k = 0;
         int left_marker = vehicle[v].start_charge_time[k];
         std::vector<ChargeInterval> charge_interval(vehicle[v].charge_terminal.size());
         // Code to populate sub-intervals of the charging opportunities where prices are the same
@@ -299,9 +301,9 @@ void csp::create_objective_uniform_model(IloExpr& objective, const std::vector<V
                     left_marker = ENERGY_LEFT_INTERVAL[p+1];
                 }
             }
-        }
+        }*/
 
-        /*std::vector<ChargeInterval> charge_interval(vehicle[v].charge_terminal.size());
+        std::vector<ChargeInterval> charge_interval(vehicle[v].charge_terminal.size());
         // Code to populate sub-intervals of the charging opportunities where prices are the same
         for (int k = 0; k<vehicle[v].charge_terminal.size(); ++k) {
             int left_marker = vehicle[v].start_charge_time[k];
@@ -326,7 +328,7 @@ void csp::create_objective_uniform_model(IloExpr& objective, const std::vector<V
                     }
                 }
             }
-        }*/
+        }
 
         // Log vector members of charge opportunities
         logger.log(LogLevel::Verbose, "Charging opportunities for vehicle index "+std::to_string(v));
@@ -414,7 +416,6 @@ double csp::solve_uniform_model(std::vector<Vehicle>& vehicle, std::vector<Termi
         // Create decision variables
         logger.log(LogLevel::Debug, "Creating decision variables");
         UniformModelVariable variable(vehicles_requiring_charging.size(), terminals_with_charging_station.size());
-
         csp::create_variables_uniform_model(env, vehicle, variable, vehicles_requiring_charging,
                 terminals_with_charging_station);
 

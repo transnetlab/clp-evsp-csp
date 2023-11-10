@@ -21,6 +21,10 @@
 
 /* Solve joint problem from the starting point of the sequential problem. What is the %savings
  * Combine regular and depot exchanges
+ * Incorporate some of the code optimization techniques from the notes
+ * Use the reduced costs to update the savings
+ * Optimize rotation-opportunity pairs
+ * Optimize pricing for objective in uniform CSP
  * Try variants of scheduling -- Shift first and exchange later, random between the two, integrate diversification
 */
 
@@ -33,7 +37,7 @@ int main(int argc, char* argv[])
 {
     // Read the instance as command line argument. If not provided, use the default instance
     Data data; // Vector of parameters
-    data.instance = (argc>1) ? argv[1] : "Ann_Arbor";
+    data.instance = (argc>1) ? argv[1] : "LA_Go";
 
     // Delete any old log files if present and create a new one. Set logging level.
     std::remove(("../output/"+data.instance+"_log.txt").c_str());
@@ -53,13 +57,13 @@ int main(int argc, char* argv[])
     preprocessing::initialize_inputs(vehicle, trip, terminal, data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
-    // diversification::optimize_rotations(vehicle, trip, terminal, data);
+    diversification::optimize_rotations(vehicle, trip, terminal, data);
 
     // Only optimize rotations. No changes to charging locations are made here.
     // scheduling::optimize_rotations(vehicle, trip, terminal, data);
 
     // Local search for charging locations which also includes scheduling operators
-    // locations::optimize_stations(vehicle, trip, terminal, data);
+    locations::optimize_stations(vehicle, trip, terminal, data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
     // PERFORM_THREE_EXCHANGES = true;
@@ -68,7 +72,7 @@ int main(int argc, char* argv[])
 
     // Solve the charge scheduling problem
     data.log_csp_solution = true;
-    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data, "Uniform");
+    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data, "Split");
 
     // Log number of successful and unsuccessful openings from data
     logger.log(LogLevel::Info, "Number of successful openings: "+std::to_string(data.num_successful_openings));

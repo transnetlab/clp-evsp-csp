@@ -77,12 +77,12 @@ public:
     void log_member_data(Logger& logger) const
     {
         // Print this only if charging opportunities has at least two elements
-        if (period_index.size()>1) {
+        //if (period_index.size()>1) {
             logger.log(LogLevel::Verbose, "Overlap period index: "+vector_to_string(period_index));
             logger.log(LogLevel::Verbose, "Overlap within_period_duration: "+vector_to_string(within_period_duration));
             logger.log(LogLevel::Verbose, "Overlap start time: "+vector_to_string(start_time));
             logger.log(LogLevel::Verbose, "Overlap end time: "+vector_to_string(end_time));
-        }
+        //}
     }
 };
 
