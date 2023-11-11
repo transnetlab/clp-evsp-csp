@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 
     // Solve the charge scheduling problem
     data.log_csp_solution = true;
-    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data, "Split");
+    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data, "Uniform");
 
     // Log number of successful and unsuccessful openings from data
     logger.log(LogLevel::Info, "Number of successful openings: "+std::to_string(data.num_successful_openings));
