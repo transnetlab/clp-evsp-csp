@@ -63,6 +63,9 @@ public:
     int current_idle_time;  // Total idle time across all rotations. This measures the utilization of the terminal.
     int potential_idle_time; // Total idle time across all rotations if this were to be a charge station
 
+    // Variables for CSP
+    std::vector<std::pair<int, int>> rotation_opportunity_pair;
+
     // Constructor
     Terminal()
     {
@@ -87,7 +90,14 @@ public:
     void log_member_data() const
     {
         logger.log(LogLevel::Info, "Terminal ID, Stop ID, Trip ID, Is depot, Is charge station: "+std::to_string(id)+" "
-                +stop_id+" "+std::to_string(trip_id)+" "+std::to_string(is_depot)+" "+std::to_string(is_charge_station));
+                +stop_id+" "+std::to_string(trip_id)+" "+std::to_string(is_depot)+" "
+                +std::to_string(is_charge_station));
+    }
+
+    // Clear rotation opportunity pairs
+    void clear_rotation_opportunity_pairs()
+    {
+        rotation_opportunity_pair.clear();
     }
 };
 
@@ -174,14 +184,13 @@ public:
         }
     }
 
-    // Clear CSP variables
-    void clear_csp_variables()
+    // Clear CSP parameters
+    void clear_csp_parameters()
     {
         is_charging_required = false;
         charge_terminal.clear();
         start_charge_time.clear();
         end_charge_time.clear();
-        energy_till_charge_terminal.clear();
     }
 
     // Print members of the class
@@ -203,7 +212,7 @@ public:
     }
 
     // Populate CSP related variables under the charge and go policy
-    void populate_csp_variables_cag(const std::vector<Trip>& trip, const std::vector<Terminal>& terminal)
+    void populate_csp_parameters(const std::vector<Trip>& trip, const std::vector<Terminal>& terminal)
     {
         // If trip is empty, throw an error and exit
         if (trip_id.empty()) {
@@ -279,6 +288,17 @@ public:
 
         // If cumulative energy is less than the maximum charge level, then charging is not required
         is_charging_required = (cumulative_energy>(MAX_CHARGE_LEVEL-MIN_CHARGE_LEVEL));
+    }
+
+    // Populate rotation opportunity pairs used for uniform charging
+    void populate_rotation_opportunity_pairs(std::vector<Terminal>& terminal, int index)
+    {
+        if (is_charging_required) {
+            for (int k=0;k<charge_terminal.size();++k) {
+                // Make a pair of the vehicle index and the charge terminal index
+                terminal[charge_terminal[k]-1].rotation_opportunity_pair.push_back(std::make_pair(index,  k));
+            }
+        }
     }
 };
 

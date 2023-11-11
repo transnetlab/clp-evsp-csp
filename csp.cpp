@@ -9,8 +9,8 @@ void initialization::update_vehicles(std::vector<Vehicle>& vehicle, std::vector<
 
     // Clear old CSP variables (if any) and update them
     for (int v = 0; v<vehicle.size(); ++v) {
-        vehicle[v].clear_csp_variables();
-        vehicle[v].populate_csp_variables_cag(trip, terminal);
+        vehicle[v].clear_csp_parameters();
+        vehicle[v].populate_csp_parameters(trip, terminal);
     }
 
     // Log the results from the initialization step
@@ -39,8 +39,8 @@ void initialization::update_vehicles(std::vector<Vehicle>& vehicle, std::vector<
 
     // Clear old CSP variables (if any) and update them
     for (int index = 0; index<update_vehicle_indices.size(); ++index) {
-        vehicle[update_vehicle_indices[index]].clear_csp_variables();
-        vehicle[update_vehicle_indices[index]].populate_csp_variables_cag(trip, terminal);
+        vehicle[update_vehicle_indices[index]].clear_csp_parameters();
+        vehicle[update_vehicle_indices[index]].populate_csp_parameters(trip, terminal);
     }
 
     // Log the results from the initialization step
@@ -61,14 +61,33 @@ void initialization::update_vehicles(std::vector<Vehicle>& vehicle, std::vector<
     }*/
 }
 
+// Update the rotation opportunity pairs for the uniform CSP model
+void initialization::update_rotation_opportunities(std::vector<Vehicle>& vehicle, std::vector<Terminal>& terminal)
+{
+    //logger.log(LogLevel::Debug, "Updating rotation opportunity pairs for all vehicles");
+
+    // Clear old rotation opportunity pairs in the terminal class
+    for (auto& curr_terminal : terminal)
+        if (curr_terminal.is_charge_station)
+            curr_terminal.clear_rotation_opportunity_pairs();
+
+    // Update the rotation opportunity pairs in the vehicle class
+    for (int v = 0; v<vehicle.size(); ++v)
+        vehicle[v].populate_rotation_opportunity_pairs(terminal, v);
+}
+
 void initialization::create_sets(std::vector<Vehicle>& vehicle, std::vector<Terminal>& terminal,
         std::vector<int>& vehicles_requiring_charging, std::vector<int>& terminals_with_charging_station)
 {
     logger.log(LogLevel::Debug, "Preprocessing the data for the CSP problem");
     // Determine the indices of vehicles which require charging
-    for (int v = 0; v<vehicle.size(); ++v)
-        if (vehicle[v].is_charging_required)
+    std::vector<int> vehicle_to_index(vehicle.size(), -1);
+    for (int v = 0; v<vehicle.size(); ++v) {
+        if (vehicle[v].is_charging_required) {
             vehicles_requiring_charging.push_back(v);
+            vehicle_to_index[v] = vehicles_requiring_charging.size()-1;
+        }
+    }
 
     // Determine the terminal indices with charging stations
     // TODO: This can go outside the loop in exchanges and shifts since it does not change
@@ -131,8 +150,8 @@ void csp::create_variables_uniform_model(IloEnv& env, const std::vector<Vehicle>
 }
 
 void csp::create_constraints_uniform_model(IloEnv& env, IloModel& model, const std::vector<Vehicle>& vehicle,
-        UniformModelVariable& variable, const std::vector<int>& vehicles_requiring_charging,
-        const std::vector<int>& terminals_with_charging_station)
+        const std::vector<Terminal> terminal, UniformModelVariable& variable,
+        const std::vector<int>& vehicles_requiring_charging, const std::vector<int>& terminals_with_charging_station)
 {
     int v;
     std::string constraint_name;
@@ -188,6 +207,18 @@ void csp::create_constraints_uniform_model(IloEnv& env, IloModel& model, const s
                 if (vehicle[v].charge_terminal[k]==terminals_with_charging_station[s]+1)
                     rotation_opportunity_pair.push_back(std::make_pair(b, k));
         }  // TODO: This information could be pre-computed in the terminal class?
+
+        // Compare rotation_opportunity_pairs with the ones in terminal class
+        std::cout << "Rotation and opportunity pairs for terminal..." << std::endl;
+        for (int i = 0; i<rotation_opportunity_pair.size(); ++i)
+            std::cout << i << ": " << rotation_opportunity_pair[i].first << ", " << rotation_opportunity_pair[i].second
+                      << std::endl;
+
+        std::cout << "Rotation and opportunity pairs for terminal -- new method..." << std::endl;
+        int index = terminals_with_charging_station[s];
+        for (int i = 0; i<terminal[index].rotation_opportunity_pair.size(); ++i)
+            std::cout << i << ": " << terminal[index].rotation_opportunity_pair[i].first
+                      << ", " << terminal[index].rotation_opportunity_pair[i].second << std::endl;
 
         // Print the rotation and opportunity pairs
         /*std::cout << "Rotation and opportunity pairs for terminal..." << std::endl;
@@ -421,7 +452,7 @@ double csp::solve_uniform_model(std::vector<Vehicle>& vehicle, std::vector<Termi
 
         // Add constraints
         logger.log(LogLevel::Debug, "Adding constraints");
-        csp::create_constraints_uniform_model(env, model, vehicle, variable, vehicles_requiring_charging,
+        csp::create_constraints_uniform_model(env, model, vehicle, terminal, variable, vehicles_requiring_charging,
                 terminals_with_charging_station);
 
         // Add objective
@@ -785,8 +816,10 @@ double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector
 {
     initialization::update_vehicles(vehicle, trip, terminal);
 
-    if (CSP_SOLUTION_TYPE==SolutionType::Uniform)
+    if (CSP_SOLUTION_TYPE==SolutionType::Uniform) {
+        initialization::update_rotation_opportunities(vehicle, terminal);
         return csp::solve_uniform_model(vehicle, terminal, data);
+    }
     if (CSP_SOLUTION_TYPE==SolutionType::Split)
         return csp::solve_split_model(vehicle, terminal, data);
     else {
@@ -801,8 +834,10 @@ double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector
 {
     initialization::update_vehicles(vehicle, trip, terminal, data, update_vehicle_indices);
 
-    if (CSP_SOLUTION_TYPE==SolutionType::Uniform)
+    if (CSP_SOLUTION_TYPE==SolutionType::Uniform) {
+        initialization::update_rotation_opportunities(vehicle, terminal);
         return csp::solve_uniform_model(vehicle, terminal, data);
+    }
     if (CSP_SOLUTION_TYPE==SolutionType::Split)
         return csp::solve_split_model(vehicle, terminal, data);
     else {
@@ -817,8 +852,10 @@ double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector
 {
     initialization::update_vehicles(vehicle, trip, terminal);
 
-    if (type=="Uniform")
+    if (type=="Uniform") {
+        initialization::update_rotation_opportunities(vehicle, terminal);
         return csp::solve_uniform_model(vehicle, terminal, data);
+    }
     if (type=="Split")
         return csp::solve_split_model(vehicle, terminal, data);
     else {
@@ -827,14 +864,17 @@ double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector
     }
 }
 
+// TODO: Write this function for only split model since there are many if statements throughout the code
 // Function that updates a subset of vehicle rotations with CSP data and selects the CSP model based on user parameters
 double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
         std::vector<Terminal>& terminal, Data& data, std::vector<int>& update_vehicle_indices, std::string type)
 {
     initialization::update_vehicles(vehicle, trip, terminal, data, update_vehicle_indices);
 
-    if (type=="Uniform")
+    if (type=="Uniform") {
+        initialization::update_rotation_opportunities(vehicle, terminal);
         return csp::solve_uniform_model(vehicle, terminal, data);
+    }
     if (type=="Split")
         return csp::solve_split_model(vehicle, terminal, data);
     else {

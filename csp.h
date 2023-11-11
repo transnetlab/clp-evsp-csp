@@ -91,13 +91,14 @@ void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Term
 void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data& data,
         std::vector<int>&);
 void create_sets(std::vector<Vehicle>&, std::vector<Terminal>&, std::vector<int>&, std::vector<int>&);
+void update_rotation_opportunities(std::vector<Vehicle>&, std::vector<Terminal>&);
 }
 
 namespace csp {
 void create_variables_uniform_model(IloEnv&, const std::vector<Vehicle>&, UniformModelVariable&,
         const std::vector<int>&, const std::vector<int>&);
-void create_constraints_uniform_model(IloEnv&, IloModel&, const std::vector<Vehicle>&, UniformModelVariable&,
-        const std::vector<int>&, const std::vector<int>&);
+void create_constraints_uniform_model(IloEnv&, IloModel&, const std::vector<Vehicle>&,
+        const std::vector<Terminal> terminal, UniformModelVariable&, const std::vector<int>&, const std::vector<int>&);
 void create_objective_uniform_model(IloExpr&, const std::vector<Vehicle>&, UniformModelVariable&,
         const std::vector<int>&, const std::vector<int>&);
 void log_solution_uniform_model(IloCplex&, const std::vector<Vehicle>&, const UniformModelVariable&,
