@@ -11,6 +11,7 @@
 #include <map>
 #include <set>
 #include <deque>
+#include <utility>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/adjacency_matrix.hpp>
 #include <boost/graph/bron_kerbosch_all_cliques.hpp>
@@ -45,12 +46,12 @@ public:
     }
 };
 
-/*using Graph   = boost::adjacency_matrix<boost::undirectedS>;
+using Graph   = boost::adjacency_matrix<boost::undirectedS>;
 using V       = Graph::vertex_descriptor;
 using Clique  = std::deque<V>;
-using Cliques = std::vector<Clique>;*/
+using Cliques = std::vector<Clique>;
 
-using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS>;
+/*using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS>;
 using V = Graph::vertex_descriptor;
 using Clique = std::vector<V>;
 using Cliques = std::vector<Clique>;
@@ -63,7 +64,7 @@ struct Collector {
       for (auto& t = target.emplace_back(); Graph::vertex_descriptor v : clique)
           t.push_back(v);
   }
-};
+};*/
 
 // This class splits the charge opportunity into sub-intervals where price is constant
 class ChargeInterval {
@@ -78,10 +79,10 @@ public:
     {
         // Print this only if charging opportunities has at least two elements
         //if (period_index.size()>1) {
-            logger.log(LogLevel::Verbose, "Overlap period index: "+vector_to_string(period_index));
-            logger.log(LogLevel::Verbose, "Overlap within_period_duration: "+vector_to_string(within_period_duration));
-            logger.log(LogLevel::Verbose, "Overlap start time: "+vector_to_string(start_time));
-            logger.log(LogLevel::Verbose, "Overlap end time: "+vector_to_string(end_time));
+        logger.log(LogLevel::Verbose, "Overlap period index: "+vector_to_string(period_index));
+        logger.log(LogLevel::Verbose, "Overlap within_period_duration: "+vector_to_string(within_period_duration));
+        logger.log(LogLevel::Verbose, "Overlap start time: "+vector_to_string(start_time));
+        logger.log(LogLevel::Verbose, "Overlap end time: "+vector_to_string(end_time));
         //}
     }
 };
@@ -90,15 +91,17 @@ namespace initialization {
 void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&);
 void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data& data,
         std::vector<int>&);
+void create_sets(std::vector<Vehicle>&, std::vector<Terminal>&, std::vector<int>&, std::vector<int>&,
+        std::vector<int>&);
 void create_sets(std::vector<Vehicle>&, std::vector<Terminal>&, std::vector<int>&, std::vector<int>&);
-void update_rotation_opportunities(std::vector<Vehicle>&, std::vector<Terminal>&);
 }
 
 namespace csp {
 void create_variables_uniform_model(IloEnv&, const std::vector<Vehicle>&, UniformModelVariable&,
         const std::vector<int>&, const std::vector<int>&);
 void create_constraints_uniform_model(IloEnv&, IloModel&, const std::vector<Vehicle>&,
-        const std::vector<Terminal> terminal, UniformModelVariable&, const std::vector<int>&, const std::vector<int>&);
+        const std::vector<Terminal> terminal, UniformModelVariable&, const std::vector<int>&, const std::vector<int>&,
+        const std::vector<int>&);
 void create_objective_uniform_model(IloExpr&, const std::vector<Vehicle>&, UniformModelVariable&,
         const std::vector<int>&, const std::vector<int>&);
 void log_solution_uniform_model(IloCplex&, const std::vector<Vehicle>&, const UniformModelVariable&,
