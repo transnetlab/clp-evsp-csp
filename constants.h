@@ -36,6 +36,4 @@ enum class SolutionType : int {
 };
 constexpr SolutionType CSP_SOLUTION_TYPE = SolutionType::Uniform; // Solution type for the CSP
 
-
-
 #endif //EBUS_VNS_CONSTANTS_H

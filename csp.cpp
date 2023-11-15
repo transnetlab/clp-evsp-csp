@@ -13,6 +13,13 @@ void initialization::update_vehicles(std::vector<Vehicle>& vehicle, std::vector<
         vehicle[v].populate_csp_parameters(trip, terminal);
     }
 
+    if (CSP_SOLUTION_TYPE==SolutionType::Uniform) {
+        for (int v = 0; v<vehicle.size(); ++v) {
+            vehicle[v].clear_price_interval_parameters();
+            vehicle[v].populate_price_interval_parameters();
+        }
+    }
+
     // Log the results from the initialization step
     /*logger.log(LogLevel::Info, "CSP variables updated for all vehicles");
     logger.log(LogLevel::Info, "Number of vehicles: "+std::to_string(vehicle.size()));
@@ -33,7 +40,7 @@ void initialization::update_vehicles(std::vector<Vehicle>& vehicle, std::vector<
 
 // Function to update the CSP members of the vehicle class for a subset of vehicles
 void initialization::update_vehicles(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data, std::vector<int>& update_vehicle_indices)
+        std::vector<Terminal>& terminal, std::vector<int>& update_vehicle_indices)
 {
     //logger.log(LogLevel::Info, "Updating CSP variables for all vehicles");
 
@@ -41,6 +48,14 @@ void initialization::update_vehicles(std::vector<Vehicle>& vehicle, std::vector<
     for (int index = 0; index<update_vehicle_indices.size(); ++index) {
         vehicle[update_vehicle_indices[index]].clear_csp_parameters();
         vehicle[update_vehicle_indices[index]].populate_csp_parameters(trip, terminal);
+    }
+
+    // Clear and populate CSP variables associated with price intervals
+    if (CSP_SOLUTION_TYPE==SolutionType::Uniform) {
+        for (int index = 0; index<update_vehicle_indices.size(); ++index) {
+            vehicle[update_vehicle_indices[index]].clear_price_interval_parameters();
+            vehicle[update_vehicle_indices[index]].populate_price_interval_parameters();
+        }
     }
 
     // Log the results from the initialization step
@@ -281,6 +296,115 @@ void csp::create_constraints_uniform_model(IloEnv& env, IloModel& model, const s
     }
 }
 
+// OLD FUNCTION
+//void csp::create_objective_uniform_model(IloExpr& objective, const std::vector<Vehicle>& vehicle,
+//        UniformModelVariable& variable, const std::vector<int>& vehicles_requiring_charging,
+//        const std::vector<int>& terminals_with_charging_station)
+//{
+//    int v;
+//    for (int b = 0; b<vehicles_requiring_charging.size(); ++b) {
+//        v = vehicles_requiring_charging[b];
+//
+//        // Find the last end charging time across all vehicles and all opportunities
+//        //int last_end_charge_time = vehicle[v].end_charge_time[vehicle[v].charge_terminal.size()-1];
+//
+//        // If last charge time is greater than 1440, throw an error and exit
+//        /*if (last_end_charge_time>1440) {
+//            std::cerr << "Error: Operations extend beyond a day to " << last_end_charge_time;
+//            std::cerr << "Adjust pricing in the constants file..." << std::endl;
+//            exit(1);
+//        }*/
+//
+//        /*int k = 0;
+//        int left_marker = vehicle[v].start_charge_time[k];
+//        std::vector<ChargeInterval> charge_interval(vehicle[v].charge_terminal.size());
+//        // Code to populate sub-intervals of the charging opportunities where prices are the same
+//        for (int p = 0; p<NUM_PRICE_INTERVALS-1; ++p) {
+//            if (left_marker<ENERGY_LEFT_INTERVAL[p+1]) {  // charging opportunity k starts in [p, p+1]
+//                charge_interval[k].period_index.push_back(p);
+//                charge_interval[k].start_time.push_back(left_marker);
+//                // Check if charging finishes in this time period or continues in the next one.
+//                // Charging opportunity k ends in [p, p+1]
+//                if (vehicle[v].end_charge_time[k]<=ENERGY_LEFT_INTERVAL[p+1]) {
+//                    charge_interval[k].end_time.push_back(vehicle[v].end_charge_time[k]);
+//                    charge_interval[k].within_period_duration.push_back(
+//                            vehicle[v].end_charge_time[k]-left_marker);
+//
+//                    ++k; // Proceed to the next charging opportunity
+//                    if (k>vehicle[v].charge_terminal.size()-1) // If k is the last charging opportunity
+//                        break;
+//
+//                    left_marker = vehicle[v].start_charge_time[k]; // Update left end point
+//                    --p; // Checks if the next charging opportunity starts in the same time window
+//                } // Check till the last possible k. Charging opportunity k continues.
+//                else {
+//                    charge_interval[k].end_time.push_back(ENERGY_LEFT_INTERVAL[p+1]);
+//                    charge_interval[k].within_period_duration.push_back(ENERGY_LEFT_INTERVAL[p+1]-left_marker);
+//
+//                    left_marker = ENERGY_LEFT_INTERVAL[p+1];
+//                }
+//            }
+//        }*/
+//
+//        std::vector<ChargeInterval> charge_interval(vehicle[v].charge_terminal.size());
+//        // Code to populate sub-intervals of the charging opportunities where prices are the same
+//        for (int k = 0; k<vehicle[v].charge_terminal.size(); ++k) {
+//            int left_marker = vehicle[v].start_charge_time[k];
+//            for (int p = 0; p<NUM_PRICE_INTERVALS-1; ++p) {
+//                if (left_marker<ENERGY_LEFT_INTERVAL[p+1]) {  // charging opportunity k starts in [p, p+1]
+//                    charge_interval[k].period_index.push_back(p);
+//                    charge_interval[k].start_time.push_back(left_marker);
+//
+//                    // Check if charging finishes in this time period or continues in the next one.
+//                    // Charging opportunity k ends in [p, p+1]
+//                    if (vehicle[v].end_charge_time[k]<=ENERGY_LEFT_INTERVAL[p+1]) {
+//                        charge_interval[k].end_time.push_back(vehicle[v].end_charge_time[k]);
+//                        charge_interval[k].within_period_duration.push_back(
+//                                vehicle[v].end_charge_time[k]-left_marker);
+//                        break;
+//                    } // Charging opportunity k continues in another price period
+//                    else {
+//                        charge_interval[k].end_time.push_back(ENERGY_LEFT_INTERVAL[p+1]);
+//                        charge_interval[k].within_period_duration.push_back(ENERGY_LEFT_INTERVAL[p+1]-left_marker);
+//
+//                        left_marker = ENERGY_LEFT_INTERVAL[p+1];
+//                    }
+//                }
+//            }
+//        }
+//
+//        // Log vector members of charge opportunities
+//        logger.log(LogLevel::Verbose, "Charging opportunities for vehicle index "+std::to_string(v));
+//        for (int k = 0; k<charge_interval.size(); ++k) {
+//            logger.log(LogLevel::Verbose, "Charging opportunity "+std::to_string(k));
+//            charge_interval[k].log_member_data(logger);
+//        }
+//
+//        // Add objective expressions for dynamic energy prices
+//        for (int k = 0; k<charge_interval.size(); ++k) {
+//            // Charging opportunity k lies in a single price period
+//            if (charge_interval[k].period_index.size()==1)
+//                objective += variable.energy_input[b][k]*ENERGY_PRICE[charge_interval[k].period_index[0]];
+//            else {  // Charging opportunity k lies in multiple price periods
+//                // Find the fraction of time the vehicle is charging in each price period
+//                double denominator_inverse =
+//                        1.0/double(vehicle[v].end_charge_time[k]-vehicle[v].start_charge_time[k]);
+//                for (int p = 0; p<charge_interval[k].period_index.size(); ++p) {
+//                    double time_fraction = double(charge_interval[k].within_period_duration[p])*denominator_inverse;
+//                    objective += variable.energy_input[b][k]*(time_fraction)
+//                            *(ENERGY_PRICE[charge_interval[k].period_index[p]]);
+//                }
+//            }
+//        }
+//        charge_interval.clear();  // Clear charge_interval variable
+//    }
+//
+//    // Add objective expressions for static capacity costs
+//    for (int s = 0; s<terminals_with_charging_station.size(); ++s)
+//        objective += variable.terminal_charge_capacity[s]*POWER_CAPACITY_PRICE;
+//}
+
+// NEW FUNCTION
 void csp::create_objective_uniform_model(IloExpr& objective, const std::vector<Vehicle>& vehicle,
         UniformModelVariable& variable, const std::vector<int>& vehicles_requiring_charging,
         const std::vector<int>& terminals_with_charging_station)
@@ -289,104 +413,29 @@ void csp::create_objective_uniform_model(IloExpr& objective, const std::vector<V
     for (int b = 0; b<vehicles_requiring_charging.size(); ++b) {
         v = vehicles_requiring_charging[b];
 
-        // Find the last end charging time across all vehicles and all opportunities
-        //int last_end_charge_time = vehicle[v].end_charge_time[vehicle[v].charge_terminal.size()-1];
-
-        // If last charge time is greater than 1440, throw an error and exit
-        /*if (last_end_charge_time>1440) {
-            std::cerr << "Error: Operations extend beyond a day to " << last_end_charge_time;
-            std::cerr << "Adjust pricing in the constants file..." << std::endl;
-            exit(1);
-        }*/
-
-        /*int k = 0;
-        int left_marker = vehicle[v].start_charge_time[k];
-        std::vector<ChargeInterval> charge_interval(vehicle[v].charge_terminal.size());
-        // Code to populate sub-intervals of the charging opportunities where prices are the same
-        for (int p = 0; p<NUM_PRICE_INTERVALS-1; ++p) {
-            if (left_marker<ENERGY_LEFT_INTERVAL[p+1]) {  // charging opportunity k starts in [p, p+1]
-                charge_interval[k].period_index.push_back(p);
-                charge_interval[k].start_time.push_back(left_marker);
-                // Check if charging finishes in this time period or continues in the next one.
-                // Charging opportunity k ends in [p, p+1]
-                if (vehicle[v].end_charge_time[k]<=ENERGY_LEFT_INTERVAL[p+1]) {
-                    charge_interval[k].end_time.push_back(vehicle[v].end_charge_time[k]);
-                    charge_interval[k].within_period_duration.push_back(
-                            vehicle[v].end_charge_time[k]-left_marker);
-
-                    ++k; // Proceed to the next charging opportunity
-                    if (k>vehicle[v].charge_terminal.size()-1) // If k is the last charging opportunity
-                        break;
-
-                    left_marker = vehicle[v].start_charge_time[k]; // Update left end point
-                    --p; // Checks if the next charging opportunity starts in the same time window
-                } // Check till the last possible k. Charging opportunity k continues.
-                else {
-                    charge_interval[k].end_time.push_back(ENERGY_LEFT_INTERVAL[p+1]);
-                    charge_interval[k].within_period_duration.push_back(ENERGY_LEFT_INTERVAL[p+1]-left_marker);
-
-                    left_marker = ENERGY_LEFT_INTERVAL[p+1];
-                }
-            }
-        }*/
-
-        std::vector<ChargeInterval> charge_interval(vehicle[v].charge_terminal.size());
-        // Code to populate sub-intervals of the charging opportunities where prices are the same
-        for (int k = 0; k<vehicle[v].charge_terminal.size(); ++k) {
-            int left_marker = vehicle[v].start_charge_time[k];
-            for (int p = 0; p<NUM_PRICE_INTERVALS-1; ++p) {
-                if (left_marker<ENERGY_LEFT_INTERVAL[p+1]) {  // charging opportunity k starts in [p, p+1]
-                    charge_interval[k].period_index.push_back(p);
-                    charge_interval[k].start_time.push_back(left_marker);
-
-                    // Check if charging finishes in this time period or continues in the next one.
-                    // Charging opportunity k ends in [p, p+1]
-                    if (vehicle[v].end_charge_time[k]<=ENERGY_LEFT_INTERVAL[p+1]) {
-                        charge_interval[k].end_time.push_back(vehicle[v].end_charge_time[k]);
-                        charge_interval[k].within_period_duration.push_back(
-                                vehicle[v].end_charge_time[k]-left_marker);
-                        break;
-                    } // Charging opportunity k continues in another price period
-                    else {
-                        charge_interval[k].end_time.push_back(ENERGY_LEFT_INTERVAL[p+1]);
-                        charge_interval[k].within_period_duration.push_back(ENERGY_LEFT_INTERVAL[p+1]-left_marker);
-
-                        left_marker = ENERGY_LEFT_INTERVAL[p+1];
-                    }
-                }
-            }
-        }
-
-        // Log vector members of charge opportunities
-        logger.log(LogLevel::Verbose, "Charging opportunities for vehicle index "+std::to_string(v));
-        for (int k = 0; k<charge_interval.size(); ++k) {
-            logger.log(LogLevel::Verbose, "Charging opportunity "+std::to_string(k));
-            charge_interval[k].log_member_data(logger);
-        }
-
         // Add objective expressions for dynamic energy prices
-        for (int k = 0; k<charge_interval.size(); ++k) {
+        for (int k = 0; k<vehicle[v].price_intervals.size(); ++k) {
             // Charging opportunity k lies in a single price period
-            if (charge_interval[k].period_index.size()==1)
-                objective += variable.energy_input[b][k]*ENERGY_PRICE[charge_interval[k].period_index[0]];
+            if (vehicle[v].price_intervals[k].period_index.size()==1)
+                objective += variable.energy_input[b][k]*ENERGY_PRICE[vehicle[v].price_intervals[k].period_index[0]];
             else {  // Charging opportunity k lies in multiple price periods
                 // Find the fraction of time the vehicle is charging in each price period
                 double denominator_inverse =
                         1.0/double(vehicle[v].end_charge_time[k]-vehicle[v].start_charge_time[k]);
-                for (int p = 0; p<charge_interval[k].period_index.size(); ++p) {
-                    double time_fraction = double(charge_interval[k].within_period_duration[p])*denominator_inverse;
+                for (int p = 0; p<vehicle[v].price_intervals[k].period_index.size(); ++p) {
+                    double time_fraction = double(vehicle[v].price_intervals[k].within_period_duration[p])*denominator_inverse;
                     objective += variable.energy_input[b][k]*(time_fraction)
-                            *(ENERGY_PRICE[charge_interval[k].period_index[p]]);
+                            *(ENERGY_PRICE[vehicle[v].price_intervals[k].period_index[p]]);
                 }
             }
         }
-        charge_interval.clear();  // Clear charge_interval variable
     }
 
     // Add objective expressions for static capacity costs
     for (int s = 0; s<terminals_with_charging_station.size(); ++s)
         objective += variable.terminal_charge_capacity[s]*POWER_CAPACITY_PRICE;
 }
+
 
 void csp::log_solution_uniform_model(IloCplex& cplex, const std::vector<Vehicle>& vehicle,
         const UniformModelVariable& variable, const std::vector<int>& vehicles_requiring_charging,
@@ -828,7 +877,7 @@ double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector
 double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
         std::vector<Terminal>& terminal, Data& data, std::vector<int>& update_vehicle_indices)
 {
-    initialization::update_vehicles(vehicle, trip, terminal, data, update_vehicle_indices);
+    initialization::update_vehicles(vehicle, trip, terminal, update_vehicle_indices);
 
     if (CSP_SOLUTION_TYPE==SolutionType::Uniform) {
         return csp::solve_uniform_model(vehicle, terminal, data);
@@ -863,7 +912,7 @@ double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector
 double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
         std::vector<Terminal>& terminal, Data& data, std::vector<int>& update_vehicle_indices, std::string type)
 {
-    initialization::update_vehicles(vehicle, trip, terminal, data, update_vehicle_indices);
+    initialization::update_vehicles(vehicle, trip, terminal, update_vehicle_indices);
 
     if (type=="Uniform") {
         return csp::solve_uniform_model(vehicle, terminal, data);

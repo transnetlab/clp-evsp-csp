@@ -130,6 +130,26 @@ public:
     }
 };
 
+// This class splits the charge opportunity into sub-intervals where price is constant
+class PriceInterval {
+public:
+    std::vector<int> period_index;  // Index of the price period in which the interval lies
+    std::vector<int> within_period_duration;  // Duration of the interval. Each window lies exclusively in a single price period
+    std::vector<int> start_time;
+    std::vector<int> end_time;
+
+    // Print members of the class
+    void log_member_data() const
+    {
+        //if (period_index.size()>1) {  // Print this only if charging opportunities has at least two elements
+        logger.log(LogLevel::Verbose, "Overlap period index: "+vector_to_string(period_index));
+        logger.log(LogLevel::Verbose, "Overlap within_period_duration: "+vector_to_string(within_period_duration));
+        logger.log(LogLevel::Verbose, "Overlap start time: "+vector_to_string(start_time));
+        logger.log(LogLevel::Verbose, "Overlap end time: "+vector_to_string(end_time));
+        //}
+    }
+};
+
 //Create a vehicle class which stores bus rotation details
 class Vehicle {
 public:
@@ -143,6 +163,8 @@ public:
     std::vector<int> start_charge_time;  // Vector of start charge times at different opportunities
     std::vector<int> end_charge_time;  // Vector of end charge times at different opportunities
     std::vector<double> energy_till_charge_terminal;  // Total energy required to reach the charging terminal. This has an extra element to account for reaching the depot.
+
+    std::vector<PriceInterval> price_intervals;  // Vector of price intervals for each charging opportunity
 
     // Constructor
     Vehicle()
@@ -182,6 +204,13 @@ public:
         charge_terminal.clear();
         start_charge_time.clear();
         end_charge_time.clear();
+        energy_till_charge_terminal.clear();
+    }
+
+    // Clear additional uniform CSP parameters
+    void clear_price_interval_parameters()
+    {
+        price_intervals.clear();
     }
 
     // Print members of the class
@@ -279,6 +308,73 @@ public:
 
         // If cumulative energy is less than the maximum charge level, then charging is not required
         is_charging_required = (cumulative_energy>(MAX_CHARGE_LEVEL-MIN_CHARGE_LEVEL));
+    }
+
+    // Populate CSP related variables under the uniform charge policy
+    void populate_price_interval_parameters() {
+        /*int k = 0;
+        int left_marker = vehicle[v].start_charge_time[k];
+        std::vector<ChargeInterval> charge_interval(vehicle[v].charge_terminal.size());
+        // Code to populate sub-intervals of the charging opportunities where prices are the same
+        for (int p = 0; p<NUM_PRICE_INTERVALS-1; ++p) {
+            if (left_marker<ENERGY_LEFT_INTERVAL[p+1]) {  // charging opportunity k starts in [p, p+1]
+                charge_interval[k].period_index.push_back(p);
+                charge_interval[k].start_time.push_back(left_marker);
+                // Check if charging finishes in this time period or continues in the next one.
+                // Charging opportunity k ends in [p, p+1]
+                if (vehicle[v].end_charge_time[k]<=ENERGY_LEFT_INTERVAL[p+1]) {
+                    charge_interval[k].end_time.push_back(vehicle[v].end_charge_time[k]);
+                    charge_interval[k].within_period_duration.push_back(
+                            vehicle[v].end_charge_time[k]-left_marker);
+
+                    ++k; // Proceed to the next charging opportunity
+                    if (k>vehicle[v].charge_terminal.size()-1) // If k is the last charging opportunity
+                        break;
+
+                    left_marker = vehicle[v].start_charge_time[k]; // Update left end point
+                    --p; // Checks if the next charging opportunity starts in the same time window
+                } // Check till the last possible k. Charging opportunity k continues.
+                else {
+                    charge_interval[k].end_time.push_back(ENERGY_LEFT_INTERVAL[p+1]);
+                    charge_interval[k].within_period_duration.push_back(ENERGY_LEFT_INTERVAL[p+1]-left_marker);
+
+                    left_marker = ENERGY_LEFT_INTERVAL[p+1];
+                }
+            }
+        }*/
+
+        price_intervals.resize(charge_terminal.size());
+        // Code to populate sub-intervals of the charging opportunities where prices are the same
+        for (int k = 0; k<charge_terminal.size(); ++k) {
+            int left_marker = start_charge_time[k];
+            for (int p = 0; p<NUM_PRICE_INTERVALS-1; ++p) {
+                if (left_marker<ENERGY_LEFT_INTERVAL[p+1]) {  // charging opportunity k starts in [p, p+1]
+                    price_intervals[k].period_index.push_back(p);
+                    price_intervals[k].start_time.push_back(left_marker);
+
+                    // Check if charging finishes in this time period or continues in the next one.
+                    // Charging opportunity k ends in [p, p+1]
+                    if (end_charge_time[k]<=ENERGY_LEFT_INTERVAL[p+1]) {
+                        price_intervals[k].end_time.push_back(end_charge_time[k]);
+                        price_intervals[k].within_period_duration.push_back(end_charge_time[k]-left_marker);
+                        break;
+                    } // Charging opportunity k continues in another price period
+                    else {
+                        price_intervals[k].end_time.push_back(ENERGY_LEFT_INTERVAL[p+1]);
+                        price_intervals[k].within_period_duration.push_back(ENERGY_LEFT_INTERVAL[p+1]-left_marker);
+
+                        left_marker = ENERGY_LEFT_INTERVAL[p+1];
+                    }
+                }
+            }
+        }
+
+        // Log vector members of charge opportunities
+        logger.log(LogLevel::Verbose, "Charging opportunities for vehicle ID "+std::to_string(id));
+        for (int k = 0; k<price_intervals.size(); ++k) {
+            logger.log(LogLevel::Verbose, "Charging opportunity "+std::to_string(k));
+            price_intervals[k].log_member_data();
+        }
     }
 };
 

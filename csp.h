@@ -75,7 +75,7 @@ public:
     std::vector<int> end_time;
 
     // Print members of the class
-    void log_member_data(Logger& logger) const
+    void log_member_data() const
     {
         // Print this only if charging opportunities has at least two elements
         //if (period_index.size()>1) {
@@ -89,8 +89,7 @@ public:
 
 namespace initialization {
 void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&);
-void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data& data,
-        std::vector<int>&);
+void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, std::vector<int>&);
 void create_sets(std::vector<Vehicle>&, std::vector<Terminal>&, std::vector<int>&, std::vector<int>&,
         std::vector<int>&);
 void create_sets(std::vector<Vehicle>&, std::vector<Terminal>&, std::vector<int>&, std::vector<int>&);
@@ -100,13 +99,13 @@ namespace csp {
 void create_variables_uniform_model(IloEnv&, const std::vector<Vehicle>&, UniformModelVariable&,
         const std::vector<int>&, const std::vector<int>&);
 void create_constraints_uniform_model(IloEnv&, IloModel&, const std::vector<Vehicle>&,
-        const std::vector<Terminal> terminal, UniformModelVariable&, const std::vector<int>&, const std::vector<int>&,
+        const std::vector<Terminal>, UniformModelVariable&, const std::vector<int>&, const std::vector<int>&,
         const std::vector<int>&);
 void create_objective_uniform_model(IloExpr&, const std::vector<Vehicle>&, UniformModelVariable&,
         const std::vector<int>&, const std::vector<int>&);
 void log_solution_uniform_model(IloCplex&, const std::vector<Vehicle>&, const UniformModelVariable&,
         const std::vector<int>&, const std::vector<int>&);
-double solve_uniform_model(std::vector<Vehicle>&, std::vector<Terminal>&, Data& data);
+double solve_uniform_model(std::vector<Vehicle>&, std::vector<Terminal>&, Data&);
 
 void create_variables_split_model(IloEnv&, const std::vector<Vehicle>&, SplitModelVariable&, const std::vector<int>&,
         const std::vector<int>&);
@@ -116,7 +115,7 @@ void create_objective_split_model(IloExpr&, const std::vector<Vehicle>&, Data&, 
         const std::vector<int>&, const std::vector<int>&);
 void log_solution_split_model(IloCplex&, const std::vector<Vehicle>&, SplitModelVariable&, const std::vector<int>&,
         const std::vector<int>&);
-double solve_split_model(std::vector<Vehicle>&, std::vector<Terminal>&, Data& data);
+double solve_split_model(std::vector<Vehicle>&, std::vector<Terminal>&, Data&);
 
 double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
 double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&,
