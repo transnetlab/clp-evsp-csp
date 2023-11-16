@@ -644,7 +644,8 @@ double split::solve_lp(std::vector<Vehicle>& vehicle, std::vector<Terminal>& ter
         std::vector<int> vehicles_requiring_charging;
         std::vector<int> terminals_with_charging_station;
         std::vector<int> terminal_to_index;
-        initialization::create_subsets(vehicle, terminal, vehicles_requiring_charging, terminals_with_charging_station, terminal_to_index);
+        initialization::create_subsets(vehicle, terminal, vehicles_requiring_charging, terminals_with_charging_station,
+                terminal_to_index);
 
         // Create decision variables
         logger.log(LogLevel::Debug, "Creating decision variables");
@@ -676,6 +677,15 @@ double split::solve_lp(std::vector<Vehicle>& vehicle, std::vector<Terminal>& ter
         if (data.log_csp_solution) {  // Write the LP to a .lp file and save the results in a .sol file
             cplex.exportModel(("../output/"+data.instance+"_csp_split.lp").c_str());
             cplex.writeSolution(("../output/"+data.instance+"_csp_split.sol").c_str());
+        }
+
+        // Query and print the values of the variables
+        for (int s = 0; s<terminals_with_charging_station.size(); ++s) {
+            terminal[terminals_with_charging_station[s]].charge_capacity = cplex.getValue(
+                    variable.terminal_charge_capacity[s]);
+            logger.log(LogLevel::Info,
+                    "Terminal index "+std::to_string(terminals_with_charging_station[s])+" charge capacity = "
+                            +std::to_string(terminal[terminals_with_charging_station[s]].charge_capacity));
         }
 
         //Display results and log the solution

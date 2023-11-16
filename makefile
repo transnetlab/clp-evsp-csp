@@ -1,6 +1,6 @@
 # Compiler settings
 CXX = g++
-CXXFLAGS = -O3 -std=c++0x
+CXXFLAGS = -O3 -std=c++2a
 
 # Directories for CPLEX and Concert
 CPLEXDIR = /opt/ibm/ILOG/CPLEX_Studio2211/cplex

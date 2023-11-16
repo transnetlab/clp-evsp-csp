@@ -348,7 +348,6 @@ void scheduling::apply_best_improvement(std::vector<Vehicle>& vehicle, std::vect
     Exchange exchange;
     Shift shift;
 
-    static double total_savings = 0.0; // This is used for sanity checks
     static int num_exchanges = 0;
     static int num_shifts = 0;
 
@@ -370,7 +369,6 @@ void scheduling::apply_best_improvement(std::vector<Vehicle>& vehicle, std::vect
         if (depot_exchange_savings>EPSILON) {
             perform_exchange(vehicle, exchange);
             ++num_exchanges;
-            total_savings += depot_exchange_savings;
         }
         else
             logger.log(LogLevel::Info, "No improvement possible from depot exchanges...");
@@ -380,19 +378,15 @@ void scheduling::apply_best_improvement(std::vector<Vehicle>& vehicle, std::vect
     if (exchange_savings>shift_savings) {
         perform_exchange(vehicle, exchange);
         ++num_exchanges;
-        total_savings += exchange_savings;
     }
     else {
         perform_shift(vehicle, shift);
         ++num_shifts;
-        total_savings += shift_savings;
     }
 
     // Log the number of shifts and exchanges that were actually performed
     logger.log(LogLevel::Info, "Number of exchanges performed: "+std::to_string(num_exchanges));
     logger.log(LogLevel::Info, "Number of shifts performed: "+std::to_string(num_shifts));
-    logger.log(LogLevel::Info, "Cumulative savings from best improvements: "+std::to_string(total_savings));
-
     // Check for savings from shift, if it is zero, then check for savings from exchange. Perform shifts or exchanges
     // only if these savings are positive
     /*Shift shift;

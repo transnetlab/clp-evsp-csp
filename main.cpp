@@ -15,12 +15,10 @@
  * Log results at every exit point
  * Switch to plurals for vectors */
 
-/* Perform sanity checks by adding up all the savings using static double variables
- * Combine regular and depot exchanges
- * Double check pricing in CSP uniform model
- * Use the reduced costs to update the savings
+/* Double check pricing in CSP uniform model
  * Enforce time budgets for each operator
  * Try variants of scheduling -- Shift first and exchange later, random between the two, integrate diversification
+ * Log iteration level outputs for final plots
 */
 
 // Glocal variables
@@ -57,10 +55,10 @@ int main(int argc, char* argv[])
     diversification::optimize_rotations(vehicle, trip, terminal, data);
 
     // Only optimize rotations. No changes to charging locations are made here.
-    scheduling::optimize_rotations(vehicle, trip, terminal, data);
+    // scheduling::optimize_rotations(vehicle, trip, terminal, data);
 
     // Local search for charging locations which also includes scheduling operators
-    // locations::optimize_stations(vehicle, trip, terminal, data);
+    locations::optimize_stations(vehicle, trip, terminal, data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
     // PERFORM_THREE_EXCHANGES = true;

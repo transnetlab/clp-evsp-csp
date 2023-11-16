@@ -63,6 +63,8 @@ public:
     int current_idle_time;  // Total idle time across all rotations. This measures the utilization of the terminal.
     int potential_idle_time; // Total idle time across all rotations if this were to be a charge station
 
+    double charge_capacity = 0.0; // Charge capacity which is the output from the CSP problem
+
     // Constructor
     Terminal()
     {
@@ -86,9 +88,10 @@ public:
     // Log members of terminal data
     void log_member_data() const
     {
-        logger.log(LogLevel::Info, "Terminal ID, Stop ID, Trip ID, Is depot, Is charge station: "+std::to_string(id)+" "
-                +stop_id+" "+std::to_string(trip_id)+" "+std::to_string(is_depot)+" "
-                +std::to_string(is_charge_station));
+        logger.log(LogLevel::Info,
+                "Terminal ID, Stop ID, Trip ID, Is depot, Is charge station, Charge capacity: "+std::to_string(id)+" "
+                        +stop_id+" "+std::to_string(trip_id)+" "+std::to_string(is_depot)+" "
+                        +std::to_string(is_charge_station)+" "+std::to_string(charge_capacity));
     }
 };
 
@@ -316,7 +319,8 @@ public:
     }
 
     // Populate CSP related variables under the uniform charge policy
-    void populate_price_interval_parameters() {
+    void populate_price_interval_parameters()
+    {
         /*int k = 0;
         int left_marker = vehicle[v].start_charge_time[k];
         std::vector<ChargeInterval> charge_interval(vehicle[v].charge_terminal.size());
