@@ -29,7 +29,7 @@ double scheduling::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Tri
             pairs.emplace_back(u, v);
 
     // Exchange trips k and l of vehicles u and v. Pairs are created as collapse throws errors depending on the compiler
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(NUM_THREADS)
     for (int p = 0; p<pairs.size(); ++p) {
         int u = pairs[p].first;
         int v = pairs[p].second;
@@ -114,7 +114,7 @@ double scheduling::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>&
                 pairs.emplace_back(u, v);
 
     //  Insert trip l of vehicle v after trip k of vehicle u
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(NUM_THREADS)
     for (int p = 0; p<pairs.size(); ++p) {
         int u = pairs[p].first;
         int v = pairs[p].second;
@@ -208,7 +208,7 @@ double scheduling::exchange_depots(std::vector<Vehicle>& vehicle, std::vector<Tr
             pairs.emplace_back(u, v);
 
     // Exchange trips k and l of vehicles u and v. Pairs are created as collapse throws errors depending on the compiler
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(NUM_THREADS)
     for (int p = 0; p<pairs.size(); ++p) {
         int u = pairs[p].first;
         int v = pairs[p].second;
@@ -345,12 +345,12 @@ void scheduling::apply_best_improvement(std::vector<Vehicle>& vehicle, std::vect
         std::vector<Terminal>& terminal, Data& data)
 {
     logger.log(LogLevel::Info, "Finding the best improvement operator...");
-
-    static int num_exchanges = 0;
-    static int num_shifts = 0;
-
     Exchange exchange;
     Shift shift;
+
+    static double total_savings = 0.0; // This is used for sanity checks
+    static int num_exchanges = 0;
+    static int num_shifts = 0;
 
     // Run the exchange and shift locations
     double exchange_savings = exchange_trips(vehicle, trip, terminal, data, exchange);
@@ -367,23 +367,31 @@ void scheduling::apply_best_improvement(std::vector<Vehicle>& vehicle, std::vect
         double depot_exchange_savings = exchange_depots(vehicle, trip, terminal, data, exchange);
         logger.log(LogLevel::Info,
                 "Savings from depot exchange operator: "+std::to_string(depot_exchange_savings));
-        (depot_exchange_savings>EPSILON) ? perform_exchange(vehicle, exchange) : logger.log(LogLevel::Info,
-                "No improvement possible from depot exchanges...");
+        if (depot_exchange_savings>EPSILON) {
+            perform_exchange(vehicle, exchange);
+            ++num_exchanges;
+            total_savings += depot_exchange_savings;
+        }
+        else
+            logger.log(LogLevel::Info, "No improvement possible from depot exchanges...");
         return;
     }
 
     if (exchange_savings>shift_savings) {
         perform_exchange(vehicle, exchange);
         ++num_exchanges;
+        total_savings += exchange_savings;
     }
     else {
         perform_shift(vehicle, shift);
         ++num_shifts;
+        total_savings += shift_savings;
     }
 
     // Log the number of shifts and exchanges that were actually performed
     logger.log(LogLevel::Info, "Number of exchanges performed: "+std::to_string(num_exchanges));
     logger.log(LogLevel::Info, "Number of shifts performed: "+std::to_string(num_shifts));
+    logger.log(LogLevel::Info, "Cumulative savings from best improvements: "+std::to_string(total_savings));
 
     // Check for savings from shift, if it is zero, then check for savings from exchange. Perform shifts or exchanges
     // only if these savings are positive
@@ -881,7 +889,7 @@ double diversification::exchange_three_trips(std::vector<Vehicle>& vehicle, std:
     double max_savings = 0.0;
 
     //  Exchange trips (k, l, m) of vehicles (u, v, w) to (m, l, k)
-#pragma omp parallel for
+    #pragma omp parallel for num_threads(NUM_THREADS)
     for (int u = 0; u<vehicle.size(); ++u) {
         for (int v = 0; v<vehicle.size(); ++v) {
             for (int w = 0; w<vehicle.size(); ++w) {
@@ -923,7 +931,7 @@ double diversification::exchange_three_trips(std::vector<Vehicle>& vehicle, std:
                                     savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, w, v, m, l);
 
                                     // Check if the exchange is the best so far
-#pragma omp critical
+                                    #pragma omp critical
                                     if (savings>max_savings) {
                                         max_savings = savings;
                                         three_exchange.first_vehicle_index = u;

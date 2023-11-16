@@ -6,31 +6,29 @@
 #include <string>
 #include <vector>
 #include <chrono>
+#include <omp.h>
 
 /* TODOs:
- * Perform sanity checks by adding up all the savings using static double variables
- * Use static variables in functions to count the number of times certain functions were used
  * Run profiler https://www.jetbrains.com/help/clion/cmake-profiling.html
  * Modify bash files to run concurrently on Gandalf
  * Check logging outputs for different levels
  * Log results at every exit point
- * Switch to plurals for vectors
- * Test results for a few iterations by replacing update vehicle indices with a full update
- * Enforce time budgets for each operator
- * Check if the version where opening gives savings, and we break works better*/
+ * Switch to plurals for vectors */
 
-/* Solve joint problem from the starting point of the sequential problem. What is the %savings
+/* Perform sanity checks by adding up all the savings using static double variables
  * Combine regular and depot exchanges
- * Incorporate some of the code optimization techniques from the notes
+ * Double check pricing in CSP uniform model
  * Use the reduced costs to update the savings
- * Optimize pricing for objective in uniform CSP
+ * Enforce time budgets for each operator
  * Try variants of scheduling -- Shift first and exchange later, random between the two, integrate diversification
 */
 
+// Glocal variables
 Logger logger(true);
 bool SOLVE_CSP_JOINTLY = true;
 bool PERFORM_THREE_EXCHANGES = false;
 bool SHIFT_ALL_TRIPS = true;
+int NUM_THREADS = omp_get_num_procs();  // Set this to appropriate number of threads
 
 int main(int argc, char* argv[])
 {
@@ -59,10 +57,10 @@ int main(int argc, char* argv[])
     diversification::optimize_rotations(vehicle, trip, terminal, data);
 
     // Only optimize rotations. No changes to charging locations are made here.
-    // scheduling::optimize_rotations(vehicle, trip, terminal, data);
+    scheduling::optimize_rotations(vehicle, trip, terminal, data);
 
     // Local search for charging locations which also includes scheduling operators
-    locations::optimize_stations(vehicle, trip, terminal, data);
+    // locations::optimize_stations(vehicle, trip, terminal, data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
     // PERFORM_THREE_EXCHANGES = true;

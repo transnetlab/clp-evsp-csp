@@ -159,6 +159,7 @@ public:
 
     // Variables for CSP
     bool is_charging_required = false;  // Updated to true if charging is required in the rotation
+    int num_charge_opportunities = 0;  // Number of charging opportunities in the rotation
     std::vector<int> charge_terminal;  // Vector of charging station terminal IDs at different opportunities (repeats are allowed)
     std::vector<int> start_charge_time;  // Vector of start charge times at different opportunities
     std::vector<int> end_charge_time;  // Vector of end charge times at different opportunities
@@ -201,6 +202,7 @@ public:
     void clear_csp_parameters()
     {
         is_charging_required = false;
+        num_charge_opportunities = 0;
         charge_terminal.clear();
         start_charge_time.clear();
         end_charge_time.clear();
@@ -308,6 +310,9 @@ public:
 
         // If cumulative energy is less than the maximum charge level, then charging is not required
         is_charging_required = (cumulative_energy>(MAX_CHARGE_LEVEL-MIN_CHARGE_LEVEL));
+
+        // Save the number of charge opportunities
+        num_charge_opportunities = charge_terminal.size();
     }
 
     // Populate CSP related variables under the uniform charge policy

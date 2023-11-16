@@ -34,6 +34,6 @@ enum class SolutionType : int {
   Split,
   Uniform
 };
-constexpr SolutionType CSP_SOLUTION_TYPE = SolutionType::Uniform; // Solution type for the CSP
+constexpr SolutionType CSP_SOLUTION_TYPE = SolutionType::Split; // Solution type for the CSP
 
 #endif //EBUS_VNS_CONSTANTS_H
