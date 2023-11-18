@@ -13,17 +13,19 @@
  * Modify bash files to run concurrently on Gandalf
  * Check logging outputs for different levels
  * Log results at every exit point
- * Switch to plurals for vectors */
+ * Switch to plurals for vectors and change to processed data
+ * Integrate MIP CSP code */
 
 /* Double check pricing in CSP uniform model
  * Enforce time budgets for each operator
+ * Should CSP-based capacity costs be considered at the time of exchanges and shifts?
  * Try variants of scheduling -- Shift first and exchange later, random between the two, integrate diversification
  * Log iteration level outputs for final plots
 */
 
 // Glocal variables
 Logger logger(true);
-bool SOLVE_CSP_JOINTLY = true;
+bool SOLVE_CSP_JOINTLY = false;
 bool PERFORM_THREE_EXCHANGES = false;
 bool SHIFT_ALL_TRIPS = true;
 int NUM_THREADS = omp_get_num_procs();  // Set this to appropriate number of threads
@@ -31,63 +33,69 @@ int NUM_THREADS = omp_get_num_procs();  // Set this to appropriate number of thr
 int main(int argc, char* argv[])
 {
     // Read the instance as command line argument. If not provided, use the default instance
-    Data data; // Vector of parameters
-    data.instance = (argc>1) ? argv[1] : "Ann_Arbor";
+    ProcessedData processed_data; // Vector of parameters
+    processed_data.instance = (argc>1) ? argv[1] : "SCMTD";
 
     // Delete any old log files if present and create a new one. Set logging level.
-    std::remove(("../output/"+data.instance+"_log.txt").c_str());
-    logger.set_file_path("../output/"+data.instance+"_log.txt");
+    std::remove(("../output/"+processed_data.instance+"_log.txt").c_str());
+    logger.set_file_path("../output/"+processed_data.instance+"_log.txt");
     logger.set_log_level_threshold(LogLevel::Info);
 
-    logger.log(LogLevel::Info, "Starting local search for instance "+data.instance+"...");
-    data.start_time_stamp = std::chrono::steady_clock::now();
-    postprocessing::write_summary(data.instance, std::time(nullptr));  // TODO: Check if this is needed
+    logger.log(LogLevel::Info, "Starting local search for instance "+processed_data.instance+"...");
+    processed_data.start_time_stamp = std::chrono::steady_clock::now();
+    postprocessing::write_summary(processed_data.instance, std::time(nullptr));  // TODO: Check if this is needed
 
     // Initialize variables
     std::vector<Trip> trip;  // Vector of trips
     std::vector<Terminal> terminal;  // Vector of terminals
     std::vector<Vehicle> vehicle;  // Vector of vehicles
 
-    // Read input data on trips and stops and initialize bus rotations
-    preprocessing::initialize_inputs(vehicle, trip, terminal, data);
+    // Read input processed_data on trips and stops and initialize bus rotations
+    preprocessing::initialize_inputs(vehicle, trip, terminal, processed_data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
-    diversification::optimize_rotations(vehicle, trip, terminal, data);
+    diversification::optimize_rotations(vehicle, trip, terminal, processed_data);
 
     // Only optimize rotations. No changes to charging locations are made here.
-    // scheduling::optimize_rotations(vehicle, trip, terminal, data);
+    // scheduling::optimize_rotations(vehicle, trip, terminal, processed_data);
 
     // Local search for charging locations which also includes scheduling operators
-    locations::optimize_stations(vehicle, trip, terminal, data);
+    locations::optimize_stations(vehicle, trip, terminal, processed_data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
     // PERFORM_THREE_EXCHANGES = true;
-    // SHIFT_ALL_TRIPS = false;
-    // diversification::optimize_rotations(vehicle, trip, terminal, data);
+    // diversification::optimize_rotations(vehicle, trip, terminal, processed_data);
 
     // Solve the charge scheduling problem
-    data.log_csp_solution = true;
-    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data, "Split");
+    processed_data.log_csp_solution = true;
+    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "Split");
 
-    // Log number of successful and unsuccessful openings from data
-    logger.log(LogLevel::Info, "Number of successful openings: "+std::to_string(data.num_successful_openings));
-    logger.log(LogLevel::Info, "Number of successful closures: "+std::to_string(data.num_successful_closures));
+    // Close charging stations where CSP solution is zero based on charge capacity variables
+    /*int num_extra_terminals_closed = 0;
+    for (auto& curr_terminal : terminal) {
+        if (curr_terminal.is_charge_station and fabs(curr_terminal.charge_capacity) < SMALL_EPSILON)
+        {
+            curr_terminal.is_charge_station = false;
+            num_extra_terminals_closed++;
+        }
+    }
+    logger.log(LogLevel::Info, "Closed "+std::to_string(num_extra_terminals_closed)+" extra terminals based on CSP.");*/
 
     // Find runtime
     logger.log(LogLevel::Info, "Finishing local search...");
-    data.end_time_stamp = std::chrono::steady_clock::now();
-    data.runtime = double(std::chrono::duration_cast<std::chrono::milliseconds>(
-            data.end_time_stamp-data.start_time_stamp).count())/1000.0; // in seconds
+    processed_data.end_time_stamp = std::chrono::steady_clock::now();
+    processed_data.runtime = double(std::chrono::duration_cast<std::chrono::milliseconds>(
+            processed_data.end_time_stamp-processed_data.start_time_stamp).count())/1000.0; // in seconds
 
     // Log final vehicle rotations
-    evaluation::calculate_utilization(vehicle, trip, terminal);
+    evaluation::calculate_utilization(vehicle, trip, terminal, processed_data);
     for (auto& curr_vehicle : vehicle)
         curr_vehicle.log_member_data();
 
     // Postprocessing
-    postprocessing::check_solution(vehicle, trip, terminal, data);
-    postprocessing::write_summary(vehicle, trip, terminal, csp_cost, data);
-    postprocessing::write_vehicle_results(vehicle, data);
-    postprocessing::write_terminal_results(terminal, data);
-    logger.log(LogLevel::Info, "Local search completed in "+std::to_string(data.runtime)+" seconds.");
+    postprocessing::check_solution(vehicle, trip, terminal, processed_data);
+    postprocessing::write_summary(vehicle, trip, terminal, csp_cost, processed_data);
+    postprocessing::write_vehicle_results(vehicle, processed_data);
+    postprocessing::write_terminal_results(terminal, processed_data);
+    logger.log(LogLevel::Info, "Local search completed in "+std::to_string(processed_data.runtime)+" seconds.");
 }

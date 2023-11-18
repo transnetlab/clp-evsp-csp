@@ -341,7 +341,7 @@ void uniform::log_solution(IloCplex& cplex, const std::vector<Vehicle>& vehicle,
     }
 }
 
-double uniform::solve_lp(std::vector<Vehicle>& vehicle, std::vector<Terminal>& terminal, Data& data)
+double uniform::solve_lp(std::vector<Vehicle>& vehicle, std::vector<Terminal>& terminal, ProcessedData& data)
 {
     logger.log(LogLevel::Debug, "Solving the uniform charging CSP problem");
     IloEnv env; // Create the CPLEX environment
@@ -462,7 +462,7 @@ void split::set_variables(IloEnv& env, const std::vector<Vehicle>& vehicle, Spli
 // Function that creates the constraints required for the split model. They include energy balance, minimum charge level,
 // and max power constraints
 void split::set_constraints(IloEnv& env, IloModel& model, const std::vector<Vehicle>& vehicle,
-        const Data& data, SplitModelVariable& variable, const std::vector<int>& vehicles_requiring_charging,
+        const ProcessedData& data, SplitModelVariable& variable, const std::vector<int>& vehicles_requiring_charging,
         const std::vector<int>& terminals_with_charging_station, const std::vector<int>& terminal_to_index)
 {
     size_t num_subset_vehicles = vehicles_requiring_charging.size();
@@ -562,7 +562,7 @@ void split::set_constraints(IloEnv& env, IloModel& model, const std::vector<Vehi
 
 // Function that creates the objective function for the split model. It includes energy input for each rotation and
 // fixed costs due to terminal charge capacity
-void split::create_objective_split_model(IloExpr& objective, const std::vector<Vehicle>& vehicle, Data& data,
+void split::create_objective_split_model(IloExpr& objective, const std::vector<Vehicle>& vehicle, ProcessedData& data,
         SplitModelVariable& variable, const std::vector<int>& vehicles_requiring_charging,
         const std::vector<int>& terminals_with_charging_station)
 {
@@ -626,7 +626,7 @@ void split::log_solution(IloCplex& cplex, const std::vector<Vehicle>& vehicle,
 }
 
 // Function that solves the split model
-double split::solve_lp(std::vector<Vehicle>& vehicle, std::vector<Terminal>& terminal, Data& data)
+double split::solve_lp(std::vector<Vehicle>& vehicle, std::vector<Terminal>& terminal, ProcessedData& data)
 {
     logger.log(LogLevel::Debug, "Solving the split charging CSP problem");
     IloEnv env; // Create the CPLEX environment
@@ -692,7 +692,7 @@ double split::solve_lp(std::vector<Vehicle>& vehicle, std::vector<Terminal>& ter
         optimal_objective = cplex.getObjValue();
         /*logger.log(LogLevel::Debug, "Solution status = "+std::to_string(cplex.getStatus()));
         logger.log(LogLevel::Debug, "Solution value = "+std::to_string(cplex.getObjValue()));*/
-        //uniform::log_solution(cplex, vehicle, variable, vehicles_requiring_charging,
+        //split::log_solution(cplex, vehicle, variable, vehicles_requiring_charging,
         //        terminals_with_charging_station);
     }
         // Catch exceptions thrown by CPLEX
@@ -710,7 +710,7 @@ double split::solve_lp(std::vector<Vehicle>& vehicle, std::vector<Terminal>& ter
 
 // Function that updates all vehicle rotations with CSP data and selects the CSP model based on user parameters
 double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data)
+        std::vector<Terminal>& terminal, ProcessedData& data)
 {
     initialization::update_vehicles(vehicle, trip, terminal);
 
@@ -727,7 +727,7 @@ double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector
 
 // Function that updates a subset of vehicle rotations with CSP data and selects the CSP model based on user parameters
 double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data, std::vector<int>& update_vehicle_indices)
+        std::vector<Terminal>& terminal, ProcessedData& data, std::vector<int>& update_vehicle_indices)
 {
     initialization::update_vehicles(vehicle, trip, terminal, update_vehicle_indices);
 
@@ -744,7 +744,7 @@ double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector
 
 // Function that updates all vehicle rotations with CSP data and selects the CSP model based on user parameters
 double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data, const std::string& type)
+        std::vector<Terminal>& terminal, ProcessedData& data, const std::string& type)
 {
     initialization::update_vehicles(vehicle, trip, terminal);
 
@@ -762,7 +762,7 @@ double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector
 // TODO: Write this function for only split model since there are many if statements throughout the code
 // Function that updates a subset of vehicle rotations with CSP data and selects the CSP model based on user parameters
 double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data, std::vector<int>& update_vehicle_indices, const std::string& type)
+        std::vector<Terminal>& terminal, ProcessedData& data, std::vector<int>& update_vehicle_indices, const std::string& type)
 {
     initialization::update_vehicles(vehicle, trip, terminal, update_vehicle_indices);
 

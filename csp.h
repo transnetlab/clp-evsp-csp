@@ -67,27 +67,27 @@ void set_objective(IloExpr&, const std::vector<Vehicle>&, UniformModelVariable&,
         const std::vector<int>&);
 void log_solution(IloCplex&, const std::vector<Vehicle>&, const UniformModelVariable&, const std::vector<int>&,
         const std::vector<int>&);
-double solve_lp(std::vector<Vehicle>&, std::vector<Terminal>&, Data&);
+double solve_lp(std::vector<Vehicle>&, std::vector<Terminal>&, ProcessedData&);
 }
 
 namespace split {
 void set_variables(IloEnv&, const std::vector<Vehicle>&, SplitModelVariable&, const std::vector<int>&,
         const std::vector<int>&);
-void set_constraints(IloEnv&, IloModel&, const std::vector<Vehicle>&, const Data&, SplitModelVariable&,
+void set_constraints(IloEnv&, IloModel&, const std::vector<Vehicle>&, const ProcessedData&, SplitModelVariable&,
         const std::vector<int>&, const std::vector<int>&, const std::vector<int>&);
-void create_objective_split_model(IloExpr&, const std::vector<Vehicle>&, Data&, SplitModelVariable&,
+void create_objective_split_model(IloExpr&, const std::vector<Vehicle>&, ProcessedData&, SplitModelVariable&,
         const std::vector<int>&, const std::vector<int>&);
 void log_solution(IloCplex&, const std::vector<Vehicle>&, SplitModelVariable&, const std::vector<int>&,
         const std::vector<int>&);
-double solve_lp(std::vector<Vehicle>&, std::vector<Terminal>&, Data&);
+double solve_lp(std::vector<Vehicle>&, std::vector<Terminal>&, ProcessedData&);
 }
 
 namespace csp {
-double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
-double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&,
+double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
+double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&,
         std::vector<int>&);
-double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&, const std::string&);
-double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&,
+double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&, const std::string&);
+double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&,
         std::vector<int>&, const std::string&);
 void log_model_rotations_terminals(IloCplex& cplex, std::vector<Vehicle>& vehicle, std::vector<Terminal>& terminal);
 }

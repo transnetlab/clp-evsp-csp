@@ -21,7 +21,7 @@ std::string vector_to_string(const std::vector<T>& input_vector)
 }
 
 // Create a class of problem parameters that are processed from the data and used in different parts of the code
-class Data {  // TODO: Add comments on where these variables are set
+class ProcessedData {  // TODO: Add comments on where these variables are set
 public:
     std::string instance;
     std::chrono::steady_clock::time_point start_time_stamp;
@@ -37,15 +37,25 @@ public:
     int time_steps_length;  // Time window of the problem
     std::map<int, double> energy_price_per_min;  // Tracks the energy price value at different time steps
 
+    /*int num_price_intervals;  // Number of energy price points
+    std::vector<int> energy_left_interval;
+    std::vector<double> energy_price;*/
+
     double runtime;
 
-    int num_successful_openings = 0;  // TODO: Log more fine grained stats such as what was the utilization and how many vehicles had to be adjusted.
+    // TODO: Log more fine grained stats such as what was the utilization and how many vehicles had to be adjusted.
+    int num_successful_openings = 0;
     int num_successful_closures = 0;
+    int num_successful_swaps = 0;
+
+    // Define two maps for successful openings and closures
+    std::map<int, int> successful_openings;
+    std::map<int, int> successful_closures;
 
     bool log_csp_solution = false;  // Flag to log the CSP solution
 
     // Constructor
-    Data()
+    ProcessedData()
     {
         // Nothing to do here
     }
@@ -321,42 +331,11 @@ public:
     // Populate CSP related variables under the uniform charge policy
     void populate_price_interval_parameters()
     {
-        /*int k = 0;
-        int left_marker = vehicle[v].start_charge_time[k];
-        std::vector<ChargeInterval> charge_interval(vehicle[v].charge_terminal.size());
+        price_intervals.resize(num_charge_opportunities);
         // Code to populate sub-intervals of the charging opportunities where prices are the same
-        for (int p = 0; p<NUM_PRICE_INTERVALS-1; ++p) {
-            if (left_marker<ENERGY_LEFT_INTERVAL[p+1]) {  // charging opportunity k starts in [p, p+1]
-                charge_interval[k].period_index.push_back(p);
-                charge_interval[k].start_time.push_back(left_marker);
-                // Check if charging finishes in this time period or continues in the next one.
-                // Charging opportunity k ends in [p, p+1]
-                if (vehicle[v].end_charge_time[k]<=ENERGY_LEFT_INTERVAL[p+1]) {
-                    charge_interval[k].end_time.push_back(vehicle[v].end_charge_time[k]);
-                    charge_interval[k].within_period_duration.push_back(
-                            vehicle[v].end_charge_time[k]-left_marker);
-
-                    ++k; // Proceed to the next charging opportunity
-                    if (k>vehicle[v].charge_terminal.size()-1) // If k is the last charging opportunity
-                        break;
-
-                    left_marker = vehicle[v].start_charge_time[k]; // Update left end point
-                    --p; // Checks if the next charging opportunity starts in the same time window
-                } // Check till the last possible k. Charging opportunity k continues.
-                else {
-                    charge_interval[k].end_time.push_back(ENERGY_LEFT_INTERVAL[p+1]);
-                    charge_interval[k].within_period_duration.push_back(ENERGY_LEFT_INTERVAL[p+1]-left_marker);
-
-                    left_marker = ENERGY_LEFT_INTERVAL[p+1];
-                }
-            }
-        }*/
-
-        price_intervals.resize(charge_terminal.size());
-        // Code to populate sub-intervals of the charging opportunities where prices are the same
-        for (int k = 0; k<charge_terminal.size(); ++k) {
+        for (int k = 0; k<num_charge_opportunities; ++k) {
             int left_marker = start_charge_time[k];
-            for (int p = 0; p<NUM_PRICE_INTERVALS-1; ++p) {
+            for (int p = 0; p<NUM_PRICE_INTERVALS; ++p) {
                 if (left_marker<ENERGY_LEFT_INTERVAL[p+1]) {  // charging opportunity k starts in [p, p+1]
                     price_intervals[k].period_index.push_back(p);
                     price_intervals[k].start_time.push_back(left_marker);

@@ -67,42 +67,44 @@ public:
 };
 
 namespace scheduling {
-double exchange_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&, Exchange&);
-double exchange_depots(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&, Exchange&);
-double shift_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data& data, Shift&);
+double exchange_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&, Exchange&);
+double exchange_depots(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&, Exchange&);
+double shift_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData& data, Shift&);
 
 void perform_exchange(std::vector<Vehicle>&, Exchange&);
 void perform_shift(std::vector<Vehicle>&, Shift&);
 
-void apply_best_improvement(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
-void optimize_rotations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
+void apply_best_improvement(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
+void optimize_rotations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
 }
 
 namespace locations {
 void split_trips(std::vector<Vehicle>&, std::vector<int>&, int, int);
 bool are_rotations_charge_feasible(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, std::vector<int>&);
-void open_charging_station(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&, int);
-void close_charging_station(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&, int);
-double swap_charging_station(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&, int, int);
-void optimize_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
+void open_charging_station(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&, int);
+void close_charging_station(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&, int);
+double swap_charging_station(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&, int, int);
+void optimize_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
+void open_charging_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&, std::vector<int>&);
 }
 
 
 namespace diversification {
 double exchange_three_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ThreeExchange&);
-double shift_all_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data& data,
+double shift_all_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData& data,
         int);
 void perform_three_exchange(std::vector<Vehicle>&, ThreeExchange&);
 
-void apply_operators(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
-void optimize_rotations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
+void apply_operators(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
+void optimize_rotations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
 }
 
 namespace evaluation {
-double calculate_objective(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
+double calculate_objective(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
 double calculate_deadheading_cost(std::vector<Vehicle>&, std::vector<Trip>&);
 double calculate_deadheading_cost(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<int>&);
-void calculate_utilization(std::vector<Vehicle>& vehicle, std::vector<Trip>&, std::vector<Terminal>&);
+void calculate_utilization(std::vector<Vehicle>& vehicle, std::vector<Trip>&, std::vector<Terminal>&,
+        ProcessedData& processed_data);
 
 bool is_two_exchange_compatible(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
 bool is_three_exchange_compatible(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int, int, int);

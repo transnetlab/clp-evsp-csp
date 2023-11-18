@@ -1,7 +1,7 @@
 #include "helpers.h"
 
 // Function to read relevant GTFS trip data
-void preprocessing::read_trip_data(std::vector<Trip>& trip, Data& data)
+void preprocessing::read_trip_data(std::vector<Trip>& trip, ProcessedData& data)
 {
     // Read trip data from file
     logger.log(LogLevel::Info, "Reading trip data from file...");
@@ -40,7 +40,7 @@ void preprocessing::read_trip_data(std::vector<Trip>& trip, Data& data)
     }
 
     input_file.close(); // Close the input_file
-    data.time_steps_length = data.last_trip_end_time - data.first_trip_start_time;
+    data.time_steps_length = data.last_trip_end_time-data.first_trip_start_time;
 
     // Log the data read
     logger.log(LogLevel::Info, "Trip data read successfully");
@@ -59,7 +59,7 @@ void preprocessing::read_trip_data(std::vector<Trip>& trip, Data& data)
 }
 
 // Function that reads data on terminal stops of routes
-void preprocessing::read_terminal_data(std::vector<Terminal>& terminal, Data& data)
+void preprocessing::read_terminal_data(std::vector<Terminal>& terminal, ProcessedData& data)
 {
     // Read terminal data from file
     logger.log(LogLevel::Info, "Reading terminal data from file...");
@@ -98,7 +98,7 @@ void preprocessing::read_terminal_data(std::vector<Terminal>& terminal, Data& da
 }
 
 // Function to augment trips with depot stops
-void preprocessing::create_depot_trips(std::vector<Trip>& trip, std::vector<Terminal>& terminal, Data& data)
+void preprocessing::create_depot_trips(std::vector<Trip>& trip, std::vector<Terminal>& terminal, ProcessedData& data)
 {
     // Augment trips with depot stops
     logger.log(LogLevel::Info, "Augmenting trips with depot stops...");
@@ -130,7 +130,7 @@ void preprocessing::create_depot_trips(std::vector<Trip>& trip, std::vector<Term
 }
 
 // Function to read data on trip pairs
-void preprocessing::read_trip_pair_data(std::vector<Trip>& trip, Data& data)
+void preprocessing::read_trip_pair_data(std::vector<Trip>& trip, ProcessedData& data)
 {
     // Read trip pair data from file
     logger.log(LogLevel::Info, "Reading trip pair data from file...");
@@ -194,7 +194,7 @@ void preprocessing::read_trip_pair_data(std::vector<Trip>& trip, Data& data)
 }
 
 // Function to initialize bus rotations from the solution to the concurrent scheduler algorithm
-void preprocessing::initialize_vehicle_rotations(std::vector<Vehicle>& vehicle, Data& data)
+void preprocessing::initialize_vehicle_rotations(std::vector<Vehicle>& vehicle, ProcessedData& data)
 {
     // Initialize bus rotations from the solution to the concurrent scheduler algorithm
     logger.log(LogLevel::Info, "Initializing vehicle rotations from the concurrent scheduler solution...");
@@ -236,23 +236,23 @@ void preprocessing::initialize_vehicle_rotations(std::vector<Vehicle>& vehicle, 
 }
 
 // Function to find the energy intervals based on pricing for the CSP problem
-void preprocessing::create_energy_price_intervals(Data& data)
+void preprocessing::create_energy_price_intervals(ProcessedData& processed_data)
 {
     // Create energy price intervals
     logger.log(LogLevel::Info, "Creating energy price intervals...");
 
     // Create energy price intervals
-    for (int t = data.first_trip_start_time; t<data.last_trip_end_time; t++) {
+    for (int t = processed_data.first_trip_start_time; t<processed_data.last_trip_end_time; t++) {
         int time_step = t%1440;
         int interval_index = 0;
         while (time_step>=ENERGY_LEFT_INTERVAL[interval_index+1])
             ++interval_index;
-        data.energy_price_per_min[t] = ENERGY_PRICE[interval_index];
+        processed_data.energy_price_per_min[t] = ENERGY_PRICE[interval_index];
     }
 
     // Log the output of the map
     logger.log(LogLevel::Debug, "Printing energy price intervals (Time step, Price)");
-    for (const auto& curr_interval : data.energy_price_per_min)
+    for (const auto& curr_interval : processed_data.energy_price_per_min)
         logger.log(LogLevel::Debug, std::to_string(curr_interval.first)+" "+std::to_string(curr_interval.second));
 }
 
@@ -289,7 +289,7 @@ void preprocessing::log_input_data(std::vector<Vehicle>& vehicle, std::vector<Tr
 
 // Function to read inputs to the model including GTFS data and initial rotations
 void preprocessing::initialize_inputs(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data)
+        std::vector<Terminal>& terminal, ProcessedData& data)
 {
     logger.log(LogLevel::Info, "Initializing inputs to the model...");
 
@@ -315,7 +315,7 @@ void preprocessing::initialize_inputs(std::vector<Vehicle>& vehicle, std::vector
 
 // Sanity check for solutions: (1) Single bus for each trip (2) All trips are included (3) Charge feasibility
 void postprocessing::check_solution(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data)
+        std::vector<Terminal>& terminal, ProcessedData& data)
 {
     logger.log(LogLevel::Info, "Performing sanity checks on the solution...");
 
@@ -395,9 +395,9 @@ void postprocessing::write_summary(std::string instance, std::time_t curr_time)
 
 // Function to write the summary outputs to a file
 void postprocessing::write_summary(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, double csp_cost, Data& data)
+        std::vector<Terminal>& terminal, double csp_cost, ProcessedData& processed_data)
 {
-    // Write the output data to a file
+    // Write the output processed_data to a file
     logger.log(LogLevel::Info, "Writing output summary to file...");
     std::ofstream summary_file("../output/Summary.txt", std::ios_base::app);
     if (!summary_file.is_open()) {
@@ -413,16 +413,19 @@ void postprocessing::write_summary(std::vector<Vehicle>& vehicle, std::vector<Tr
     }
 
     // Write the cost of the solution and the problem settings
-    double cost = evaluation::calculate_objective(vehicle, trip, terminal, data);
+    double cost = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
 
     if (SOLVE_CSP_JOINTLY)
-        summary_file << data.num_trips << ", " << data.num_terminals << ", " << num_charging_stations << ", "
-                     << vehicle.size() << ", " << std::fixed << std::setprecision(2) << cost-csp_cost << ", "
-                     << csp_cost << ", " << cost << ", " << data.runtime << std::endl;
+        summary_file << processed_data.num_trips << ", " << processed_data.num_terminals << ", "
+                     << num_charging_stations << ", " << vehicle.size() << ", " << std::fixed << std::setprecision(2)
+                     << cost-csp_cost << ", " << csp_cost << ", " << cost << ", " << processed_data.runtime
+                     << std::endl;
     else
-        summary_file << data.num_trips << ", " << data.num_terminals << ", " << num_charging_stations << ", "
-                     << vehicle.size() << ", " << std::fixed << std::setprecision(2) << cost << ", "
-                     << csp_cost << ", " << cost+csp_cost << ", " << data.runtime << std::endl;
+        summary_file << processed_data.num_trips << ", " << processed_data.num_terminals << ", "
+                     << num_charging_stations << ", " << vehicle.size() << ", "
+                     << processed_data.num_successful_openings << ", " << processed_data.num_successful_closures << ", "
+                     << processed_data.num_successful_swaps << ", " << std::fixed << std::setprecision(2) << cost
+                     << ", " << csp_cost << ", " << cost+csp_cost << ", " << processed_data.runtime << std::endl;
 
     // Write the constants used in the model
     /*summary_file << " (Settings: Vehicle cost: " << VEHICLE_COST << ", " << "Charge station cost: " << CHARGE_LOC_COST
@@ -439,9 +442,8 @@ void postprocessing::write_summary(std::vector<Vehicle>& vehicle, std::vector<Tr
     summary_file.close();
 }
 
-
 // Function to write the summary outputs to a file
-void postprocessing::write_vehicle_results(std::vector<Vehicle>& vehicle, Data& data)
+void postprocessing::write_vehicle_results(std::vector<Vehicle>& vehicle, ProcessedData& data)
 {
     // Write the vehicle rotation data to a file
     logger.log(LogLevel::Info, "Writing vehicle rotation results to file...");
@@ -452,7 +454,7 @@ void postprocessing::write_vehicle_results(std::vector<Vehicle>& vehicle, Data& 
     }
 
     // Write the vehicle rotation data to a file
-    int id = 1;  // New IDs are created since splitting trips can lead to non-continguous IDs
+    int id = 1;  // New IDs are created since splitting trips can lead to non-contiguous IDs
     for (const auto& curr_vehicle : vehicle) {
         vehicle_results_file << id << " ";
         for (const auto& curr_trip : curr_vehicle.trip_id)
@@ -465,7 +467,7 @@ void postprocessing::write_vehicle_results(std::vector<Vehicle>& vehicle, Data& 
 }
 
 // Function to write the summary outputs to a file
-void postprocessing::write_terminal_results(std::vector<Terminal>& terminal, Data& data)
+void postprocessing::write_terminal_results(std::vector<Terminal>& terminal, ProcessedData& data)
 {
     // Write the terminal data to a file
     logger.log(LogLevel::Info, "Writing charging station location results to file...");
