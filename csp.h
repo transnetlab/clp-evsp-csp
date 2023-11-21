@@ -15,6 +15,23 @@
 #include <boost/graph/adjacency_matrix.hpp>
 #include <boost/graph/bron_kerbosch_all_cliques.hpp>
 
+class IntegratedModelVariable {
+public:
+    std::vector<std::vector<IloNumVar>> charge_level;
+    std::vector<std::vector<std::vector<IloNumVar>>> energy_input;
+    std::vector<IloNumVar> terminal_charge_capacity;
+    std::vector<IloNumVar> activate_charge_station;
+
+    IntegratedModelVariable(int num_vehicles, int num_terminals)
+            :charge_level(num_vehicles),
+             energy_input(num_vehicles),
+             terminal_charge_capacity(num_terminals),
+                activate_charge_station(num_terminals)
+    {
+
+    }
+};
+
 class SplitModelVariable {
 public:
     std::vector<std::vector<IloNumVar>> charge_level;
@@ -80,6 +97,18 @@ void create_objective_split_model(IloExpr&, const std::vector<Vehicle>&, Process
 void log_solution(IloCplex&, const std::vector<Vehicle>&, SplitModelVariable&, const std::vector<int>&,
         const std::vector<int>&);
 double solve_lp(std::vector<Vehicle>&, std::vector<Terminal>&, ProcessedData&);
+}
+
+namespace integrated {
+void set_variables(IloEnv&, const std::vector<Vehicle>&, IntegratedModelVariable&, const std::vector<int>&,
+        const std::vector<int>&);
+void set_constraints(IloEnv&, IloModel&, const std::vector<Vehicle>&, const ProcessedData&, IntegratedModelVariable&,
+        const std::vector<int>&, const std::vector<int>&, const std::vector<int>&);
+void create_objective_split_model(IloExpr&, const std::vector<Vehicle>&, ProcessedData&, IntegratedModelVariable&,
+        const std::vector<int>&, const std::vector<int>&);
+void log_solution(IloCplex&, const std::vector<Vehicle>&, IntegratedModelVariable&, const std::vector<int>&,
+        const std::vector<int>&);
+double solve_mip(std::vector<Vehicle>& vehicle, std::vector<Terminal>& terminal, ProcessedData& data);
 }
 
 namespace csp {

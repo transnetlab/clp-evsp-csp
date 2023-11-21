@@ -25,16 +25,14 @@
 
 // Glocal variables
 Logger logger(true);
-bool SOLVE_CSP_JOINTLY = false;
-bool PERFORM_THREE_EXCHANGES = false;
-bool SHIFT_ALL_TRIPS = true;
+bool SOLVE_CSP_JOINTLY = true;
 int NUM_THREADS = omp_get_num_procs();  // Set this to appropriate number of threads
 
 int main(int argc, char* argv[])
 {
     // Read the instance as command line argument. If not provided, use the default instance
     ProcessedData processed_data; // Vector of parameters
-    processed_data.instance = (argc>1) ? argv[1] : "SCMTD";
+    processed_data.instance = (argc>1) ? argv[1] : "Ann_Arbor";
 
     // Delete any old log files if present and create a new one. Set logging level.
     std::remove(("../output/"+processed_data.instance+"_log.txt").c_str());
@@ -54,21 +52,24 @@ int main(int argc, char* argv[])
     preprocessing::initialize_inputs(vehicle, trip, terminal, processed_data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
-    diversification::optimize_rotations(vehicle, trip, terminal, processed_data);
-
-    // Only optimize rotations. No changes to charging locations are made here.
-    // scheduling::optimize_rotations(vehicle, trip, terminal, processed_data);
+    diversification::optimize_all_shifts(vehicle, trip, terminal, processed_data);
 
     // Local search for charging locations which also includes scheduling operators
-    locations::optimize_stations(vehicle, trip, terminal, processed_data);
+    // locations::optimize_stations(vehicle, trip, terminal, processed_data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
-    // PERFORM_THREE_EXCHANGES = true;
-    // diversification::optimize_rotations(vehicle, trip, terminal, processed_data);
+    // diversification::optimize_three_exchanges(vehicle, trip, terminal, processed_data);
+
+    locations::optimize_integrated_model(vehicle, trip, terminal, processed_data);
 
     // Solve the charge scheduling problem
     processed_data.log_csp_solution = true;
-    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "Split");
+    double csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "clp_csp");
+    // Remove the cost of open charging stations
+    for (auto& curr_terminal : terminal) {
+        if (curr_terminal.is_charge_station)
+            csp_cost -= CHARGE_LOC_COST;
+    }
 
     // Close charging stations where CSP solution is zero based on charge capacity variables
     /*int num_extra_terminals_closed = 0;

@@ -48,9 +48,11 @@ public:
     int num_successful_closures = 0;
     int num_successful_swaps = 0;
 
+    std::vector<double> objective_values;  // Vector of objective values at different iterations
+
     // Define two maps for successful openings and closures
-    std::map<int, int> successful_openings;
-    std::map<int, int> successful_closures;
+    // std::map<int, int> successful_openings;
+    // std::map<int, int> successful_closures;
 
     bool log_csp_solution = false;  // Flag to log the CSP solution
 
