@@ -26,7 +26,7 @@ public:
             :charge_level(num_vehicles),
              energy_input(num_vehicles),
              terminal_charge_capacity(num_terminals),
-                activate_charge_station(num_terminals)
+             activate_charge_station(num_terminals)
     {
 
     }
@@ -68,8 +68,10 @@ using Clique = std::deque<V>;
 using Cliques = std::vector<Clique>;
 
 namespace initialization {
-void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&);
-void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, std::vector<int>&);
+void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&,
+        const std::string&);
+void update_vehicles(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&,
+        std::vector<int>&, const std::string&);
 void create_subsets(std::vector<Vehicle>&, std::vector<Terminal>&, std::vector<int>&, std::vector<int>&,
         std::vector<int>&);
 void create_subsets(std::vector<Vehicle>&, std::vector<Terminal>&, std::vector<int>&, std::vector<int>&);
@@ -92,7 +94,7 @@ void set_variables(IloEnv&, const std::vector<Vehicle>&, SplitModelVariable&, co
         const std::vector<int>&);
 void set_constraints(IloEnv&, IloModel&, const std::vector<Vehicle>&, const ProcessedData&, SplitModelVariable&,
         const std::vector<int>&, const std::vector<int>&, const std::vector<int>&);
-void create_objective_split_model(IloExpr&, const std::vector<Vehicle>&, ProcessedData&, SplitModelVariable&,
+void create_objective(IloExpr&, const std::vector<Vehicle>&, ProcessedData&, SplitModelVariable&,
         const std::vector<int>&, const std::vector<int>&);
 void log_solution(IloCplex&, const std::vector<Vehicle>&, SplitModelVariable&, const std::vector<int>&,
         const std::vector<int>&);
@@ -104,21 +106,19 @@ void set_variables(IloEnv&, const std::vector<Vehicle>&, IntegratedModelVariable
         const std::vector<int>&);
 void set_constraints(IloEnv&, IloModel&, const std::vector<Vehicle>&, const ProcessedData&, IntegratedModelVariable&,
         const std::vector<int>&, const std::vector<int>&, const std::vector<int>&);
-void create_objective_split_model(IloExpr&, const std::vector<Vehicle>&, ProcessedData&, IntegratedModelVariable&,
+void create_objective(IloExpr&, const std::vector<Vehicle>&, ProcessedData&, IntegratedModelVariable&,
         const std::vector<int>&, const std::vector<int>&);
 void log_solution(IloCplex&, const std::vector<Vehicle>&, IntegratedModelVariable&, const std::vector<int>&,
         const std::vector<int>&);
-double solve_mip(std::vector<Vehicle>& vehicle, std::vector<Terminal>& terminal, ProcessedData& data);
+double solve_mip(std::vector<Vehicle>&, std::vector<Terminal>&, ProcessedData&);
 }
 
 namespace csp {
-double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
 double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&,
-        std::vector<int>&);
-double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&, const std::string&);
+        const std::string&);
 double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&,
         std::vector<int>&, const std::string&);
-void log_model_rotations_terminals(IloCplex& cplex, std::vector<Vehicle>& vehicle, std::vector<Terminal>& terminal);
+void log_model_rotations_terminals(IloCplex&, std::vector<Vehicle>&, std::vector<Terminal>&);
 }
 
 #endif  //EBUS_VNS_CSP_H

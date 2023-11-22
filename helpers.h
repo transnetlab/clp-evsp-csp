@@ -37,11 +37,13 @@ void initialize_inputs(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Te
 
 namespace postprocessing {
 void check_solution(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
-void write_summary(std::string message);
-void write_summary(std::string instance, std::time_t curr_time);
-void write_summary(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal, double csp_cost, ProcessedData& processed_data);
+void write_summary(std::string);
+void write_summary(std::string, std::time_t);
+void write_summary(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&,
+        double);
 void write_vehicle_results(std::vector<Vehicle>&, ProcessedData&);
 void write_terminal_results(std::vector<Terminal>&, ProcessedData&);
+void write_iteration_stats(ProcessedData&);
 }
 
 #endif //EBUS_VNS_HELPERS_H

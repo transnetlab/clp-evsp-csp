@@ -30,13 +30,12 @@ constexpr double EPSILON = 1e-12; // Small number to compare doubles
 constexpr double SMALL_EPSILON = 1e-15; // Small number to compare doubles
 
 constexpr double IDLE_TIME_THRESHOLD = 0.0;  // Threshold for idle time in minutes used in opening and closing stations
-constexpr int SHIFT_ALL_TRIPS_THRESHOLD = 6; // Threshold for number of trips in a rotation to perform shift all trips (includes depots)
+constexpr int SHIFT_ALL_TRIPS_THRESHOLD = 8; // Threshold for number of trips in a rotation to perform shift all trips (includes depots)
 
-//constexpr bool SOLVE_CSP_JOINTLY = false;  // Flag to solve the CSP jointly or separately
-enum class SolutionType : int {
-  Split,
-  Uniform
-};
-constexpr SolutionType CSP_SOLUTION_TYPE = SolutionType::Uniform; // Solution type for the CSP
+constexpr bool SOLVE_EVSP_CSP = true;  // Flag to solve the CSP jointly or separately in the exchanges and shifts
+constexpr bool SOLVE_CLP_CSP = true; // Flag to solve CSP with CLP
+
+constexpr int NUM_SHORTLISTED_SOLUTIONS = 100; // Set this preferably to be a multiple of the number of cores used
+constexpr bool USE_HYBRID_OPERATORS = true;  // Flag to use hybrid operators
 
 #endif //EBUS_VNS_CONSTANTS_H
