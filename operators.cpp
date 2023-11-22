@@ -1352,7 +1352,7 @@ void locations::open_close_stations_clp_csp(std::vector<Vehicle>& vehicle, std::
     double clp_csp_cost;
     while (new_objective<old_objective) {
         old_objective = new_objective;
-        clp_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "clp-csp-uniform");
+        clp_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "clp-csp-split");
         scheduling::optimize_rotations(vehicle, trip, terminal, processed_data);
         new_objective = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
     }
@@ -1379,7 +1379,7 @@ void locations::open_close_stations_clp_csp(std::vector<Vehicle>& vehicle, std::
             }
         }
         locations::close_charging_station(vehicle, trip, terminal, processed_data, min_charge_capacity_terminal_id);
-        clp_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "clp-csp-uniform");
+        clp_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "clp-csp-split");
 
         // Delete min_charge_capacity_terminal_id from close_terminal_ids
         close_terminal_ids.erase(std::remove(close_terminal_ids.begin(), close_terminal_ids.end(),

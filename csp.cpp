@@ -17,7 +17,7 @@ void initialization::update_vehicles(std::vector<Vehicle>& vehicle, std::vector<
         curr_vehicle.populate_csp_parameters(trip, terminal);
     }
 
-    if (type=="csp-uniform" or type=="clp-csp-uniform") {
+    if (type=="csp-uniform") {
         for (auto& curr_vehicle : vehicle) {
             curr_vehicle.clear_price_interval_parameters();
             curr_vehicle.populate_price_interval_parameters();
@@ -56,7 +56,7 @@ void initialization::update_vehicles(std::vector<Vehicle>& vehicle, std::vector<
     }
 
     // Clear and populate CSP variables associated with price intervals
-    if (type=="csp-uniform" or type=="clp-csp-uniform") {
+    if (type=="csp-uniform") {
         for (int index = 0; index<num_vehicles_updated; ++index) {
             vehicle[update_vehicle_indices[index]].clear_price_interval_parameters();
             vehicle[update_vehicle_indices[index]].populate_price_interval_parameters();
@@ -1060,7 +1060,7 @@ double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector
         return uniform::solve_lp(vehicle, terminal, processed_data);
     else if (type=="csp-split")
         return split::solve_lp(vehicle, terminal, processed_data);
-    else if (type=="clp-csp-uniform")
+    else if (type=="clp-csp-split")
         return integrated::solve_mip(vehicle, terminal, processed_data);
     else {
         std::cerr << "Error: Invalid charging model" << std::endl;
@@ -1079,7 +1079,7 @@ double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector
         return uniform::solve_lp(vehicle, terminal, processed_data);
     else if (type=="csp-split")
         return split::solve_lp(vehicle, terminal, processed_data);
-    else if (type=="clp-csp-uniform")
+    else if (type=="clp-csp-split")
         return integrated::solve_mip(vehicle, terminal, processed_data);
     else {
         std::cerr << "Error: Invalid charging model" << std::endl;
