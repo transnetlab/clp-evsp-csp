@@ -10,17 +10,14 @@
 
 // Function to find the best savings from exchanging trips
 double scheduling::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data, Exchange& exchange)
+        std::vector<Terminal>& terminal, ProcessedData& processed_data, Exchange& exchange)
 {
-    // static int num_calls = 0;  // Record the number of function calls
-    // ++num_calls;
-
     double max_savings = 0.0;  // Stores the maximum savings among all exchanges
 
     // If CSP is to be solved jointly with scheduling, find the CSP solution before exchanges
     double old_csp_cost = 0.0;
-    if (SOLVE_CSP_JOINTLY)
-        old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data);
+    if (SOLVE_EVSP_CSP)
+        old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "csp-uniform");
 
     // Pre-compute the pairs
     std::vector<std::pair<int, int>> pairs;
@@ -29,7 +26,7 @@ double scheduling::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Tri
             pairs.emplace_back(u, v);
 
     // Exchange trips k and l of vehicles u and v. Pairs are created as collapse throws errors depending on the compiler
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(NUM_THREADS)
     for (int p = 0; p<pairs.size(); ++p) {
         int u = pairs[p].first;
         int v = pairs[p].second;
@@ -58,20 +55,21 @@ double scheduling::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Tri
                         savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, u, v, k, l);
                         savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, v, u, l, k);
 
-                        if (SOLVE_CSP_JOINTLY) {
+                        if (SOLVE_EVSP_CSP) {
                             // Update a copy of the vehicle rotations
                             std::vector<Vehicle> vehicle_copy = vehicle;
                             vehicle_copy[u].trip_id = swapped_rotations[0];
                             vehicle_copy[v].trip_id = swapped_rotations[1];
 
                             // Solve the CSP model for the copy
-                            double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal, data,
-                                    update_vehicle_indices);
+                            double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal,
+                                    processed_data,
+                                    update_vehicle_indices, "csp-uniform");
                             savings += old_csp_cost-new_csp_cost;
                         }
 
                         // Check if the exchange is the best so far
-                        #pragma omp critical
+                        // #pragma omp critical
                         {
                             if (evaluation::is_savings_maximum(savings, max_savings, u, v, k, l, exchange)) {
                                 max_savings = savings;
@@ -92,19 +90,136 @@ double scheduling::exchange_trips(std::vector<Vehicle>& vehicle, std::vector<Tri
     return max_savings;
 }
 
+// Function to find the best savings from exchanging trips
+double scheduling::exchange_trips_hybrid(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, ProcessedData& processed_data, Exchange& exchange)
+{
+    double max_savings = 0.0;  // Stores the maximum savings among all exchanges
+
+    // If CSP is to be solved jointly with scheduling, find the CSP solution before exchanges
+    double old_csp_cost = 0.0;
+    if (SOLVE_EVSP_CSP)
+        old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "csp-uniform");
+
+    // Pre-compute the pairs
+    std::vector<std::pair<int, int>> pairs;
+    for (int u = 0; u<vehicle.size(); ++u)
+        for (int v = u+1; v<vehicle.size(); ++v)
+            pairs.emplace_back(u, v);
+
+    std::vector<Exchange> exchanges;
+
+    // Exchange trips k and l of vehicles u and v. Pairs are created as collapse throws errors depending on the compiler
+    #pragma omp parallel for num_threads(NUM_THREADS)
+    for (int p = 0; p<pairs.size(); ++p) {
+        int u = pairs[p].first;
+        int v = pairs[p].second;
+
+        std::vector<int> update_vehicle_indices = {u, v};
+        for (int k = 1; k<vehicle[u].trip_id.size()-1; ++k) {
+            for (int l = 1; l<vehicle[v].trip_id.size()-1; ++l) {
+                // Store a vector of trip_id vectors after swapping trips
+                std::vector<std::vector<int>> swapped_rotations;
+
+                double savings = 0.0;
+                // Check if the exchanges is time compatible
+                if (evaluation::is_two_exchange_compatible(vehicle, trip, u, v, k, l)) {
+                    // Check if exchanges are charge feasible. Push the original trip_ids to swapped_rotations
+                    swapped_rotations.clear();
+                    swapped_rotations.push_back(vehicle[u].trip_id);  // This has index 0 in swapped_rotations
+                    swapped_rotations.push_back(vehicle[v].trip_id);  // This has index 1 in swapped_rotations
+
+                    // Exchange trips k and l of vehicles u and v in swapped_rotations
+                    int temp = swapped_rotations[0][k];
+                    swapped_rotations[0][k] = swapped_rotations[1][l];
+                    swapped_rotations[1][l] = temp;
+
+                    if (evaluation::are_rotations_charge_feasible(trip, terminal, swapped_rotations)) {
+                        // Calculate savings in deadheading from performing the exchange
+                        savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, u, v, k, l);
+                        savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, v, u, l, k);
+
+                        // Store exchange information
+                        #pragma omp critical
+                        {
+                            Exchange temp_exchange;
+                            temp_exchange.first_vehicle_index = u;
+                            temp_exchange.first_trip_index = k;
+                            temp_exchange.second_vehicle_index = v;
+                            temp_exchange.second_trip_index = l;
+                            temp_exchange.savings = savings;
+                            exchanges.push_back(temp_exchange);
+
+                            // Sort exchanges based on savings and keep only top 100
+                            std::sort(exchanges.begin(), exchanges.end(), [](const Exchange& a, const Exchange& b) {
+                              return a.savings>b.savings; // Sort in descending order of savings
+                            });
+
+                            if (exchanges.size()>NUM_SHORTLISTED_SOLUTIONS) {
+                                exchanges.resize(NUM_SHORTLISTED_SOLUTIONS); // Keep only a limited number of solutions
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Scan exchanges and solve CSP jointly to find the max savings
+    #pragma omp parallel for num_threads(NUM_THREADS)
+    for (int i = 0; i<exchanges.size(); ++i) {
+        int u = exchanges[i].first_vehicle_index;
+        int v = exchanges[i].second_vehicle_index;
+        int k = exchanges[i].first_trip_index;
+        int l = exchanges[i].second_trip_index;
+
+        std::vector<std::vector<int>> swapped_rotations;
+        std::vector<int> update_vehicle_indices = {u, v};
+        swapped_rotations.clear();
+        swapped_rotations.push_back(vehicle[u].trip_id);  // This has index 0 in swapped_rotations
+        swapped_rotations.push_back(vehicle[v].trip_id);  // This has index 1 in swapped_rotations
+
+        // Exchange trips k and l of vehicles u and v in swapped_rotations
+        int temp = swapped_rotations[0][k];
+        swapped_rotations[0][k] = swapped_rotations[1][l];
+        swapped_rotations[1][l] = temp;
+
+        // Update a copy of the vehicle rotations
+        std::vector<Vehicle> vehicle_copy = vehicle;
+        vehicle_copy[u].trip_id = swapped_rotations[0];
+        vehicle_copy[v].trip_id = swapped_rotations[1];
+
+        double savings = 0.0;
+
+        // Solve the CSP model for the copy
+        double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal, processed_data,
+                update_vehicle_indices, "csp-uniform");
+        savings += old_csp_cost-new_csp_cost;
+
+        if (evaluation::is_savings_maximum(savings, max_savings, u, v, k, l, exchange)) {
+            max_savings = savings;
+            exchange.first_vehicle_index = u;
+            exchange.first_trip_index = k;
+            exchange.second_vehicle_index = v;
+            exchange.second_trip_index = l;
+        }
+    }
+
+    // Log the number of calls made to this function
+    // logger.log(LogLevel::Info, "Number of exchanges evaluated: "+std::to_string(num_calls));
+    return max_savings;
+}
+
 // Function to find the best savings from shifting trips
 double scheduling::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal,
-        Data& data, Shift& shift)
+        ProcessedData& processed_data, Shift& shift)
 {
-    // static int num_calls = 0;  // Record the number of function calls
-    // ++num_calls;
-
     double max_savings = 0.0;  // Variables for calculating the savings from trip shifts
 
     // If CSP is to be solved jointly with scheduling, find the CSP solution before shifts
     double old_csp_cost = 0.0;
-    if (SOLVE_CSP_JOINTLY)
-        old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data);
+    if (SOLVE_EVSP_CSP)
+        old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "csp-uniform");
 
     // Pre-compute the pairs
     std::vector<std::pair<int, int>> pairs;
@@ -114,7 +229,7 @@ double scheduling::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>&
                 pairs.emplace_back(u, v);
 
     //  Insert trip l of vehicle v after trip k of vehicle u
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(NUM_THREADS)
     for (int p = 0; p<pairs.size(); ++p) {
         int u = pairs[p].first;
         int v = pairs[p].second;
@@ -145,7 +260,7 @@ double scheduling::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>&
                         savings += evaluation::calculate_trip_addition_cost(vehicle, trip, u, v, k, l);
                         savings += evaluation::calculate_trip_removal_cost(vehicle, trip, v, l);
 
-                        if (SOLVE_CSP_JOINTLY) {
+                        if (SOLVE_EVSP_CSP) {
                             // Update a copy of the vehicle rotations
                             std::vector<Vehicle> vehicle_copy = vehicle;
                             std::vector<int> update_vehicle_indices;
@@ -163,12 +278,12 @@ double scheduling::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>&
 
                             // Solve the CSP model for the copy
                             double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal,
-                                    data, update_vehicle_indices);
+                                    processed_data, update_vehicle_indices, "csp-uniform");
                             savings += old_csp_cost-new_csp_cost;
                         }
 
                         // Check if the exchange is the best so far
-                        #pragma omp critical
+                        //#pragma omp critical
                         {
                             if (evaluation::is_savings_maximum(savings, max_savings, u, v, k, l, shift)) {
                                 max_savings = savings;
@@ -189,17 +304,152 @@ double scheduling::shift_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>&
     return max_savings;
 }
 
+double scheduling::shift_trips_hybrid(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal,
+        ProcessedData& processed_data, Shift& shift)
+{
+    double max_savings = 0.0;  // Variables for calculating the savings from trip shifts
+
+    // If CSP is to be solved jointly with scheduling, find the CSP solution before shifts
+    double old_csp_cost = 0.0;
+    if (SOLVE_EVSP_CSP)
+        old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "csp-uniform");
+
+    // Pre-compute the pairs
+    std::vector<std::pair<int, int>> pairs;
+    for (int u = 0; u<vehicle.size(); ++u)
+        for (int v = 0; v<vehicle.size(); ++v)
+            if (u!=v)
+                pairs.emplace_back(u, v);
+
+    std::vector<Shift> shifts;
+
+    //  Insert trip l of vehicle v after trip k of vehicle u
+    #pragma omp parallel for num_threads(NUM_THREADS)
+    for (int p = 0; p<pairs.size(); ++p) {
+        int u = pairs[p].first;
+        int v = pairs[p].second;
+        for (int k = 1; k<vehicle[u].trip_id.size()-1; ++k) {
+            for (int l = 1; l<vehicle[v].trip_id.size()-1; ++l) {
+                // Store a vector of trip_id vectors after shifting trips
+                std::vector<std::vector<int>> shifted_rotations;
+
+                double savings = 0.0;
+                // Check if the exchanges is time compatible and charge feasible
+                if (evaluation::is_shift_compatible(vehicle, trip, u, v, k, l)) {
+                    // Check if exchanges are charge feasible. Insert the original trip_ids to shifted_rotations
+                    shifted_rotations.clear();
+                    shifted_rotations.push_back(vehicle[u].trip_id);  // This has index 0 in shifted_rotations
+                    shifted_rotations.push_back(vehicle[v].trip_id);  // This has index 1 in shifted_rotations
+
+                    // Insert trip l of vehicle v after trip k of vehicle u in shifted_rotations
+                    shifted_rotations[0].insert(shifted_rotations[0].begin()+k+1, shifted_rotations[1][l]);
+                    // Remove trip l of vehicle v from shifted_rotations
+                    shifted_rotations[1].erase(shifted_rotations[1].begin()+l);
+
+                    // Check if shifted_rotations[1] has only two trips. If so, delete it
+                    if (shifted_rotations[1].size()==2)
+                        shifted_rotations.erase(shifted_rotations.begin()+1);
+
+                    if (evaluation::are_rotations_charge_feasible(trip, terminal, shifted_rotations)) {
+                        // Calculate savings in deadheading from performing the exchange
+                        savings += evaluation::calculate_trip_addition_cost(vehicle, trip, u, v, k, l);
+                        savings += evaluation::calculate_trip_removal_cost(vehicle, trip, v, l);
+
+                        #pragma omp critical
+                        {
+                            Shift temp_shift;
+                            temp_shift.dest_vehicle_index = u;
+                            temp_shift.dest_trip_index = k;
+                            temp_shift.source_vehicle_index = v;
+                            temp_shift.source_trip_index = l;
+                            temp_shift.savings = savings;
+                            shifts.push_back(temp_shift);
+
+                            // Sort shifts based on savings and keep only the top 100
+                            std::sort(shifts.begin(), shifts.end(), [](const Shift& a, const Shift& b) {
+                              return a.savings>b.savings; // sort in descending order of savings
+                            });
+
+                            if (shifts.size()>NUM_SHORTLISTED_SOLUTIONS) {
+                                shifts.resize(NUM_SHORTLISTED_SOLUTIONS); // keep only top 100
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #pragma omp parallel for num_threads(NUM_THREADS)
+    for (int i = 0; i<shifts.size(); ++i) {
+        int u = shifts[i].dest_vehicle_index;
+        int v = shifts[i].source_vehicle_index;
+        int k = shifts[i].dest_trip_index;
+        int l = shifts[i].source_trip_index;
+
+        std::vector<std::vector<int>> shifted_rotations;
+        double savings = 0.0;
+
+        // Check if exchanges are charge feasible. Insert the original trip_ids to shifted_rotations
+        shifted_rotations.clear();
+        shifted_rotations.push_back(vehicle[u].trip_id);  // This has index 0 in shifted_rotations
+        shifted_rotations.push_back(vehicle[v].trip_id);  // This has index 1 in shifted_rotations
+
+        // Insert trip l of vehicle v after trip k of vehicle u in shifted_rotations
+        shifted_rotations[0].insert(shifted_rotations[0].begin()+k+1, shifted_rotations[1][l]);
+        // Remove trip l of vehicle v from shifted_rotations
+        shifted_rotations[1].erase(shifted_rotations[1].begin()+l);
+
+        // Check if shifted_rotations[1] has only two trips. If so, delete it
+        if (shifted_rotations[1].size()==2)
+            shifted_rotations.erase(shifted_rotations.begin()+1);
+
+        // Update a copy of the vehicle rotations
+        std::vector<Vehicle> vehicle_copy = vehicle;
+        std::vector<int> update_vehicle_indices;
+        vehicle_copy[u].trip_id = shifted_rotations[0];
+        if (shifted_rotations.size()==1) {  // Delete vehicle with index v if needed
+            vehicle_copy.erase(vehicle_copy.begin()+v);
+
+            // Deleting a rotation can shift the index of the others by 1
+            update_vehicle_indices = (v>u) ? std::vector<int>{u} : std::vector<int>{u-1};
+        }
+        else {
+            vehicle_copy[v].trip_id = shifted_rotations[1];
+            update_vehicle_indices = {u, v};
+        }
+
+        // Solve the CSP model for the copy
+        double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal,
+                processed_data, update_vehicle_indices, "csp-uniform");
+        savings += old_csp_cost-new_csp_cost;
+
+        if (evaluation::is_savings_maximum(savings, max_savings, u, v, k, l, shift)) {
+            max_savings = savings;
+            shift.dest_vehicle_index = u;
+            shift.dest_trip_index = k;
+            shift.source_vehicle_index = v;
+            shift.source_trip_index = l;
+        }
+    }
+
+    // Log the number of calls made to this function
+    // logger.log(LogLevel::Info, "Number of shifts evaluated: "+std::to_string(num_calls));
+    return max_savings;
+}
+
 // Function to exchange the depot trips of two vehicles
 double scheduling::exchange_depots(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data, Exchange& exchange)
+        std::vector<Terminal>& terminal, ProcessedData& processed_data, Exchange& exchange)
 {
     // Find a pair of vehicle rotation as a set from vehicles
     double max_savings = 0.0;  // Stores the maximum savings among all exchanges
 
     // If CSP is to be solved jointly with scheduling, find the CSP solution before exchanges
     double old_csp_cost = 0.0;
-    if (SOLVE_CSP_JOINTLY)
-        old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data);
+    if (SOLVE_EVSP_CSP)
+        old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "csp-uniform");
 
     // Pre-compute the pairs
     std::vector<std::pair<int, int>> pairs;
@@ -208,7 +458,7 @@ double scheduling::exchange_depots(std::vector<Vehicle>& vehicle, std::vector<Tr
             pairs.emplace_back(u, v);
 
     // Exchange trips k and l of vehicles u and v. Pairs are created as collapse throws errors depending on the compiler
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(NUM_THREADS)
     for (int p = 0; p<pairs.size(); ++p) {
         int u = pairs[p].first;
         int v = pairs[p].second;
@@ -234,20 +484,20 @@ double scheduling::exchange_depots(std::vector<Vehicle>& vehicle, std::vector<Tr
             savings += evaluation::calculate_depot_replacement_cost(vehicle, trip, u, v, k, l);
             savings += evaluation::calculate_depot_replacement_cost(vehicle, trip, v, u, l, k);
 
-            if (SOLVE_CSP_JOINTLY) {
+            if (SOLVE_EVSP_CSP) {
                 // Update a copy of the vehicle rotations
                 std::vector<Vehicle> vehicle_copy = vehicle;
                 vehicle_copy[u].trip_id = swapped_rotations[0];
                 vehicle_copy[v].trip_id = swapped_rotations[1];
 
                 // Solve the CSP model for the copy
-                double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal, data,
-                        update_vehicle_indices);
+                double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal, processed_data,
+                        update_vehicle_indices, "csp-uniform");
                 savings += old_csp_cost-new_csp_cost;
             }
 
             // Check if the exchange is the best so far
-            #pragma omp critical
+            //#pragma omp critical
             {
                 if (evaluation::is_savings_maximum(savings, max_savings, u, v, k, l, exchange)) {
                     max_savings = savings;
@@ -257,6 +507,118 @@ double scheduling::exchange_depots(std::vector<Vehicle>& vehicle, std::vector<Tr
                     exchange.second_trip_index = l;
                 }
             }
+        }
+    }
+
+    return max_savings;
+}
+
+// Function to exchange the depot trips of two vehicles
+double scheduling::exchange_depots_hybrid(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, ProcessedData& processed_data, Exchange& exchange)
+{
+    // Find a pair of vehicle rotation as a set from vehicles
+    double max_savings = 0.0;  // Stores the maximum savings among all exchanges
+
+    // If CSP is to be solved jointly with scheduling, find the CSP solution before exchanges
+    double old_csp_cost = 0.0;
+    if (SOLVE_EVSP_CSP)
+        old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "csp-uniform");
+
+    // Pre-compute the pairs
+    std::vector<std::pair<int, int>> pairs;
+    for (int u = 0; u<vehicle.size(); ++u)
+        for (int v = u+1; v<vehicle.size(); ++v)
+            pairs.emplace_back(u, v);
+
+    std::vector<Exchange> exchanges;
+
+    // Exchange trips k and l of vehicles u and v. Pairs are created as collapse throws errors depending on the compiler
+    #pragma omp parallel for num_threads(NUM_THREADS)
+    for (int p = 0; p<pairs.size(); ++p) {
+        int u = pairs[p].first;
+        int v = pairs[p].second;
+        // Store a vector of trip_id vectors after swapping trips
+        std::vector<std::vector<int>> swapped_rotations;
+
+        std::vector<int> update_vehicle_indices = {u, v};
+        int k = vehicle[u].trip_id.size()-1;
+        int l = vehicle[v].trip_id.size()-1;
+        double savings = 0.0;
+
+        swapped_rotations.clear();
+        swapped_rotations.push_back(vehicle[u].trip_id);  // This has index 0 in swapped_rotations
+        swapped_rotations.push_back(vehicle[v].trip_id);  // This has index 1 in swapped_rotations
+
+        // Exchange trips k and l of vehicles u and v in swapped_rotations
+        int temp = swapped_rotations[0][k];
+        swapped_rotations[0][k] = swapped_rotations[1][l];
+        swapped_rotations[1][l] = temp;
+
+        if (evaluation::are_rotations_charge_feasible(trip, terminal, swapped_rotations)) {
+            // Calculate savings in deadheading from performing the exchange
+            savings += evaluation::calculate_depot_replacement_cost(vehicle, trip, u, v, k, l);
+            savings += evaluation::calculate_depot_replacement_cost(vehicle, trip, v, u, l, k);
+
+            #pragma omp critical
+            {
+                Exchange temp_exchange;
+                temp_exchange.first_vehicle_index = u;
+                temp_exchange.first_trip_index = k;
+                temp_exchange.second_vehicle_index = v;
+                temp_exchange.second_trip_index = l;
+                temp_exchange.savings = savings;
+                exchanges.push_back(temp_exchange);
+
+                // Sort exchanges based on savings and keep only top 100
+                std::sort(exchanges.begin(), exchanges.end(), [](const Exchange& a, const Exchange& b) {
+                  return a.savings>b.savings; // sort in descending order of savings
+                });
+
+                if (exchanges.size()>NUM_SHORTLISTED_SOLUTIONS) {
+                    exchanges.resize(NUM_SHORTLISTED_SOLUTIONS); // keep only top 100
+                }
+            }
+        }
+    }
+
+    // Scan exchanges and solve CSP jointly to find the max savings
+    #pragma omp parallel for num_threads(NUM_THREADS)
+    for (int i = 0; i<exchanges.size(); ++i) {
+        int u = exchanges[i].first_vehicle_index;
+        int v = exchanges[i].second_vehicle_index;
+        int k = exchanges[i].first_trip_index;
+        int l = exchanges[i].second_trip_index;
+
+        std::vector<std::vector<int>> swapped_rotations;
+        std::vector<int> update_vehicle_indices = {u, v};
+        swapped_rotations.clear();
+        swapped_rotations.push_back(vehicle[u].trip_id);  // This has index 0 in swapped_rotations
+        swapped_rotations.push_back(vehicle[v].trip_id);  // This has index 1 in swapped_rotations
+
+        // Exchange trips k and l of vehicles u and v in swapped_rotations
+        int temp = swapped_rotations[0][k];
+        swapped_rotations[0][k] = swapped_rotations[1][l];
+        swapped_rotations[1][l] = temp;
+
+        // Update a copy of the vehicle rotations
+        std::vector<Vehicle> vehicle_copy = vehicle;
+        vehicle_copy[u].trip_id = swapped_rotations[0];
+        vehicle_copy[v].trip_id = swapped_rotations[1];
+
+        double savings = 0.0;
+
+        // Solve the CSP model for the copy
+        double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal, processed_data,
+                update_vehicle_indices, "csp-uniform");
+        savings += old_csp_cost-new_csp_cost;
+
+        if (evaluation::is_savings_maximum(savings, max_savings, u, v, k, l, exchange)) {
+            max_savings = savings;
+            exchange.first_vehicle_index = u;
+            exchange.first_trip_index = k;
+            exchange.second_vehicle_index = v;
+            exchange.second_trip_index = l;
         }
     }
 
@@ -342,33 +704,38 @@ void scheduling::perform_shift(std::vector<Vehicle>& vehicle, Shift& shift)
 
 // Best improvement function to optimize rotations using shifts and exchanges
 void scheduling::apply_best_improvement(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data)
+        std::vector<Terminal>& terminal, ProcessedData& processed_data)
 {
     logger.log(LogLevel::Info, "Finding the best improvement operator...");
+    Exchange exchange;
+    Shift shift;
 
     static int num_exchanges = 0;
     static int num_shifts = 0;
 
-    Exchange exchange;
-    Shift shift;
-
     // Run the exchange and shift locations
-    double exchange_savings = exchange_trips(vehicle, trip, terminal, data, exchange);
+    double exchange_savings, shift_savings, depot_exchange_savings;
+    exchange_savings = USE_HYBRID_OPERATORS ? exchange_trips_hybrid(vehicle, trip, terminal, processed_data, exchange)
+                                            : exchange_trips(vehicle, trip, terminal, processed_data, exchange);
     logger.log(LogLevel::Info, "Savings from exchange operator: "+std::to_string(exchange_savings));
 
-    double shift_savings = shift_trips(vehicle, trip, terminal, data, shift);
+    shift_savings = USE_HYBRID_OPERATORS ? shift_trips_hybrid(vehicle, trip, terminal, processed_data, shift)
+                                         : shift_trips(vehicle, trip, terminal, processed_data, shift);
     logger.log(LogLevel::Info, "Savings from shift operator: "+std::to_string(shift_savings));
 
     // Check if savings are positive
     if (exchange_savings<EPSILON and shift_savings<EPSILON) {
         logger.log(LogLevel::Info, "No improvement possible from trip exchanges or shifts...");
-
         logger.log(LogLevel::Info, "Checking for improvement from depot exchanges...");
-        double depot_exchange_savings = exchange_depots(vehicle, trip, terminal, data, exchange);
-        logger.log(LogLevel::Info,
-                "Savings from depot exchange operator: "+std::to_string(depot_exchange_savings));
-        (depot_exchange_savings>EPSILON) ? perform_exchange(vehicle, exchange) : logger.log(LogLevel::Info,
-                "No improvement possible from depot exchanges...");
+        depot_exchange_savings = USE_HYBRID_OPERATORS ? exchange_depots_hybrid(vehicle, trip, terminal, processed_data,
+                exchange) : exchange_depots(vehicle, trip, terminal, processed_data, exchange);
+        logger.log(LogLevel::Info, "Savings from depot exchanges: "+std::to_string(depot_exchange_savings));
+        if (depot_exchange_savings>EPSILON) {
+            perform_exchange(vehicle, exchange);
+            ++num_exchanges;
+        }
+        else
+            logger.log(LogLevel::Info, "No improvement possible from depot exchanges...");
         return;
     }
 
@@ -384,23 +751,22 @@ void scheduling::apply_best_improvement(std::vector<Vehicle>& vehicle, std::vect
     // Log the number of shifts and exchanges that were actually performed
     logger.log(LogLevel::Info, "Number of exchanges performed: "+std::to_string(num_exchanges));
     logger.log(LogLevel::Info, "Number of shifts performed: "+std::to_string(num_shifts));
-
     // Check for savings from shift, if it is zero, then check for savings from exchange. Perform shifts or exchanges
     // only if these savings are positive
     /*Shift shift;
-    double shift_savings = shift_trips(vehicle, trip, terminal, data, shift);
+    double shift_savings = shift_trips(vehicle, trip, terminal, processed_data, shift);
     if (shift_savings>EPSILON)
         perform_shift(vehicle, shift);
     else {
         Exchange exchange;
-        double exchange_savings = exchange_trips(vehicle, trip, terminal, data, exchange);
+        double exchange_savings = exchange_trips(vehicle, trip, terminal, processed_data, exchange);
         if (exchange_savings>EPSILON)
             perform_exchange(vehicle, exchange);
         else {
             logger.log(LogLevel::Info, "No improvement possible from trip exchanges or shifts...");
 
             logger.log(LogLevel::Info, "Checking for improvement from depot exchanges...");
-            double depot_exchange_savings = exchange_depots(vehicle, trip, terminal, data, exchange);
+            double depot_exchange_savings = exchange_depots(vehicle, trip, terminal, processed_data, exchange);
             logger.log(LogLevel::Info,
                     "Savings from depot exchange operator: "+std::to_string(depot_exchange_savings));
             (depot_exchange_savings>EPSILON) ? perform_exchange(vehicle, exchange) : logger.log(LogLevel::Info,
@@ -412,19 +778,19 @@ void scheduling::apply_best_improvement(std::vector<Vehicle>& vehicle, std::vect
     /*int random_number = rand()%2;
     if (random_number==0) {
         Shift shift;
-        double shift_savings = shift_trips(vehicle, trip, terminal, data, shift);
+        double shift_savings = shift_trips(vehicle, trip, terminal, processed_data, shift);
         if (shift_savings>EPSILON)
             perform_shift(vehicle, shift);
         else {
             Exchange exchange;
-            double exchange_savings = exchange_trips(vehicle, trip, terminal, data, exchange);
+            double exchange_savings = exchange_trips(vehicle, trip, terminal, processed_data, exchange);
             if (exchange_savings>EPSILON)
                 perform_exchange(vehicle, exchange);
             else {
                 logger.log(LogLevel::Info, "No improvement possible from trip exchanges or shifts...");
 
                 logger.log(LogLevel::Info, "Checking for improvement from depot exchanges...");
-                double depot_exchange_savings = exchange_depots(vehicle, trip, terminal, data, exchange);
+                double depot_exchange_savings = exchange_depots(vehicle, trip, terminal, processed_data, exchange);
                 logger.log(LogLevel::Info,
                         "Savings from depot exchange operator: "+std::to_string(depot_exchange_savings));
                 (depot_exchange_savings>EPSILON) ? perform_exchange(vehicle, exchange) : logger.log(LogLevel::Info,
@@ -434,19 +800,19 @@ void scheduling::apply_best_improvement(std::vector<Vehicle>& vehicle, std::vect
     }
     else {
         Exchange exchange;
-        double exchange_savings = exchange_trips(vehicle, trip, terminal, data, exchange);
+        double exchange_savings = exchange_trips(vehicle, trip, terminal, processed_data, exchange);
         if (exchange_savings>EPSILON)
             perform_exchange(vehicle, exchange);
         else {
             Shift shift;
-            double shift_savings = shift_trips(vehicle, trip, terminal, data, shift);
+            double shift_savings = shift_trips(vehicle, trip, terminal, processed_data, shift);
             if (shift_savings>EPSILON)
                 perform_shift(vehicle, shift);
             else {
                 logger.log(LogLevel::Info, "No improvement possible from trip exchanges or shifts...");
 
                 logger.log(LogLevel::Info, "Checking for improvement from depot exchanges...");
-                double depot_exchange_savings = exchange_depots(vehicle, trip, terminal, data, exchange);
+                double depot_exchange_savings = exchange_depots(vehicle, trip, terminal, processed_data, exchange);
                 logger.log(LogLevel::Info,
                         "Savings from depot exchange operator: "+std::to_string(depot_exchange_savings));
                 (depot_exchange_savings>EPSILON) ? perform_exchange(vehicle, exchange) : logger.log(LogLevel::Info,
@@ -458,20 +824,36 @@ void scheduling::apply_best_improvement(std::vector<Vehicle>& vehicle, std::vect
 
 // Function to optimize rotations using repeated shifts and exchanges till there is no improvement
 void scheduling::optimize_rotations(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data)
+        std::vector<Terminal>& terminal, ProcessedData& processed_data)
 {
     logger.log(LogLevel::Info, "Optimizing rotations...");
 
     // Initialize variables
     double old_objective = INF;
-    double new_objective = evaluation::calculate_objective(vehicle, trip, terminal, data);
+    double new_objective = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
 
-    // Loop until there is no improvement in the objective
+    // Define the threshold time in minutes (adjust as needed)
+    // const int threshold_minutes = 20;
+
+    // Get the current time before entering the loop
+    //auto start_time = std::chrono::high_resolution_clock::now();
+
+    // Loop until there is no improvement in the objective or time exceeds the threshold
     while (new_objective<old_objective) {
         old_objective = new_objective;
-        scheduling::apply_best_improvement(vehicle, trip, terminal, data);
-        new_objective = evaluation::calculate_objective(vehicle, trip, terminal, data);
+        scheduling::apply_best_improvement(vehicle, trip, terminal, processed_data);
+        new_objective = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
+
+        // Store the objective value for visualization purposes
+        processed_data.objective_values.push_back(new_objective);
+
+        // Check if elapsed time exceeded the threshold
+        //auto current_time = std::chrono::high_resolution_clock::now();
+        //std::chrono::duration<double> elapsed_minutes = current_time - start_time;
+        //if (elapsed_minutes.count() >= threshold_minutes)
+        //    break;
     }
+    diversification::optimize_all_shifts(vehicle, trip, terminal, processed_data);
 }
 
 /* LOCATION OPERATORS
@@ -592,13 +974,13 @@ bool locations::are_rotations_charge_feasible(std::vector<Vehicle>& vehicle, std
 
 // Function to open charging stations and check if savings can be achieved from scheduling operators
 void locations::open_charging_station(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data, int open_terminal_id)
+        std::vector<Terminal>& terminal, ProcessedData& processed_data, int open_terminal_id)
 {
     logger.log(LogLevel::Info,
             "Checking for improvement from opening charge station at terminal ID "
                     +std::to_string(open_terminal_id));
     logger.log(LogLevel::Info, "Before opening the charging station...");
-    double best_objective = evaluation::calculate_objective(vehicle, trip, terminal, data);
+    double best_objective = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
 
     // Opening charging station will increase the cost. Check if savings can be achieved from scheduling operators
     logger.log(LogLevel::Info, "After opening the charging station...");
@@ -606,14 +988,15 @@ void locations::open_charging_station(std::vector<Vehicle>& vehicle, std::vector
 
     logger.log(LogLevel::Info, "Applying local search operators to adjust scheduling...");
     std::vector<Vehicle> vehicle_copy = vehicle;  // Create a copy of the vehicle vector to check for savings
-    scheduling::optimize_rotations(vehicle_copy, trip, terminal, data);
+    scheduling::optimize_rotations(vehicle_copy, trip, terminal, processed_data);
 
     // Check if the current objective is better than the best objective that we started with
-    double curr_objective = evaluation::calculate_objective(vehicle_copy, trip, terminal, data);
+    double curr_objective = evaluation::calculate_objective(vehicle_copy, trip, terminal, processed_data);
     if (curr_objective<best_objective) {
         logger.log(LogLevel::Info, "Objective improved by "+std::to_string(best_objective-curr_objective));
         vehicle = vehicle_copy;
-        ++data.num_successful_openings;
+        ++processed_data.num_successful_openings;
+        // processed_data.successful_openings[open_terminal_id] = 1;
     }
     else {
         logger.log(LogLevel::Info, "No improvement from opening the charging station. Reverting changes...");
@@ -621,15 +1004,45 @@ void locations::open_charging_station(std::vector<Vehicle>& vehicle, std::vector
     }
 }
 
+// Function to open multiple charging stations and check if savings can be achieved from scheduling operators
+void locations::open_charging_stations(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, ProcessedData& processed_data, std::vector<int>& open_terminal_ids)
+{
+    logger.log(LogLevel::Info, "Before opening the charging stations...");
+    double best_objective = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
+
+    // Opening charging station will increase the cost. Check if savings can be achieved from scheduling operators
+    logger.log(LogLevel::Info, "After opening the chargings station...");
+    for (const int& open_terminal_id : open_terminal_ids)
+        terminal[open_terminal_id-1].is_charge_station = true;  // Open the terminal with the chosen index
+
+    logger.log(LogLevel::Info, "Applying local search operators to adjust scheduling...");
+    std::vector<Vehicle> vehicle_copy = vehicle;  // Create a copy of the vehicle vector to check for savings
+    scheduling::optimize_rotations(vehicle_copy, trip, terminal, processed_data);
+
+    // Check if the current objective is better than the best objective that we started with
+    double curr_objective = evaluation::calculate_objective(vehicle_copy, trip, terminal, processed_data);
+    if (curr_objective<best_objective) {
+        logger.log(LogLevel::Info, "Objective improved by "+std::to_string(best_objective-curr_objective));
+        vehicle = vehicle_copy;
+        processed_data.num_successful_openings = open_terminal_ids.size();
+    }
+    else {
+        logger.log(LogLevel::Info, "No improvement from opening the charging station. Reverting changes...");
+        for (const int& open_terminal_id : open_terminal_ids)
+            terminal[open_terminal_id-1].is_charge_station = false;
+    }
+}
+
 // Function that closes charging stations and creates new rotations if required
 void locations::close_charging_station(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data, int close_terminal_id)
+        std::vector<Terminal>& terminal, ProcessedData& processed_data, int close_terminal_id)
 {
     logger.log(LogLevel::Info,
             "Checking for improvement from closing charge station at terminal ID "
                     +std::to_string(close_terminal_id));
     logger.log(LogLevel::Info, "Before closing the charging station...");
-    double best_objective = evaluation::calculate_objective(vehicle, trip, terminal, data);
+    double best_objective = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
 
     // Scan through the rotations and find vehicle indices that have the chosen terminal and add them to a scan eligible list
     std::vector<int> scan_eligible_vehicle_indices;
@@ -664,14 +1077,15 @@ void locations::close_charging_station(std::vector<Vehicle>& vehicle, std::vecto
 
     // Check if savings can be achieved from applying the scheduling operators
     logger.log(LogLevel::Info, "Applying local search locations to adjust scheduling...");
-    scheduling::optimize_rotations(vehicle_copy, trip, terminal, data);
+    scheduling::optimize_rotations(vehicle_copy, trip, terminal, processed_data);
 
     // Check if the current objective is better than the best objective that we started with
-    double curr_objective = evaluation::calculate_objective(vehicle_copy, trip, terminal, data);
+    double curr_objective = evaluation::calculate_objective(vehicle_copy, trip, terminal, processed_data);
     if (curr_objective<best_objective) {
         logger.log(LogLevel::Info, "Objective improved by "+std::to_string(best_objective-curr_objective));
         vehicle = vehicle_copy;
-        ++data.num_successful_closures;
+        ++processed_data.num_successful_closures;
+        // processed_data.successful_closures[close_terminal_id] = 1;
     }
     else {
         logger.log(LogLevel::Info, "No improvement from closing the charging station. Reverting changes...");
@@ -680,14 +1094,14 @@ void locations::close_charging_station(std::vector<Vehicle>& vehicle, std::vecto
 }
 
 double locations::swap_charging_station(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data, int open_terminal_id, int close_terminal_id)
+        std::vector<Terminal>& terminal, ProcessedData& processed_data, int open_terminal_id, int close_terminal_id)
 {
     logger.log(LogLevel::Info,
             "Checking for improvement from swapping charge station at terminal ID "
                     +std::to_string(close_terminal_id)+" with terminal ID "+std::to_string(open_terminal_id));
 
     logger.log(LogLevel::Info, "Before swapping the charging station...");
-    double best_objective = evaluation::calculate_objective(vehicle, trip, terminal, data);
+    double best_objective = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
 
     logger.log(LogLevel::Info, "After opening the charging station...");
     terminal[open_terminal_id-1].is_charge_station = true;  // Open the terminal with the chosen index
@@ -725,10 +1139,10 @@ double locations::swap_charging_station(std::vector<Vehicle>& vehicle, std::vect
 
     // Check if savings can be achieved from applying the scheduling operators
     logger.log(LogLevel::Info, "Applying local search locations to adjust scheduling...");
-    scheduling::optimize_rotations(vehicle_copy, trip, terminal, data);
+    scheduling::optimize_rotations(vehicle_copy, trip, terminal, processed_data);
 
     // Check if the current objective is better than the best objective that we started with
-    double curr_objective = evaluation::calculate_objective(vehicle_copy, trip, terminal, data);
+    double curr_objective = evaluation::calculate_objective(vehicle_copy, trip, terminal, processed_data);
     if (curr_objective<best_objective) {
         logger.log(LogLevel::Info,
                 "Swapping charging stations improves the objective by "+std::to_string(best_objective-curr_objective));
@@ -743,128 +1157,259 @@ double locations::swap_charging_station(std::vector<Vehicle>& vehicle, std::vect
     return best_objective-curr_objective;
 }
 
-// Function to open or close locations. This could create new rotations as well when locations are closed
-void locations::optimize_stations(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data)
+void locations::perform_station_swap(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, ProcessedData& processed_data)
 {
-    logger.log(LogLevel::Info, "Optimizing locations...");
+    logger.log(LogLevel::Info, "Checking for improvement from swapping stations...");
+    evaluation::calculate_utilization(vehicle, trip, terminal, processed_data);
     std::vector<int> open_terminal_ids;
     std::vector<int> close_terminal_ids;
 
-    // Step 1: Close open charging stations with zero utilization
-    logger.log(LogLevel::Info, "Checking if charge stations with zero utilization can be closed...");
-    evaluation::calculate_utilization(vehicle, trip, terminal);
-    int num_zero_utilization_terminals = 0;
-    for (auto& curr_terminal : terminal) {
-        if (curr_terminal.is_charge_station and curr_terminal.current_idle_time==0) {
-            curr_terminal.is_charge_station = false;
-            ++num_zero_utilization_terminals;
-        }
-    }
-    logger.log(LogLevel::Info, "Number of charge stations closed: "+std::to_string(num_zero_utilization_terminals));
-
-    // Step 2: Open charging stations
-    // Open a closed charging station in decreasing order of utilization. Calculate savings considering scheduling.
-    evaluation::calculate_utilization(vehicle, trip, terminal);
+    // Find the list of terminals that can be opened
     open_terminal_ids.clear();
     for (const auto& curr_terminal : terminal)
-        if (not curr_terminal.is_charge_station and curr_terminal.potential_idle_time>0.0)
+        if (not curr_terminal.is_charge_station and curr_terminal.potential_idle_time>IDLE_TIME_THRESHOLD)
             open_terminal_ids.push_back(curr_terminal.id);
 
     // Sort the terminals that are closed in descending order of utilization
     std::sort(open_terminal_ids.begin(), open_terminal_ids.end(),
-            [&terminal](int a, int b) { return terminal[a-1].potential_idle_time>terminal[b-1].potential_idle_time; });
+            [&terminal](int a, int b) {
+              return terminal[a-1].potential_idle_time>terminal[b-1].potential_idle_time;
+            });
 
-    // Print the sorted terminal IDs
-    logger.log(LogLevel::Info, "Sorted terminals to be opened: "+vector_to_string(open_terminal_ids));
-
-    // Loop through the sorted terminal ID list and check if opening them leads to an improvement in the objective
-    for (const auto& open_terminal_id : open_terminal_ids)
-        locations::open_charging_station(vehicle, trip, terminal, data, open_terminal_id);
-
-    // Step 3: Close charging stations
-    // Sort the terminals that are closed in ascending order of their utilization
-    evaluation::calculate_utilization(vehicle, trip, terminal);
+    // Find the list of terminals that can be closed
     close_terminal_ids.clear();
     for (const auto& curr_terminal : terminal)
-        if (curr_terminal.is_charge_station)
+        if (curr_terminal.is_charge_station and curr_terminal.current_idle_time>IDLE_TIME_THRESHOLD)
             close_terminal_ids.push_back(curr_terminal.id);
 
     // Sort the terminals that are open in ascending order of utilization
     std::sort(close_terminal_ids.begin(), close_terminal_ids.end(),
             [&terminal](int a, int b) { return terminal[a-1].current_idle_time<terminal[b-1].current_idle_time; });
 
-    // Print the sorted terminal IDs
-    logger.log(LogLevel::Info, "Sorted terminals to be closed: "+vector_to_string(close_terminal_ids));
-
-    // Loop through the sorted terminal ID list and check if closing them leads to an improvement in the objective
-    for (const auto& close_terminal_id : close_terminal_ids)  // TODO: Should we recalculate utilization after closing?
-        locations::close_charging_station(vehicle, trip, terminal, data, close_terminal_id);
-
-    // Step 4: Swap open and closed charging stations
-    if (SWAP_CHARGE_STATIONS) {
-        evaluation::calculate_utilization(vehicle, trip, terminal);
-        // Find the list of terminals that can be opened
-        open_terminal_ids.clear();
-        for (const auto& curr_terminal : terminal)
-            if (not curr_terminal.is_charge_station and curr_terminal.potential_idle_time>IDLE_TIME_THRESHOLD)
-                open_terminal_ids.push_back(curr_terminal.id);
-
-        // Sort the terminals that are closed in descending order of utilization
-        std::sort(open_terminal_ids.begin(), open_terminal_ids.end(),
-                [&terminal](int a, int b) {
-                  return terminal[a-1].potential_idle_time>terminal[b-1].potential_idle_time;
-                });
-
-        // Find the list of terminals that can be closed
-        close_terminal_ids.clear();
-        for (const auto& curr_terminal : terminal)
-            if (curr_terminal.is_charge_station and curr_terminal.current_idle_time>IDLE_TIME_THRESHOLD)
-                close_terminal_ids.push_back(curr_terminal.id);
-
-        // Sort the terminals that are open in ascending order of utilization
-        std::sort(close_terminal_ids.begin(), close_terminal_ids.end(),
-                [&terminal](int a, int b) { return terminal[a-1].current_idle_time<terminal[b-1].current_idle_time; });
-
-        // Loop through the list of open and closed terminals and check if swapping improves the objective
-        double max_savings = 0.0;
-        double savings;
-        std::vector<Vehicle> optimal_vehicle;
-        std::vector<Vehicle> original_vehicle = vehicle;
-        std::vector<Terminal> original_terminal = terminal;
-        int optimal_open_terminal_id, optimal_close_terminal_id;
-        if (open_terminal_ids.size()>1 and close_terminal_ids.size()>1) {
-            // Log the list of open and closed charging stations being considered for swapping
-            logger.log(LogLevel::Info, "Terminals that could be opened: "+vector_to_string(open_terminal_ids));
-            logger.log(LogLevel::Info, "Terminals that could be closed: "+vector_to_string(close_terminal_ids));
-            for (const auto& open_terminal_id : open_terminal_ids) {
-                for (const auto& close_terminal_id : close_terminal_ids) {
-                    vehicle = original_vehicle;
-                    savings = locations::swap_charging_station(vehicle, trip, terminal, data, open_terminal_id,
-                            close_terminal_id);
-                    terminal = original_terminal;
-                    if (savings>max_savings) {
-                        max_savings = savings;
-                        optimal_vehicle = vehicle;
-                        optimal_open_terminal_id = open_terminal_id;
-                        optimal_close_terminal_id = close_terminal_id;
-                        logger.log(LogLevel::Info,
-                                "Savings of "+std::to_string(max_savings)+" found from swapping charging stations");
-                    }
+    // Loop through the list of open and closed terminals and check if swapping improves the objective
+    double max_savings = 0.0;
+    double savings;
+    std::vector<Vehicle> optimal_vehicle;
+    std::vector<Vehicle> original_vehicle = vehicle;
+    std::vector<Terminal> original_terminal = terminal;
+    int optimal_open_terminal_id, optimal_close_terminal_id;
+    if (open_terminal_ids.size()>1 and close_terminal_ids.size()>1) {
+        // Log the list of open and closed charging stations being considered for swapping
+        logger.log(LogLevel::Info, "Terminals that could be opened: "+vector_to_string(open_terminal_ids));
+        logger.log(LogLevel::Info, "Terminals that could be closed: "+vector_to_string(close_terminal_ids));
+        for (const auto& open_terminal_id : open_terminal_ids) {
+            for (const auto& close_terminal_id : close_terminal_ids) {
+                vehicle = original_vehicle;
+                savings = locations::swap_charging_station(vehicle, trip, terminal, processed_data, open_terminal_id,
+                        close_terminal_id);
+                terminal = original_terminal;
+                if (savings>max_savings) {
+                    max_savings = savings;
+                    optimal_vehicle = vehicle;
+                    optimal_open_terminal_id = open_terminal_id;
+                    optimal_close_terminal_id = close_terminal_id;
+                    logger.log(LogLevel::Info,
+                            "Savings of "+std::to_string(max_savings)+" found from swapping charging stations");
                 }
             }
         }
-
-        // Perform the swap if the savings are positive
-        if (max_savings>0.0) {
-            logger.log(LogLevel::Info, "Swapping charging stations...");
-            vehicle = optimal_vehicle;
-            terminal[optimal_open_terminal_id-1].is_charge_station = true;
-            terminal[optimal_close_terminal_id-1].is_charge_station = false;
-        }
-        else
-            logger.log(LogLevel::Info, "No improvement from swapping charging stations...");
     }
+
+    // Perform the swap if the savings are positive
+    if (max_savings>0.0) {
+        logger.log(LogLevel::Info, "Swapping charging stations...");
+        vehicle = optimal_vehicle;
+        terminal[optimal_open_terminal_id-1].is_charge_station = true;
+        terminal[optimal_close_terminal_id-1].is_charge_station = false;
+    }
+    else
+        logger.log(LogLevel::Info, "No improvement from swapping charging stations...");
+}
+
+// Function to open or close locations. This could create new rotations as well when locations are closed
+void locations::open_close_stations_using_utilization(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, ProcessedData& processed_data)
+{
+    logger.log(LogLevel::Info, "Optimizing locations using only utilization metrics...");
+    std::vector<int> open_terminal_ids;
+    std::vector<int> close_terminal_ids;
+
+    // Step 1: Open charging stations
+    // Open a closed charging station in decreasing order of utilization. Calculate savings considering scheduling.
+    evaluation::calculate_utilization(vehicle, trip, terminal, processed_data);
+    open_terminal_ids.clear();
+    for (const auto& curr_terminal : terminal)
+        if (not curr_terminal.is_charge_station and curr_terminal.potential_idle_time>IDLE_TIME_THRESHOLD)
+            open_terminal_ids.push_back(curr_terminal.id);
+
+    // Sort the terminals that are opened in descending order of utilization
+    std::sort(open_terminal_ids.begin(), open_terminal_ids.end(),
+            [&terminal](int a, int b) { return terminal[a-1].potential_idle_time>terminal[b-1].potential_idle_time; });
+
+    // Print the sorted terminal IDs
+    logger.log(LogLevel::Info, "Sorted terminals to be opened: "+vector_to_string(open_terminal_ids));
+
+    // Initialize the map of successful openings with all the open terminal IDs and set their values to zero
+    /*for (const auto& open_terminal_id : open_terminal_ids)
+        processed_data.successful_openings.insert(std::make_pair(open_terminal_id, 0));*/
+
+    // Loop through the sorted terminal ID list and check if opening them leads to an improvement in the objective
+    // for (const auto& open_terminal_id : open_terminal_ids)
+    //    locations::open_charging_station(vehicle, trip, terminal, processed_data, open_terminal_id);
+    locations::open_charging_stations(vehicle, trip, terminal, processed_data, open_terminal_ids);
+
+    // Print charging opening and closing maps
+    /*for (const auto& open_terminal_id : open_terminal_ids)
+        logger.log(LogLevel::Info, "Opened terminal "+std::to_string(open_terminal_id)+"? "
+                +std::to_string(processed_data.successful_openings[open_terminal_id]));*/
+
+    // Step 2: Close charging stations
+    // Sort the terminals that are closed in ascending order of their utilization
+    evaluation::calculate_utilization(vehicle, trip, terminal, processed_data);
+    close_terminal_ids.clear();
+    for (const auto& curr_terminal : terminal)
+        if (curr_terminal.is_charge_station)
+            close_terminal_ids.push_back(curr_terminal.id);
+
+    // Sort the terminals that are open in ascending order of utilization
+    // std::sort(close_terminal_ids.begin(), close_terminal_ids.end(),
+    //        [&terminal](int a, int b) { return terminal[a-1].current_idle_time<terminal[b-1].current_idle_time; });
+
+    // Initialize the map of successful closures with all the closed terminal IDs and set their values to zero
+    /* for (const auto& close_terminal_id : close_terminal_ids)
+        processed_data.successful_closures.insert(std::make_pair(close_terminal_id, 0));*/
+
+    // Loop through the sorted terminal ID list and check if closing them leads to an improvement in the objective
+    // Having zero terminals is also okay since more vehicle rotations will be created
+    while (not close_terminal_ids.empty()) {
+        // Log the list of terminals to be closed
+        logger.log(LogLevel::Info, "Candidate terminals that could be closed: "+vector_to_string(close_terminal_ids));
+
+        //Find the terminal with the least utilization
+        double min_utilization = INF;
+        int min_utilization_terminal_id = -1;
+        for (const auto& close_terminal_id : close_terminal_ids) {
+            if (terminal[close_terminal_id-1].current_idle_time<min_utilization) {
+                min_utilization = terminal[close_terminal_id-1].current_idle_time;
+                min_utilization_terminal_id = close_terminal_id;
+            }
+        }
+        locations::close_charging_station(vehicle, trip, terminal, processed_data, min_utilization_terminal_id);
+        evaluation::calculate_utilization(vehicle, trip, terminal, processed_data);
+
+        // Delete min_utilization_terminal_id from close_terminal_ids
+        close_terminal_ids.erase(std::remove(close_terminal_ids.begin(), close_terminal_ids.end(),
+                min_utilization_terminal_id), close_terminal_ids.end());
+
+        // If any of the charging stations have zero utilization remove them from close_terminal_ids
+        for (int i = 0; i<close_terminal_ids.size(); ++i)
+            if (terminal[close_terminal_ids[i]-1].current_idle_time<EPSILON)
+                close_terminal_ids.erase(close_terminal_ids.begin()+i);
+    }
+
+    // Print charging opening and closing maps
+    /*for (const auto& close_terminal_id : close_terminal_ids)
+        logger.log(LogLevel::Info, "Closed terminal "+std::to_string(close_terminal_id)+"? "
+                +std::to_string(processed_data.successful_closures[close_terminal_id]));*/
+}
+
+// Function to open or close locations. This could create new rotations as well when locations are closed.
+// This function uses the utilization metrics for opening charging stations but uses the CLP-CSP model for
+// closing charging stations. This can be used even for the sequential model resulting in a weak joint model.
+void locations::open_close_stations_clp_csp(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, ProcessedData& processed_data)
+{
+    logger.log(LogLevel::Info, "Optimizing locations using utilization, and CLP-CSP solutions...");
+    std::vector<int> open_terminal_ids;
+    std::vector<int> close_terminal_ids;
+
+    // Step 1: Open charging stations
+    // Open a closed charging station in decreasing order of utilization. Calculate savings considering scheduling.
+    evaluation::calculate_utilization(vehicle, trip, terminal, processed_data);
+    open_terminal_ids.clear();
+    for (const auto& curr_terminal : terminal)
+        if (not curr_terminal.is_charge_station and curr_terminal.potential_idle_time>IDLE_TIME_THRESHOLD)
+            open_terminal_ids.push_back(curr_terminal.id);
+
+    // Print the terminal IDs
+    logger.log(LogLevel::Info, "Terminals to be opened: "+vector_to_string(open_terminal_ids));
+
+    // Initialize the map of successful openings with all the open terminal IDs and set their values to zero
+    //for (const auto& open_terminal_id : open_terminal_ids)
+    //    processed_data.successful_openings.insert(std::make_pair(open_terminal_id, 0));
+
+    // Check if opening them and scheduling leads to an improvement in the objective
+    locations::open_charging_stations(vehicle, trip, terminal, processed_data, open_terminal_ids);
+    // TODO: Check if we really need to do scheduling after opening or can we just solve the CLP-CSP and then do scheduling
+
+    // Step 2.1: Close charging stations based on CLP-CSP that are not going to be used.
+    // This is equivalent to removing stations with zero utilization
+    double old_objective = INF;
+    double new_objective = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
+
+    // Loop until there is no improvement and close unused charging stations.
+    double clp_csp_cost;
+    while (new_objective<old_objective) {
+        old_objective = new_objective;
+        clp_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "clp-csp-uniform");
+        scheduling::optimize_rotations(vehicle, trip, terminal, processed_data);
+        new_objective = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
+    }
+
+    // Step 2.2: Close candidate charging stations that are in-use one at a time. This may create new rotations.
+    // Pick the charging station with the least charge capacity and close it
+    close_terminal_ids.clear();
+    for (const auto& curr_terminal : terminal)
+        if (curr_terminal.is_charge_station)
+            close_terminal_ids.push_back(curr_terminal.id);
+
+    // Find the terminal that has the least charge capacity and has not been processed yet
+    // Loop until all the terminals have been processed  // TODO: Add early stopping rules
+    while (not close_terminal_ids.empty()) {
+        logger.log(LogLevel::Info, "Candidate terminals that could be closed: "+vector_to_string(close_terminal_ids));
+
+        // Find the terminal with the least charge capacity
+        double min_charge_capacity = INF;
+        int min_charge_capacity_terminal_id = -1;
+        for (const auto& close_terminal_id : close_terminal_ids) {
+            if (terminal[close_terminal_id-1].charge_capacity<min_charge_capacity) {
+                min_charge_capacity = terminal[close_terminal_id-1].charge_capacity;
+                min_charge_capacity_terminal_id = close_terminal_id;
+            }
+        }
+        locations::close_charging_station(vehicle, trip, terminal, processed_data, min_charge_capacity_terminal_id);
+        clp_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "clp-csp-uniform");
+
+        // Delete min_charge_capacity_terminal_id from close_terminal_ids
+        close_terminal_ids.erase(std::remove(close_terminal_ids.begin(), close_terminal_ids.end(),
+                min_charge_capacity_terminal_id), close_terminal_ids.end());
+
+        // If any of the charging stations have zero charge capacity remove them from closed_terminal_ids
+        for (int i = 0; i<close_terminal_ids.size(); ++i)
+            if (terminal[close_terminal_ids[i]-1].charge_capacity<EPSILON)
+                close_terminal_ids.erase(close_terminal_ids.begin()+i);
+    }
+
+    // Initialize the map of successful closures with all the closed terminal IDs and set their values to zero
+    /*for (const auto& close_terminal_id : close_terminal_ids)
+        processed_data.successful_closures.insert(std::make_pair(close_terminal_id, 0));
+
+    // Print charging opening and closing maps
+    for (const auto& close_terminal_id : close_terminal_ids)
+        logger.log(LogLevel::Info, "Closed terminal "+std::to_string(close_terminal_id)+"? "
+                +std::to_string(processed_data.successful_closures[close_terminal_id]));*/
+}
+
+void locations::optimize_stations(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, ProcessedData& processed_data)
+{
+    logger.log(LogLevel::Info, "Selecting model for optimizing locations...");
+
+    if (SOLVE_CLP_CSP)
+        locations::open_close_stations_clp_csp(vehicle, trip, terminal, processed_data);
+    else
+        locations::open_close_stations_using_utilization(vehicle, trip, terminal, processed_data);
 }
 
 /* DIVERSIFICATION OPERATORS
@@ -881,7 +1426,7 @@ double diversification::exchange_three_trips(std::vector<Vehicle>& vehicle, std:
     double max_savings = 0.0;
 
     //  Exchange trips (k, l, m) of vehicles (u, v, w) to (m, l, k)
-#pragma omp parallel for
+    #pragma omp parallel for num_threads(NUM_THREADS)
     for (int u = 0; u<vehicle.size(); ++u) {
         for (int v = 0; v<vehicle.size(); ++v) {
             for (int w = 0; w<vehicle.size(); ++w) {
@@ -900,12 +1445,9 @@ double diversification::exchange_three_trips(std::vector<Vehicle>& vehicle, std:
                             if (evaluation::is_three_exchange_compatible(vehicle, trip, u, v, w, k, l, m)) {
                                 // Check if exchanges are charge feasible. Push the original trip_ids to swapped_rotations
                                 swapped_rotations.clear();
-                                swapped_rotations.push_back(
-                                        vehicle[u].trip_id);  // This has index 0 in swapped_rotations
-                                swapped_rotations.push_back(
-                                        vehicle[v].trip_id);  // This has index 1 in swapped_rotations
-                                swapped_rotations.push_back(
-                                        vehicle[w].trip_id);  // This has index 2 in swapped_rotations
+                                swapped_rotations.push_back(vehicle[u].trip_id);
+                                swapped_rotations.push_back(vehicle[v].trip_id);
+                                swapped_rotations.push_back(vehicle[w].trip_id);
 
                                 // Exchange trips such that m goes to u, k goes to v, and l goes to w
                                 int temp_id_k = swapped_rotations[0][k];
@@ -923,7 +1465,7 @@ double diversification::exchange_three_trips(std::vector<Vehicle>& vehicle, std:
                                     savings += evaluation::calculate_trip_replacement_cost(vehicle, trip, w, v, m, l);
 
                                     // Check if the exchange is the best so far
-#pragma omp critical
+                                    #pragma omp critical  // TODO: Add tie-breaking rules
                                     if (savings>max_savings) {
                                         max_savings = savings;
                                         three_exchange.first_vehicle_index = u;
@@ -942,112 +1484,6 @@ double diversification::exchange_three_trips(std::vector<Vehicle>& vehicle, std:
         }
     }
     return max_savings;
-}
-
-double diversification::shift_all_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data, int source_vehicle_index)
-{
-    logger.log(LogLevel::Info, "Shifting all trips of vehicle index "+std::to_string(source_vehicle_index)+"...");
-    logger.log(LogLevel::Info, "Trip IDs before shifting: "+vector_to_string(vehicle[source_vehicle_index].trip_id));
-
-    // Store a vector of trip_id vectors after shifting trips
-    Shift shift;
-
-    std::vector<Vehicle> vehicle_copy = vehicle;
-    std::vector<std::vector<int>> shifted_rotations;
-    std::vector<int> update_vehicle_indices;
-
-    double savings, max_savings;
-    double trip_removal_cost;
-    bool is_shift_feasible;
-
-    for (int l = 1; l<vehicle[source_vehicle_index].trip_id.size()-1; ++l) {
-        max_savings = -INF;
-        is_shift_feasible = false;
-        trip_removal_cost = evaluation::calculate_trip_removal_cost(vehicle, trip, source_vehicle_index, l);
-        double old_csp_cost = 0.0;
-
-        if (SOLVE_CSP_JOINTLY)
-            old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data);
-
-        for (int u = 0; u<vehicle.size(); ++u) {
-            if (u==source_vehicle_index)
-                continue;
-            for (int k = 1; k<vehicle[u].trip_id.size()-1; ++k) {
-                // Check if the exchanges is feasible
-                if (evaluation::is_shift_compatible(vehicle, trip, u, source_vehicle_index, k, l)) {
-                    // Check if exchanges are charge feasible. Insert the original trip_ids to shifted_rotations
-                    shifted_rotations.clear();
-                    shifted_rotations.push_back(vehicle[u].trip_id);  // This has index 0
-                    shifted_rotations.push_back(vehicle[source_vehicle_index].trip_id);  // This has index 1
-
-                    // Insert trip l of vehicle v after trip k of vehicle u in shifted_rotations
-                    shifted_rotations[0].insert(shifted_rotations[0].begin()+k+1, shifted_rotations[1][l]);
-
-                    // Remove trip l of vehicle v from shifted_rotations
-                    shifted_rotations[1].erase(shifted_rotations[1].begin()+l);
-
-                    // Check if shifted_rotations[1] has only two trips. If so, delete it
-                    if (shifted_rotations[1].size()==2)
-                        shifted_rotations.erase(shifted_rotations.begin()+1);
-
-                    if (evaluation::are_rotations_charge_feasible(trip, terminal, shifted_rotations)) {
-                        // Calculate savings in deadheading from performing the exchange
-                        savings = evaluation::calculate_trip_addition_cost(vehicle, trip, u, source_vehicle_index, k, l)
-                                +trip_removal_cost;
-
-                        if (SOLVE_CSP_JOINTLY) {
-                            // Update a copy of the vehicle rotations
-                            vehicle_copy = vehicle;
-                            vehicle_copy[u].trip_id = shifted_rotations[0];
-                            if (shifted_rotations.size()==1) {  // Delete source vehicle if needed
-                                vehicle_copy.erase(vehicle_copy.begin()+source_vehicle_index);
-
-                                // Deleting a rotation can shift the index of the others by 1
-                                update_vehicle_indices = (source_vehicle_index>u) ? std::vector<int>{u} : std::vector<
-                                        int>{u-1};
-                            }
-                            else {
-                                vehicle_copy[source_vehicle_index].trip_id = shifted_rotations[1];
-                                update_vehicle_indices = {u, source_vehicle_index};
-                            }
-
-                            // Solve the CSP model for the copy
-                            double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal,
-                                    data, update_vehicle_indices);
-                            savings += old_csp_cost-new_csp_cost;
-                        }
-
-                        // Check if the exchange is the best so far
-                        if (evaluation::is_savings_maximum(savings, max_savings, u, source_vehicle_index, k, l,
-                                shift)) {
-                            is_shift_feasible = true;
-                            max_savings = savings;
-                            shift.dest_vehicle_index = u;
-                            shift.dest_trip_index = k;
-                            shift.source_vehicle_index = source_vehicle_index;
-                            shift.source_trip_index = l;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (is_shift_feasible) {
-            if (vehicle[source_vehicle_index].trip_id.size()==3) {
-                scheduling::perform_shift(vehicle, shift);
-                return max_savings;
-            }
-            else
-                scheduling::perform_shift(vehicle, shift);
-        }
-        else {
-            logger.log(LogLevel::Info, "No feasible shift found for trip index "+std::to_string(source_vehicle_index));
-            return -INF;
-        }
-    }
-
-    return max_savings;  // TODO: If we must remove the rotation during all shifts, modify this
 }
 
 // Function to find the best savings from shifting three trips simultaneously
@@ -1099,72 +1535,197 @@ void diversification::perform_three_exchange(std::vector<Vehicle>& vehicle, Thre
 }
 
 // Operators that diversify exchanges and shifts
-void diversification::apply_operators(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data)
+void diversification::apply_three_exchanges(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, ProcessedData& processed_data)
 {
-    if (SHIFT_ALL_TRIPS) {
-        // Sequentially shift all trips of vehicles which fewer trips to vehicles which have more trips
-        logger.log(LogLevel::Info, "Shifting all trips of vehicles with few trips...");
+    logger.log(LogLevel::Info, "Checking for improvement from three exchanges...");
 
-        //Find vehicle indices which ave less than or equal to threshold number of trips
-        std::vector<int> vehicle_indices;
-        for (int v = 0; v<vehicle.size(); ++v)
-            if (vehicle[v].trip_id.size()<=SHIFT_ALL_TRIPS_THRESHOLD)
-                vehicle_indices.push_back(v);
-        logger.log(LogLevel::Info, "Vehicle indices with few trips: "+vector_to_string(vehicle_indices));
+    ThreeExchange three_exchange;
+    double three_exchange_savings = exchange_three_trips(vehicle, trip, terminal, three_exchange);
 
-        double max_savings = 0.0;
-        int optimal_vehicle_index;
-        std::vector<Vehicle> optimal_vehicle = vehicle;
-        for (int i = 0; i<vehicle_indices.size(); ++i) {
-            double savings;
-            int v = vehicle_indices[i];
-            std::vector<Vehicle> vehicle_copy = vehicle;
-            savings = shift_all_trips(vehicle_copy, trip, terminal, data, v);
-            if (savings>max_savings) {
-                max_savings = savings;
-                optimal_vehicle = vehicle_copy;
-            }
-        }
-        logger.log(LogLevel::Info, "Max savings from shifting all trips of a vehicle: "+std::to_string(max_savings));
-
-        // Perform the shift for the optimal index
-        if (max_savings>EPSILON) {
-            logger.log(LogLevel::Info, "Performing shift for vehicle index "+std::to_string(optimal_vehicle_index));
-            vehicle = optimal_vehicle;
-        }
-        else
-            logger.log(LogLevel::Info, "No improvement possible from shifting all trips of a vehicle...");
-    }
-
-    if (PERFORM_THREE_EXCHANGES) {
-        logger.log(LogLevel::Info, "Checking for improvement from three exchanges...");
-
-        ThreeExchange three_exchange;
-        double three_exchange_savings = exchange_three_trips(vehicle, trip, terminal, three_exchange);
-
-        logger.log(LogLevel::Info, "Savings from three exchange operator: "+std::to_string(three_exchange_savings));
-        (three_exchange_savings>EPSILON) ? perform_three_exchange(vehicle, three_exchange) : logger.log(
-                LogLevel::Info, "No improvement possible from three exchanges...");
-    }
+    logger.log(LogLevel::Info, "Savings from three exchange operator: "+std::to_string(three_exchange_savings));
+    (three_exchange_savings>EPSILON) ? perform_three_exchange(vehicle, three_exchange) : logger.log(
+            LogLevel::Info, "No improvement possible from three exchanges...");
 }
 
-// Function to optimize rotations using repeated shifts and exchanges till there is no improvement
-void diversification::optimize_rotations(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data)
+// Function to optimize rotations using repeated three exchanges till there is no improvement
+void diversification::optimize_three_exchanges(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, ProcessedData& processed_data)
 {
-    logger.log(LogLevel::Info, "Optimizing rotations using diversification operators...");
+    logger.log(LogLevel::Info, "Optimizing rotations using three exchanges diversification operators...");
 
     // Initialize variables
     double old_objective = INF;
-    double new_objective = evaluation::calculate_objective(vehicle, trip, terminal, data);
+    double new_objective = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
 
     // Loop until there is no improvement
     while (new_objective<old_objective) {
         old_objective = new_objective;
-        // scheduling::apply_best_improvement(vehicle, trip, terminal, data);
-        diversification::apply_operators(vehicle, trip, terminal, data);
-        new_objective = evaluation::calculate_objective(vehicle, trip, terminal, data);
+        diversification::apply_three_exchanges(vehicle, trip, terminal, processed_data);
+        new_objective = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
+    }
+}
+
+double diversification::shift_all_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, ProcessedData& processed_data, int source_vehicle_index)
+{
+    logger.log(LogLevel::Info,
+            "Attempting shifting all trips of vehicle index "+std::to_string(source_vehicle_index)+"...");
+    logger.log(LogLevel::Debug, "Trip IDs before shifting: "+vector_to_string(vehicle[source_vehicle_index].trip_id));
+
+    // Store a vector of trip_id vectors after shifting trips
+    Shift shift;
+
+    std::vector<Vehicle> vehicle_copy = vehicle;
+    std::vector<std::vector<int>> shifted_rotations;
+    std::vector<int> update_vehicle_indices;
+
+    double savings, max_savings;
+    double trip_removal_cost;
+    bool is_shift_feasible;
+
+    for (int l = 1; l<vehicle[source_vehicle_index].trip_id.size()-1; ++l) {
+        max_savings = -INF;
+        is_shift_feasible = false;
+        trip_removal_cost = evaluation::calculate_trip_removal_cost(vehicle, trip, source_vehicle_index, l);
+        double old_csp_cost = 0.0;
+
+        if (SOLVE_EVSP_CSP)
+            old_csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "csp-uniform");
+
+        for (int u = 0; u<vehicle.size(); ++u) {
+            if (u==source_vehicle_index)
+                continue;
+            for (int k = 1; k<vehicle[u].trip_id.size()-1; ++k) {
+                // Check if the exchanges is feasible
+                if (evaluation::is_shift_compatible(vehicle, trip, u, source_vehicle_index, k, l)) {
+                    // Check if exchanges are charge feasible. Insert the original trip_ids to shifted_rotations
+                    shifted_rotations.clear();
+                    shifted_rotations.push_back(vehicle[u].trip_id);  // This has index 0
+                    shifted_rotations.push_back(vehicle[source_vehicle_index].trip_id);  // This has index 1
+
+                    // Insert trip l of vehicle v after trip k of vehicle u in shifted_rotations
+                    shifted_rotations[0].insert(shifted_rotations[0].begin()+k+1, shifted_rotations[1][l]);
+
+                    // Remove trip l of vehicle v from shifted_rotations
+                    shifted_rotations[1].erase(shifted_rotations[1].begin()+l);
+
+                    // Check if shifted_rotations[1] has only two trips. If so, delete it
+                    if (shifted_rotations[1].size()==2)
+                        shifted_rotations.erase(shifted_rotations.begin()+1);
+
+                    if (evaluation::are_rotations_charge_feasible(trip, terminal, shifted_rotations)) {
+                        // Calculate savings in deadheading from performing the exchange
+                        savings = evaluation::calculate_trip_addition_cost(vehicle, trip, u, source_vehicle_index, k, l)
+                                +trip_removal_cost;
+
+                        if (SOLVE_EVSP_CSP) {
+                            // Update a copy of the vehicle rotations
+                            vehicle_copy = vehicle;
+                            vehicle_copy[u].trip_id = shifted_rotations[0];
+                            if (shifted_rotations.size()==1) {  // Delete source vehicle if needed
+                                vehicle_copy.erase(vehicle_copy.begin()+source_vehicle_index);
+
+                                // Deleting a rotation can shift the index of the others by 1
+                                update_vehicle_indices = (source_vehicle_index>u) ? std::vector<int>{u} : std::vector<
+                                        int>{u-1};
+                            }
+                            else {
+                                vehicle_copy[source_vehicle_index].trip_id = shifted_rotations[1];
+                                update_vehicle_indices = {u, source_vehicle_index};
+                            }
+
+                            // Solve the CSP model for the copy
+                            double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal,
+                                    processed_data, update_vehicle_indices, "csp-uniform");
+                            savings += old_csp_cost-new_csp_cost;
+                        }
+
+                        // Check if the exchange is the best so far
+                        if (evaluation::is_savings_maximum(savings, max_savings, u, source_vehicle_index, k, l,
+                                shift)) {
+                            is_shift_feasible = true;
+                            max_savings = savings;
+                            shift.dest_vehicle_index = u;
+                            shift.dest_trip_index = k;
+                            shift.source_vehicle_index = source_vehicle_index;
+                            shift.source_trip_index = l;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (is_shift_feasible) {
+            if (vehicle[source_vehicle_index].trip_id.size()==3) {
+                scheduling::perform_shift(vehicle, shift);
+                return max_savings;
+            }
+            else
+                scheduling::perform_shift(vehicle, shift);
+        }
+        else {
+            logger.log(LogLevel::Info, "No feasible shift found for trip index "+std::to_string(source_vehicle_index));
+            return -INF;
+        }
+    }
+
+    return max_savings;  // TODO: If we must remove the rotation during all shifts, modify this?
+}
+
+// Operators that diversify exchanges and shifts
+void diversification::apply_all_shifts(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, ProcessedData& processed_data)
+{
+    // Sequentially shift all trips of vehicles which fewer trips to vehicles which have more trips
+    logger.log(LogLevel::Info, "Shifting all trips of vehicles with few trips...");
+
+    //Find vehicle indices which ave less than or equal to threshold number of trips
+    std::vector<int> vehicle_indices;
+    for (int v = 0; v<vehicle.size(); ++v)
+        if (vehicle[v].trip_id.size()<=SHIFT_ALL_TRIPS_THRESHOLD)
+            vehicle_indices.push_back(v);
+    logger.log(LogLevel::Info, "Vehicle indices with few trips: "+vector_to_string(vehicle_indices));
+
+    double max_savings = 0.0;
+    int optimal_vehicle_index;
+    std::vector<Vehicle> optimal_vehicle = vehicle;
+    for (int i = 0; i<vehicle_indices.size(); ++i) {
+        double savings;
+        int v = vehicle_indices[i];
+        std::vector<Vehicle> vehicle_copy = vehicle;
+        savings = shift_all_trips(vehicle_copy, trip, terminal, processed_data, v);
+        if (savings>max_savings) {
+            max_savings = savings;
+            optimal_vehicle = vehicle_copy;
+        }
+    }
+    logger.log(LogLevel::Info, "Max savings from shifting all trips of a vehicle: "+std::to_string(max_savings));
+
+    // Perform the shift for the optimal index
+    if (max_savings>EPSILON) {
+        logger.log(LogLevel::Info, "Performing shift for vehicle index "+std::to_string(optimal_vehicle_index));
+        vehicle = optimal_vehicle;
+    }
+    else
+        logger.log(LogLevel::Info, "No improvement possible from shifting all trips of a vehicle...");
+}
+
+// Function to optimize rotations using repeated three exchanges till there is no improvement
+void diversification::optimize_all_shifts(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        std::vector<Terminal>& terminal, ProcessedData& processed_data)
+{
+    logger.log(LogLevel::Info, "Optimizing rotations using all shifts diversification operators...");
+
+    // Initialize variables
+    double old_objective = INF;
+    double new_objective = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
+
+    // Loop until there is no improvement
+    while (new_objective<old_objective) {
+        old_objective = new_objective;
+        diversification::apply_all_shifts(vehicle, trip, terminal, processed_data);
+        new_objective = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
     }
 }
 
@@ -1176,7 +1737,7 @@ void diversification::optimize_rotations(std::vector<Vehicle>& vehicle, std::vec
 
 // Calculate the objective that includes the cost of deadheading and opening charging stations
 double evaluation::calculate_objective(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal, Data& data)
+        std::vector<Terminal>& terminal, ProcessedData& processed_data)
 {
     // Calculate the objective value of the initial solution
     logger.log(LogLevel::Info, "Calculating the objective value of the solution...");
@@ -1202,8 +1763,8 @@ double evaluation::calculate_objective(std::vector<Vehicle>& vehicle, std::vecto
     double csp_cost;
     double total_cost;
     // Calculate CSP cost
-    if (SOLVE_CSP_JOINTLY) {
-        csp_cost = csp::select_optimization_model(vehicle, trip, terminal, data);
+    if (SOLVE_EVSP_CSP) {
+        csp_cost = csp::select_optimization_model(vehicle, trip, terminal, processed_data, "csp-split");
         total_cost = location_cost+vehicle_acquisition_cost+deadhead_cost+csp_cost;
     }
     else
@@ -1215,13 +1776,13 @@ double evaluation::calculate_objective(std::vector<Vehicle>& vehicle, std::vecto
     logger.log(LogLevel::Debug, "Number of charging stations: "+std::to_string(int(location_cost/CHARGE_LOC_COST)));
     logger.log(LogLevel::Debug, "Number of vehicles used: "+std::to_string(vehicle.size()));
 
-    if (SOLVE_CSP_JOINTLY) {
+    if (SOLVE_EVSP_CSP) {
         logger.log(LogLevel::Debug,
                 "Non-CSP cost: "+std::to_string(location_cost+vehicle_acquisition_cost+deadhead_cost));
         logger.log(LogLevel::Debug, "CSP cost: "+std::to_string(csp_cost));
     }
 
-    if (SOLVE_CSP_JOINTLY)
+    if (SOLVE_EVSP_CSP)
         logger.log(LogLevel::Info, "Total cost (including CSP costs): "+std::to_string(total_cost));
     else
         logger.log(LogLevel::Info, "Total cost (excluding CSP costs): "+std::to_string(total_cost));
@@ -1229,33 +1790,9 @@ double evaluation::calculate_objective(std::vector<Vehicle>& vehicle, std::vecto
     return total_cost;
 }
 
-// Function that calculates the total deadheading cost across all vehicle rotations
-double evaluation::calculate_deadheading_cost(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip)
-{
-    double total_deadheading_cost = 0.0;
-    for (auto& curr_vehicle : vehicle) {
-        curr_vehicle.calculate_deadhead_cost(trip);
-        total_deadheading_cost += curr_vehicle.deadhead_cost;
-    }
-    return total_deadheading_cost;
-}
-
-// Function that calculates the total deadheading cost across a subset of vehicle rotations
-double evaluation::calculate_deadheading_cost(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<int>& vehicle_indices)
-{
-    double total_deadheading_cost = 0.0;
-    for (int i = 0; i<vehicle_indices.size(); ++i) {
-        int v = vehicle_indices[i];
-        vehicle[v].calculate_deadhead_cost(trip);
-        total_deadheading_cost += vehicle[v].deadhead_cost;
-    }
-    return total_deadheading_cost;
-}  // TODO: Check if we want this version at a rotation basis without reference to the full vehicle class
-
 // Determine the time spent by vehicles at charging terminals along their routes in the current station configuration
 void evaluation::calculate_utilization(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
-        std::vector<Terminal>& terminal)
+        std::vector<Terminal>& terminal, ProcessedData& processed_data)
 {
     // Estimate the amount of idle time available at each charging and non-charging terminals across all vehicles
     for (auto& curr_terminal : terminal) {
@@ -1309,6 +1846,17 @@ void evaluation::calculate_utilization(std::vector<Vehicle>& vehicle, std::vecto
                         +std::to_string(curr_terminal.current_idle_time)+" "
                         +std::to_string(curr_terminal.potential_idle_time));
     }
+
+    // Close charging terminals with zero utilization
+    logger.log(LogLevel::Info, "Checking if charge stations with zero utilization can be closed...");
+    int num_zero_utilization_terminals = 0;
+    for (auto& curr_terminal : terminal) {
+        if (curr_terminal.is_charge_station and curr_terminal.current_idle_time==0) {
+            curr_terminal.is_charge_station = false;
+            ++num_zero_utilization_terminals;
+        }
+    }
+    logger.log(LogLevel::Info, "Number of charge stations closed: "+std::to_string(num_zero_utilization_terminals));
 }
 
 // Checks if exchanging two trips across two different vehicle rotations is compatible
@@ -1372,10 +1920,13 @@ bool evaluation::is_shift_compatible(std::vector<Vehicle>& vehicle, std::vector<
     int dest_vehicle_next_trip_id = vehicle[dest_vehicle_index].trip_id[dest_vehicle_trip_index+1];
 
     int source_vehicle_trip_id = vehicle[source_vehicle_index].trip_id[source_vehicle_trip_index];  // The trip being shifted
+    int source_vehicle_prev_trip_id = vehicle[source_vehicle_index].trip_id[source_vehicle_trip_index-1];
+    int source_vehicle_next_trip_id = vehicle[source_vehicle_index].trip_id[source_vehicle_trip_index+1];
 
     // Check if the shift is feasible using compatibility matrices
     if (trip[dest_vehicle_curr_trip_id-1].is_compatible[source_vehicle_trip_id-1]
-            and trip[source_vehicle_trip_id-1].is_compatible[dest_vehicle_next_trip_id-1])
+            and trip[source_vehicle_trip_id-1].is_compatible[dest_vehicle_next_trip_id-1]
+            and trip[source_vehicle_prev_trip_id-1].is_compatible[source_vehicle_next_trip_id-1])
         return true;
     else
         return false;

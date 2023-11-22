@@ -21,7 +21,7 @@ std::string vector_to_string(const std::vector<T>& input_vector)
 }
 
 // Create a class of problem parameters that are processed from the data and used in different parts of the code
-class Data {  // TODO: Add comments on where these variables are set
+class ProcessedData {  // TODO: Add comments on where these variables are set
 public:
     std::string instance;
     std::chrono::steady_clock::time_point start_time_stamp;
@@ -37,15 +37,27 @@ public:
     int time_steps_length;  // Time window of the problem
     std::map<int, double> energy_price_per_min;  // Tracks the energy price value at different time steps
 
+    /*int num_price_intervals;  // Number of energy price points
+    std::vector<int> energy_left_interval;
+    std::vector<double> energy_price;*/
+
     double runtime;
 
-    int num_successful_openings = 0;  // TODO: Log more fine grained stats such as what was the utilization and how many vehicles had to be adjusted.
+    // TODO: Log more fine grained stats such as what was the utilization and how many vehicles had to be adjusted.
+    int num_successful_openings = 0;
     int num_successful_closures = 0;
+    int num_successful_swaps = 0;
+
+    std::vector<double> objective_values;  // Vector of objective values at different iterations
+
+    // Define two maps for successful openings and closures
+    // std::map<int, int> successful_openings;
+    // std::map<int, int> successful_closures;
 
     bool log_csp_solution = false;  // Flag to log the CSP solution
 
     // Constructor
-    Data()
+    ProcessedData()
     {
         // Nothing to do here
     }
@@ -63,8 +75,7 @@ public:
     int current_idle_time;  // Total idle time across all rotations. This measures the utilization of the terminal.
     int potential_idle_time; // Total idle time across all rotations if this were to be a charge station
 
-    // Variables for CSP
-    std::vector<std::pair<int, int>> rotation_opportunity_pair;
+    double charge_capacity = 0.0; // Charge capacity which is the output from the CSP problem
 
     // Constructor
     Terminal()
@@ -89,15 +100,10 @@ public:
     // Log members of terminal data
     void log_member_data() const
     {
-        logger.log(LogLevel::Info, "Terminal ID, Stop ID, Trip ID, Is depot, Is charge station: "+std::to_string(id)+" "
-                +stop_id+" "+std::to_string(trip_id)+" "+std::to_string(is_depot)+" "
-                +std::to_string(is_charge_station));
-    }
-
-    // Clear rotation opportunity pairs
-    void clear_rotation_opportunity_pairs()
-    {
-        rotation_opportunity_pair.clear();
+        logger.log(LogLevel::Info,
+                "Terminal ID, Stop ID, Trip ID, Is depot, Is charge station, Charge capacity: "+std::to_string(id)+" "
+                        +stop_id+" "+std::to_string(trip_id)+" "+std::to_string(is_depot)+" "
+                        +std::to_string(is_charge_station)+" "+std::to_string(charge_capacity));
     }
 };
 
@@ -139,6 +145,26 @@ public:
     }
 };
 
+// This class splits the charge opportunity into sub-intervals where price is constant
+class PriceInterval {
+public:
+    std::vector<int> period_index;  // Index of the price period in which the interval lies
+    std::vector<int> within_period_duration;  // Duration of the interval. Each window lies exclusively in a single price period
+    std::vector<int> start_time;
+    std::vector<int> end_time;
+
+    // Print members of the class
+    void log_member_data() const
+    {
+        //if (period_index.size()>1) {  // Print this only if charging opportunities has at least two elements
+        logger.log(LogLevel::Verbose, "Overlap period index: "+vector_to_string(period_index));
+        logger.log(LogLevel::Verbose, "Overlap within_period_duration: "+vector_to_string(within_period_duration));
+        logger.log(LogLevel::Verbose, "Overlap start time: "+vector_to_string(start_time));
+        logger.log(LogLevel::Verbose, "Overlap end time: "+vector_to_string(end_time));
+        //}
+    }
+};
+
 //Create a vehicle class which stores bus rotation details
 class Vehicle {
 public:
@@ -148,10 +174,13 @@ public:
 
     // Variables for CSP
     bool is_charging_required = false;  // Updated to true if charging is required in the rotation
+    int num_charge_opportunities = 0;  // Number of charging opportunities in the rotation
     std::vector<int> charge_terminal;  // Vector of charging station terminal IDs at different opportunities (repeats are allowed)
     std::vector<int> start_charge_time;  // Vector of start charge times at different opportunities
     std::vector<int> end_charge_time;  // Vector of end charge times at different opportunities
     std::vector<double> energy_till_charge_terminal;  // Total energy required to reach the charging terminal. This has an extra element to account for reaching the depot.
+
+    std::vector<PriceInterval> price_intervals;  // Vector of price intervals for each charging opportunity
 
     // Constructor
     Vehicle()
@@ -188,9 +217,17 @@ public:
     void clear_csp_parameters()
     {
         is_charging_required = false;
+        num_charge_opportunities = 0;
         charge_terminal.clear();
         start_charge_time.clear();
         end_charge_time.clear();
+        energy_till_charge_terminal.clear();
+    }
+
+    // Clear additional uniform CSP parameters
+    void clear_price_interval_parameters()
+    {
+        price_intervals.clear();
     }
 
     // Print members of the class
@@ -288,16 +325,45 @@ public:
 
         // If cumulative energy is less than the maximum charge level, then charging is not required
         is_charging_required = (cumulative_energy>(MAX_CHARGE_LEVEL-MIN_CHARGE_LEVEL));
+
+        // Save the number of charge opportunities
+        num_charge_opportunities = charge_terminal.size();
     }
 
-    // Populate rotation opportunity pairs used for uniform charging
-    void populate_rotation_opportunity_pairs(std::vector<Terminal>& terminal, int index)
+    // Populate CSP related variables under the uniform charge policy
+    void populate_price_interval_parameters()
     {
-        if (is_charging_required) {
-            for (int k=0;k<charge_terminal.size();++k) {
-                // Make a pair of the vehicle index and the charge terminal index
-                terminal[charge_terminal[k]-1].rotation_opportunity_pair.push_back(std::make_pair(index,  k));
+        price_intervals.resize(num_charge_opportunities);
+        // Code to populate sub-intervals of the charging opportunities where prices are the same
+        for (int k = 0; k<num_charge_opportunities; ++k) {
+            int left_marker = start_charge_time[k];
+            for (int p = 0; p<NUM_PRICE_INTERVALS; ++p) {
+                if (left_marker<ENERGY_LEFT_INTERVAL[p+1]) {  // charging opportunity k starts in [p, p+1]
+                    price_intervals[k].period_index.push_back(p);
+                    price_intervals[k].start_time.push_back(left_marker);
+
+                    // Check if charging finishes in this time period or continues in the next one.
+                    // Charging opportunity k ends in [p, p+1]
+                    if (end_charge_time[k]<=ENERGY_LEFT_INTERVAL[p+1]) {
+                        price_intervals[k].end_time.push_back(end_charge_time[k]);
+                        price_intervals[k].within_period_duration.push_back(end_charge_time[k]-left_marker);
+                        break;
+                    } // Charging opportunity k continues in another price period
+                    else {
+                        price_intervals[k].end_time.push_back(ENERGY_LEFT_INTERVAL[p+1]);
+                        price_intervals[k].within_period_duration.push_back(ENERGY_LEFT_INTERVAL[p+1]-left_marker);
+
+                        left_marker = ENERGY_LEFT_INTERVAL[p+1];
+                    }
+                }
             }
+        }
+
+        // Log vector members of charge opportunities
+        logger.log(LogLevel::Verbose, "Charging opportunities for vehicle ID "+std::to_string(id));
+        for (int k = 0; k<price_intervals.size(); ++k) {
+            logger.log(LogLevel::Verbose, "Charging opportunity "+std::to_string(k));
+            price_intervals[k].log_member_data();
         }
     }
 };

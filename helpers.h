@@ -25,23 +25,25 @@ std::string array_to_string(const std::array<T, N>& arr)
 }
 
 namespace preprocessing {
-void read_trip_data(std::vector<Trip>&, Data&);
-void read_terminal_data(std::vector<Terminal>&, Data&);
-void create_depot_trips(std::vector<Trip>&, std::vector<Terminal>&, Data&);
-void read_trip_pair_data(std::vector<Trip>&, Data&);
-void initialize_vehicle_rotations(std::vector<Vehicle>&, Data&);
-void create_energy_price_intervals(Data&);
+void read_trip_data(std::vector<Trip>&, ProcessedData&);
+void read_terminal_data(std::vector<Terminal>&, ProcessedData&);
+void create_depot_trips(std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
+void read_trip_pair_data(std::vector<Trip>&, ProcessedData&);
+void initialize_vehicle_rotations(std::vector<Vehicle>&, ProcessedData&);
+void create_energy_price_intervals(ProcessedData&);
 void log_input_data(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&);
-void initialize_inputs(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
+void initialize_inputs(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
 }
 
 namespace postprocessing {
-void check_solution(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, Data&);
-void write_summary(std::string message);
-void write_summary(std::string instance, std::time_t curr_time);
-void write_summary(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal, double csp_cost, Data& data);
-void write_vehicle_results(std::vector<Vehicle>&, Data&);
-void write_terminal_results(std::vector<Terminal>&, Data&);
+void check_solution(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
+void write_summary(std::string);
+void write_summary(std::string, std::time_t);
+void write_summary(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&,
+        double);
+void write_vehicle_results(std::vector<Vehicle>&, ProcessedData&);
+void write_terminal_results(std::vector<Terminal>&, ProcessedData&);
+void write_iteration_stats(ProcessedData&);
 }
 
 #endif //EBUS_VNS_HELPERS_H
