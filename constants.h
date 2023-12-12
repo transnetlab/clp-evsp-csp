@@ -35,7 +35,7 @@ constexpr int SHIFT_ALL_TRIPS_THRESHOLD = 8; // Threshold for number of trips in
 constexpr bool SOLVE_EVSP_CSP = true;  // Flag to solve the CSP jointly or separately in the exchanges and shifts
 constexpr bool SOLVE_CLP_CSP = true; // Flag to solve CSP with CLP
 
-constexpr int NUM_SHORTLISTED_SOLUTIONS = 100; // Set this preferably to be a multiple of the number of cores used
-constexpr bool USE_HYBRID_OPERATORS = true;  // Flag to use hybrid operators
+constexpr int NUM_SHORTLISTED_SOLUTIONS = 1000; // Set this preferably to be a multiple of the number of cores used
+constexpr bool USE_HYBRID_OPERATORS = false;  // Flag to use hybrid operators
 
 #endif //EBUS_VNS_CONSTANTS_H

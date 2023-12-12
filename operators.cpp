@@ -840,7 +840,7 @@ void scheduling::optimize_rotations(std::vector<Vehicle>& vehicle, std::vector<T
 
     // Loop until there is no improvement in the objective or time exceeds the threshold
     while (new_objective<old_objective) {
-        old_objective = new_objective;
+        old_objective = new_objective;  // TODO: We need a copy since objective is calculated form another CSP than the best improvement
         scheduling::apply_best_improvement(vehicle, trip, terminal, processed_data);
         new_objective = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
 
@@ -983,7 +983,7 @@ void locations::open_charging_station(std::vector<Vehicle>& vehicle, std::vector
     double best_objective = evaluation::calculate_objective(vehicle, trip, terminal, processed_data);
 
     // Opening charging station will increase the cost. Check if savings can be achieved from scheduling operators
-    logger.log(LogLevel::Info, "After opening the charging station...");
+    logger.log(LogLevel::Info, "After opening the charging station...");$
     terminal[open_terminal_id-1].is_charge_station = true;  // Open the terminal with the chosen index
 
     logger.log(LogLevel::Info, "Applying local search operators to adjust scheduling...");
@@ -1027,8 +1027,9 @@ void locations::open_charging_stations(std::vector<Vehicle>& vehicle, std::vecto
         vehicle = vehicle_copy;
         processed_data.num_successful_openings = open_terminal_ids.size();
     }
-    else {
-        logger.log(LogLevel::Info, "No improvement from opening the charging station. Reverting changes...");
+    else {  // TODO: This can be a problem since opening multiple stations can lead to very high costs and we don't select a subset of them
+        // TODO: We should also probably close down unused charging stations
+        logger.log(LogLevel::Info, "No improvement from opening the charging stations. Reverting changes...");
         for (const int& open_terminal_id : open_terminal_ids)
             terminal[open_terminal_id-1].is_charge_station = false;
     }
@@ -1320,7 +1321,7 @@ void locations::open_close_stations_using_utilization(std::vector<Vehicle>& vehi
 void locations::open_close_stations_clp_csp(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
         std::vector<Terminal>& terminal, ProcessedData& processed_data)
 {
-    logger.log(LogLevel::Info, "Optimizing locations using utilization, and CLP-CSP solutions...");
+    logger.log(LogLevel::Info, "Optimizing locations using utilization and CLP-CSP solutions...");
     std::vector<int> open_terminal_ids;
     std::vector<int> close_terminal_ids;
 
