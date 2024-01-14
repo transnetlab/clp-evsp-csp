@@ -386,13 +386,13 @@ double uniform::solve_lp(std::vector<Vehicle>& vehicle, std::vector<Terminal>& t
 
         logger.log(LogLevel::Debug, "Solving the LP");
         if (!cplex.solve()) {
-            csp::log_model_rotations_terminals(cplex, vehicle, terminal);
+            csp::log_model_rotations_terminals(cplex, vehicle, terminal, processed_data);
             exit(1); // Terminate with error
         }
 
         if (processed_data.log_csp_solution) {  // Write the LP to a .lp file and save the results in a .sol file
-            cplex.exportModel(("../output/"+processed_data.instance+"_csp_uniform.lp").c_str());
-            cplex.writeSolution(("../output/"+processed_data.instance+"_csp_uniform.sol").c_str());
+            cplex.exportModel(("../output/"+processed_data.instance+"/csp_uniform.lp").c_str());
+            cplex.writeSolution(("../output/"+processed_data.instance+"/csp_uniform.sol").c_str());
         }
 
         //Display results and log the solution
@@ -672,13 +672,13 @@ double split::solve_lp(std::vector<Vehicle>& vehicle, std::vector<Terminal>& ter
 
         logger.log(LogLevel::Debug, "Solving the LP");
         if (!cplex.solve()) {
-            csp::log_model_rotations_terminals(cplex, vehicle, terminal);
+            csp::log_model_rotations_terminals(cplex, vehicle, terminal, processed_data);
             exit(1); // Terminate with error
         }
 
         if (processed_data.log_csp_solution) {  // Write the LP to a .lp file and save the results in a .sol file
-            cplex.exportModel(("../output/"+processed_data.instance+"_csp_split.lp").c_str());
-            cplex.writeSolution(("../output/"+processed_data.instance+"_csp_split.sol").c_str());
+            cplex.exportModel(("../output/"+processed_data.instance+"/csp_split.lp").c_str());
+            cplex.writeSolution(("../output/"+processed_data.instance+"/csp_split.sol").c_str());
         }
 
         // Query and print the values of the variables
@@ -864,7 +864,6 @@ void integrated::set_constraints(IloEnv& env, IloModel& model, const std::vector
     }
 
     // Constraint 4: Set the charge capacity of terminals that are not open to 0
-    // TODO: Should we write this for every time step for a tighter formulation?
     for (int s = 0; s<num_subset_terminals; ++s) {
         IloExpr lhs(env);
         lhs += variable.terminal_charge_capacity[s];
@@ -1000,13 +999,13 @@ double integrated::solve_mip(std::vector<Vehicle>& vehicle, std::vector<Terminal
 
         logger.log(LogLevel::Debug, "Solving the MIP");
         if (!cplex.solve()) {
-            csp::log_model_rotations_terminals(cplex, vehicle, terminal);
+            csp::log_model_rotations_terminals(cplex, vehicle, terminal, processed_data);
             exit(1); // Terminate with error
         }
 
         if (processed_data.log_csp_solution) {  // Write the LP to a .lp file and save the results in a .sol file
-            cplex.exportModel(("../output/"+processed_data.instance+"_clp_csp_mip.lp").c_str());
-            cplex.writeSolution(("../output/"+processed_data.instance+"_clp_csp_mip.sol").c_str());
+            cplex.exportModel(("../output/"+processed_data.instance+"/clp_csp_mip.lp").c_str());
+            cplex.writeSolution(("../output/"+processed_data.instance+"/clp_csp_mip.sol").c_str());
         }
 
         // Query and print the values of the variables
@@ -1022,9 +1021,9 @@ double integrated::solve_mip(std::vector<Vehicle>& vehicle, std::vector<Terminal
         logger.log(LogLevel::Info, "Closing charge stations that are not in use...");
         int num_charge_stations_closed = 0;
         for (int s = 0; s<terminals_with_charging_station.size(); ++s) {
-            terminal[terminals_with_charging_station[s]].is_charge_station = std::round(cplex.getValue(
-                    variable.activate_charge_station[s]));
-            if (terminal[terminals_with_charging_station[s]].is_charge_station==0)
+            terminal[terminals_with_charging_station[s]].is_charge_station = static_cast<bool>(std::round(
+                    cplex.getValue(variable.activate_charge_station[s])));
+            if (!terminal[terminals_with_charging_station[s]].is_charge_station)
                 ++num_charge_stations_closed;
         }
         logger.log(LogLevel::Info, "Number of charge stations closed = "+std::to_string(num_charge_stations_closed));
@@ -1088,9 +1087,10 @@ double csp::select_optimization_model(std::vector<Vehicle>& vehicle, std::vector
 }
 
 // Logs the solution in case CPLEX does not find an optimal solution
-void csp::log_model_rotations_terminals(IloCplex& cplex, std::vector<Vehicle>& vehicle, std::vector<Terminal>& terminal)
+void csp::log_model_rotations_terminals(IloCplex& cplex, std::vector<Vehicle>& vehicle, std::vector<Terminal>& terminal,
+        ProcessedData& processed_data)
 {
-    cplex.exportModel("../output/csp_error.lp");  // Write the LP to a .lp file
+    cplex.exportModel(("../output/"+processed_data.instance+"/csp_error.lp").c_str());  // Write the LP to a .lp file
     logger.log(LogLevel::Error, "Failed to optimize LP");
 
     // Log terminal data

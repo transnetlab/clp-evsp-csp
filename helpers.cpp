@@ -82,9 +82,9 @@ void preprocessing::read_terminal_data(std::vector<Terminal>& terminal, Processe
         line_stream >> temp_terminal.stop_id;
         line_stream >> temp_terminal.trip_id;
         line_stream >> value;
-        temp_terminal.is_depot = (value==1) ? true : false;
+        temp_terminal.is_depot = (value==1);
         line_stream >> value;
-        temp_terminal.is_charge_station = (value==1) ? true : false;
+        temp_terminal.is_charge_station = (value==1);
 
         line_stream.clear();
         terminal.push_back(temp_terminal);
@@ -171,7 +171,7 @@ void preprocessing::read_trip_pair_data(std::vector<Trip>& trip, ProcessedData& 
     for (auto& curr_trip : trip) {
         for (int i = 0; i<processed_data.num_augmented_trips; ++i) {
             input_file_compatibility >> value;
-            curr_trip.is_compatible[i] = (value==1) ? true : false;
+            curr_trip.is_compatible[i] = (value==1);
             input_file_deadheading >> curr_trip.deadhead_distance[i];
             input_file_idle_time >> curr_trip.idle_time[i];
         }
@@ -261,7 +261,7 @@ void preprocessing::create_energy_price_intervals(ProcessedData& processed_data)
 // Function to log input data
 void preprocessing::log_input_data(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
         std::vector<Terminal>& terminal)
-{ // TODO: Log data members
+{
     // Log the set of trips including the augmented depot trips
     logger.log(LogLevel::Debug,
             "Printing trip data (Trip ID, Start terminal, End terminal, Start time, End time, Distance)");
@@ -368,7 +368,7 @@ void postprocessing::check_solution(std::vector<Vehicle>& vehicle, std::vector<T
 }
 
 // Function that saves an error message in the summary file if the code does not run to completion
-void postprocessing::write_summary(std::string message)
+void postprocessing::write_summary(const std::string& message)
 {
     // Write the error message
     std::ofstream summary_file("../output/Summary.txt", std::ios_base::app);
@@ -382,7 +382,7 @@ void postprocessing::write_summary(std::string message)
 }
 
 // Function that saves the instance name
-void postprocessing::write_summary(std::string instance, std::time_t curr_time)
+void postprocessing::write_summary(const std::string& instance, std::time_t curr_time)
 {
     // Write the error message
     std::ofstream summary_file("../output/Summary.txt", std::ios_base::app);
@@ -419,15 +419,14 @@ void postprocessing::write_summary(std::vector<Vehicle>& vehicle, std::vector<Tr
 
     if (SOLVE_EVSP_CSP)
         summary_file << processed_data.num_trips << ", " << processed_data.num_terminals << ", "
-                     << num_charging_stations << ", " << vehicle.size() << ", " << std::fixed << std::setprecision(2)
+                     << num_charging_stations << ", " << vehicle.size() << ", " <<  std::fixed << std::setprecision(2)
                      << cost-csp_cost << ", " << csp_cost << ", " << cost << ", " << processed_data.runtime
                      << std::endl;
     else
         summary_file << processed_data.num_trips << ", " << processed_data.num_terminals << ", "
-                     << num_charging_stations << ", " << vehicle.size() << ", "
-                     << processed_data.num_successful_openings << ", " << processed_data.num_successful_closures << ", "
-                     << processed_data.num_successful_swaps << ", " << std::fixed << std::setprecision(2) << cost
-                     << ", " << csp_cost << ", " << cost+csp_cost << ", " << processed_data.runtime << std::endl;
+                     << num_charging_stations << ", " << vehicle.size() << ", " << std::fixed << std::setprecision(2)
+                     << cost << ", " << csp_cost << ", " << cost+csp_cost << ", " << processed_data.runtime
+                     << std::endl;
 
     // Write the constants used in the model
     /*summary_file << " (Settings: Vehicle cost: " << VEHICLE_COST << ", " << "Charge station cost: " << CHARGE_LOC_COST
@@ -439,9 +438,24 @@ void postprocessing::write_summary(std::vector<Vehicle>& vehicle, std::vector<Tr
                  << ", " << "Power capacity price: " << POWER_CAPACITY_PRICE << ", " << "Idle time threshold: "
                  << IDLE_TIME_THRESHOLD << ", " << "Perform three exchanges: " << PERFORM_THREE_EXCHANGES << ", "
                  << "Perform two shifts: " << SHIFT_ALL_TRIPS << ", " << "Swap charge stations: "
-                 << SWAP_CHARGE_STATIONS << ", " << "Shift all trips threshold: " << SHIFT_ALL_TRIPS_THRESHOLD << ")" << std::endl;*/
+                 << SWAP_CHARGE_STATIONS << ", " << "Shift all trips threshold: " << SHIFT_MULTIPLE_TRIPS_THRESHOLD << ")" << std::endl;*/
 
     summary_file.close();
+}
+
+void postprocessing::create_output_directory(const std::string& instance)
+{
+    std::string dir_path = "../output/"+instance; // Base directory path plus instance
+
+    // Create an empty directory with the above path if it does not exist. If it exists, do nothing
+    try {
+        if (!std::filesystem::exists(dir_path)) {
+            std::filesystem::create_directory(dir_path);
+        }
+    }
+    catch (const std::filesystem::filesystem_error& err) {
+        std::cerr << "Error: " << err.what() << '\n';
+    }
 }
 
 // Function to write the summary outputs to a file
@@ -449,7 +463,7 @@ void postprocessing::write_vehicle_results(std::vector<Vehicle>& vehicle, Proces
 {
     // Write the vehicle rotation processed_data to a file
     logger.log(LogLevel::Info, "Writing vehicle rotation results to file...");
-    std::ofstream vehicle_results_file("../output/"+processed_data.instance+"_vehicle_results.txt");
+    std::ofstream vehicle_results_file("../output/"+processed_data.instance+"/vehicle_results.txt");
     if (!vehicle_results_file.is_open()) {
         logger.log(LogLevel::Error, "Unable to open summary file");
         exit(1); // Terminate with error
@@ -473,7 +487,7 @@ void postprocessing::write_terminal_results(std::vector<Terminal>& terminal, Pro
 {
     // Write the terminal processed_data to a file
     logger.log(LogLevel::Info, "Writing charging station location results to file...");
-    std::ofstream terminal_results_file("../output/"+processed_data.instance+"_terminal_results.txt");
+    std::ofstream terminal_results_file("../output/"+processed_data.instance+"/terminal_results.txt");
     if (!terminal_results_file.is_open()) {
         logger.log(LogLevel::Error, "Unable to open summary file");
         exit(1); // Terminate with error
@@ -496,7 +510,7 @@ void postprocessing::write_iteration_stats(ProcessedData& processed_data)
 {
     // Write the objective values vector to a file
     logger.log(LogLevel::Info, "Writing iteration stats to file...");
-    std::ofstream iteration_stats_file("../output/"+processed_data.instance+"_iteration_stats.txt");
+    std::ofstream iteration_stats_file("../output/"+processed_data.instance+"/iteration_stats.txt");
     if (!iteration_stats_file.is_open()) {
         logger.log(LogLevel::Error, "Unable to open summary file");
         exit(1); // Terminate with error

@@ -20,7 +20,7 @@ public:
     int first_trip_index;
     int second_vehicle_index;
     int second_trip_index;
-    double savings; // TODO: Delete this if this experiment does not work
+    double savings;
 
     // Create a constructor that initializes these variables with maximum integer values
     Exchange()
@@ -36,7 +36,7 @@ public:
     int source_trip_index;
     int dest_vehicle_index;
     int dest_trip_index; // The new trip is inserted after this index
-    double savings; // TODO: Delete this if this experiment does not work
+    double savings;
 
     // Create a constructor that initializes these variables with maximum integer values
     Shift()
@@ -54,17 +54,6 @@ public:
     int second_trip_index;
     int third_vehicle_index;
     int third_trip_index;
-};
-
-class TwoShift {
-public:
-    int source_vehicle_index;
-    int first_source_trip_index;
-    int second_source_trip_index;
-    int first_dest_vehicle_index;
-    int first_dest_trip_index; // The new trip is inserted after this index
-    int second_dest_vehicle_index;
-    int second_dest_trip_index; // The new trip is inserted after this index
 };
 
 namespace scheduling {
@@ -98,9 +87,9 @@ double swap_charging_station(std::vector<Vehicle>&, std::vector<Trip>&, std::vec
         int);
 void perform_station_swap(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
 
-void open_close_stations_using_utilization(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&,
+void optimize_stations_using_utilization(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&,
         ProcessedData&);
-void open_close_stations_clp_csp(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
+void optimize_stations_using_energy(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
 void optimize_stations(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
 }
 
@@ -110,9 +99,9 @@ void perform_three_exchange(std::vector<Vehicle>&, ThreeExchange&);
 void apply_three_exchanges(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
 void optimize_three_exchanges(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
 
-double shift_all_trips(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&, int);
-void apply_all_shifts(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
-void optimize_all_shifts(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&);
+double shift_multiple_trips(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal, ProcessedData& processed_data, int source_vehicle_index);
+void apply_multiple_shifts(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal, ProcessedData& processed_data);
+void optimize_multiple_shifts(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip, std::vector<Terminal>& terminal, ProcessedData& processed_data);
 }
 
 namespace evaluation {

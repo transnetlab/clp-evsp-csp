@@ -21,7 +21,7 @@ std::string vector_to_string(const std::vector<T>& input_vector)
 }
 
 // Create a class of problem parameters that are processed from the data and used in different parts of the code
-class ProcessedData {  // TODO: Add comments on where these variables are set
+class ProcessedData {
 public:
     std::string instance;
     std::chrono::steady_clock::time_point start_time_stamp;
@@ -43,10 +43,11 @@ public:
 
     double runtime;
 
-    // TODO: Log more fine grained stats such as what was the utilization and how many vehicles had to be adjusted.
     int num_successful_openings = 0;
     int num_successful_closures = 0;
     int num_successful_swaps = 0;
+    int num_successful_all_shifts = 0;
+    int num_successful_multiple_shifts = 0;
 
     std::vector<double> objective_values;  // Vector of objective values at different iterations
 
@@ -171,6 +172,7 @@ public:
     int id;  // Vehicle IDs. Rotations are added and removed and hence these need not be continuous
     std::vector<int> trip_id;  // First and last trips are aliases for depots
     double deadhead_cost;  // Cost of deadheading in the rotation
+    double cumulative_energy_required;  // Energy required for deadheading and trips in the rotation
 
     // Variables for CSP
     bool is_charging_required = false;  // Updated to true if charging is required in the rotation
@@ -210,6 +212,19 @@ public:
             curr_trip_index = trip_id[i]-1;
             next_trip_index = trip_id[i+1]-1;
             deadhead_cost += trip[curr_trip_index].deadhead_distance[next_trip_index]*COST_PER_KM;
+        }
+    }
+
+    // Function to calculate the total energy needs of a rotation
+    void calculate_energy_required(const std::vector<Trip>& trip)
+    {
+        cumulative_energy_required = 0.0;
+        int curr_trip_index, next_trip_index;
+        for (int i = 0; i<trip_id.size()-1; ++i) {
+            curr_trip_index = trip_id[i]-1;
+            next_trip_index = trip_id[i+1]-1;
+            cumulative_energy_required += trip[curr_trip_index].deadhead_distance[next_trip_index]*ENERGY_PER_KM;
+            cumulative_energy_required += trip[next_trip_index].distance*ENERGY_PER_KM;
         }
     }
 

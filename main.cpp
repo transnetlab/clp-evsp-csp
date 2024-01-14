@@ -9,16 +9,7 @@
 #include <omp.h>
 
 /* TODOs:
- * Run profiler https://www.jetbrains.com/help/clion/cmake-profiling.html
- * Modify bash files to run concurrently on Gandalf
- * Check logging outputs for different levels
- * Log results at every exit point
- * Switch to plurals for vectors
- * Group outputs into instance-based folders */
-
-/* Test the parallel maximum without critical section
- * Try variants of scheduling -- Shift first and exchange later, random between the two, integrate diversification
-*/
+ * Check logging outputs for different levels*/
 
 // Glocal variables
 Logger logger(true);
@@ -31,13 +22,14 @@ int main(int argc, char* argv[])
     processed_data.instance = (argc>1) ? argv[1] : "Ann_Arbor";
 
     // Delete any old log files if present and create a new one. Set logging level.
-    std::remove(("../output/"+processed_data.instance+"_log.txt").c_str());
-    logger.set_file_path("../output/"+processed_data.instance+"_log.txt");
+    std::remove(("../output/"+processed_data.instance+"/log.txt").c_str());
+    logger.set_file_path("../output/"+processed_data.instance+"/log.txt");
     logger.set_log_level_threshold(LogLevel::Info);
 
     logger.log(LogLevel::Info, "Starting local search for instance "+processed_data.instance+"...");
     processed_data.start_time_stamp = std::chrono::steady_clock::now();
-    postprocessing::write_summary(processed_data.instance, std::time(nullptr));  // TODO: Check if this is needed
+    postprocessing::write_summary(processed_data.instance, std::time(nullptr));
+    postprocessing::create_output_directory(processed_data.instance);
 
     // Initialize variables
     std::vector<Trip> trip;  // Vector of trips
@@ -48,7 +40,7 @@ int main(int argc, char* argv[])
     preprocessing::initialize_inputs(vehicle, trip, terminal, processed_data);
 
     // Diversify the solution by optimizing rotations. No changes to charging locations are made here.
-    diversification::optimize_all_shifts(vehicle, trip, terminal, processed_data);
+    diversification::optimize_multiple_shifts(vehicle, trip, terminal, processed_data);
 
     // Local search for charging locations which also includes scheduling operators
     locations::optimize_stations(vehicle, trip, terminal, processed_data);

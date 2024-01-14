@@ -118,7 +118,8 @@ double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std:
         const std::string&);
 double select_optimization_model(std::vector<Vehicle>&, std::vector<Trip>&, std::vector<Terminal>&, ProcessedData&,
         std::vector<int>&, const std::string&);
-void log_model_rotations_terminals(IloCplex&, std::vector<Vehicle>&, std::vector<Terminal>&);
+void log_model_rotations_terminals(IloCplex&, std::vector<Vehicle>&, std::vector<Terminal>&,
+        ProcessedData& processed_data);
 }
 
 #endif  //EBUS_VNS_CSP_H
