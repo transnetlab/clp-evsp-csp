@@ -1,7 +1,7 @@
 # Compiler settings
 CXX = g++
 CXXFLAGS = -O3 -std=c++2a
-# CXXFLAGS = -O3 -std=c++17 # Use this if there are compatibility issues with Boost libraries
+# CXXFLAGS = -O3 -std=c++17 # Use this if there are compatibility issues with Boost
 
 # Directories for CPLEX and Concert
 CPLEXDIR = /opt/ibm/ILOG/CPLEX_Studio2211/cplex
