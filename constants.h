@@ -29,10 +29,10 @@ constexpr double SMALL_EPSILON = 1e-15; // Small number to compare doubles
 constexpr double IDLE_TIME_THRESHOLD = 0.0;  // Threshold for idle time in minutes used in opening and closing stations
 constexpr int SHIFT_MULTIPLE_TRIPS_THRESHOLD = 7; // Threshold for number of trips in a rotation to perform shift multiple trips (includes depots)
 
-constexpr bool SOLVE_EVSP_CSP = false;  // Flag to solve the CSP jointly or separately in the exchanges and shifts
-constexpr bool SOLVE_CLP_CSP = false; // Flag to solve CSP with CLP
+constexpr bool SOLVE_EVSP_CSP = true;  // Flag to solve the CSP jointly or separately in the exchanges and shifts
+constexpr bool SOLVE_CLP_CSP = true; // Flag to solve CSP with CLP
 
-constexpr int NUM_SHORTLISTED_SOLUTIONS = 100; // Set this preferably to be a multiple of the number of cores used
+constexpr int NUM_SHORTLISTED_SOLUTIONS = 500; // Set this preferably to be a multiple of the number of cores used
 constexpr bool USE_HYBRID_OPERATORS = false;  // Flag to use hybrid operators
 
 #endif //EBUS_VNS_CONSTANTS_H

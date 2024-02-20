@@ -116,7 +116,8 @@ bool is_charge_adequate_next_trip(std::vector<Trip>&, int, int, bool, bool, int,
 bool are_rotations_charge_feasible(std::vector<Trip>&, std::vector<Terminal>&, std::vector<std::vector<int>>);
 
 double calculate_trip_replacement_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
-double calculate_depot_replacement_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
+double calculate_end_depot_replacement_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
+double calculate_start_depot_replacement_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
 double calculate_trip_addition_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int, int, int);
 double calculate_trip_removal_cost(std::vector<Vehicle>&, std::vector<Trip>&, int, int);
 

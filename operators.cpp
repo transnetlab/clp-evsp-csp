@@ -455,8 +455,9 @@ double scheduling::exchange_depots(std::vector<Vehicle>& vehicle, std::vector<Tr
         int v = pairs[p].second;
         // Store a vector of trip_id vectors after swapping trips
         std::vector<std::vector<int>> swapped_rotations;
-
         std::vector<int> update_vehicle_indices = {u, v};
+
+        // Exchange end depots of vehicles u and v
         int k = vehicle[u].trip_id.size()-1;
         int l = vehicle[v].trip_id.size()-1;
         double savings = 0.0;
@@ -472,8 +473,51 @@ double scheduling::exchange_depots(std::vector<Vehicle>& vehicle, std::vector<Tr
 
         if (evaluation::are_rotations_charge_feasible(trip, terminal, swapped_rotations)) {
             // Calculate savings in deadheading from performing the exchange
-            savings += evaluation::calculate_depot_replacement_cost(vehicle, trip, u, v, k, l);
-            savings += evaluation::calculate_depot_replacement_cost(vehicle, trip, v, u, l, k);
+            savings += evaluation::calculate_end_depot_replacement_cost(vehicle, trip, u, v, k, l);
+            savings += evaluation::calculate_end_depot_replacement_cost(vehicle, trip, v, u, l, k);
+
+            if (SOLVE_EVSP_CSP) {
+                // Update a copy of the vehicle rotations
+                std::vector<Vehicle> vehicle_copy = vehicle;
+                vehicle_copy[u].trip_id = swapped_rotations[0];
+                vehicle_copy[v].trip_id = swapped_rotations[1];
+
+                // Solve the CSP model for the copy
+                double new_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal, processed_data,
+                        update_vehicle_indices, "csp-uniform");
+                savings += old_csp_cost-new_csp_cost;
+            }
+
+            // Check if the exchange is the best so far
+            //#pragma omp critical
+            {
+                if (evaluation::is_savings_maximum(savings, max_savings, u, v, k, l, exchange)) {
+                    max_savings = savings;
+                    exchange.first_vehicle_index = u;
+                    exchange.first_trip_index = k;
+                    exchange.second_vehicle_index = v;
+                    exchange.second_trip_index = l;
+                }
+            }
+        }
+
+        // Exchange start depots of vehicles u and v
+        k = 0, l = 0;
+        savings = 0.0;
+
+        swapped_rotations.clear();
+        swapped_rotations.push_back(vehicle[u].trip_id);  // This has index 0 in swapped_rotations
+        swapped_rotations.push_back(vehicle[v].trip_id);  // This has index 1 in swapped_rotations
+
+        // Exchange trips k and l of vehicles u and v in swapped_rotations
+        temp = swapped_rotations[0][k];
+        swapped_rotations[0][k] = swapped_rotations[1][l];
+        swapped_rotations[1][l] = temp;
+
+        if (evaluation::are_rotations_charge_feasible(trip, terminal, swapped_rotations)) {
+            // Calculate savings in deadheading from performing the exchange
+            savings += evaluation::calculate_start_depot_replacement_cost(vehicle, trip, u, v, k, l);
+            savings += evaluation::calculate_start_depot_replacement_cost(vehicle, trip, v, u, l, k);
 
             if (SOLVE_EVSP_CSP) {
                 // Update a copy of the vehicle rotations
@@ -531,8 +575,9 @@ double scheduling::exchange_depots_hybrid(std::vector<Vehicle>& vehicle, std::ve
         int v = pairs[p].second;
         // Store a vector of trip_id vectors after swapping trips
         std::vector<std::vector<int>> swapped_rotations;
-
         std::vector<int> update_vehicle_indices = {u, v};
+
+        // Exchange end depots of vehicles u and v
         int k = vehicle[u].trip_id.size()-1;
         int l = vehicle[v].trip_id.size()-1;
         double savings = 0.0;
@@ -548,8 +593,8 @@ double scheduling::exchange_depots_hybrid(std::vector<Vehicle>& vehicle, std::ve
 
         if (evaluation::are_rotations_charge_feasible(trip, terminal, swapped_rotations)) {
             // Calculate savings in deadheading from performing the exchange
-            savings += evaluation::calculate_depot_replacement_cost(vehicle, trip, u, v, k, l);
-            savings += evaluation::calculate_depot_replacement_cost(vehicle, trip, v, u, l, k);
+            savings += evaluation::calculate_end_depot_replacement_cost(vehicle, trip, u, v, k, l);
+            savings += evaluation::calculate_end_depot_replacement_cost(vehicle, trip, v, u, l, k);
 
             #pragma omp critical
             {
@@ -561,14 +606,51 @@ double scheduling::exchange_depots_hybrid(std::vector<Vehicle>& vehicle, std::ve
                 temp_exchange.savings = savings;
                 exchanges.push_back(temp_exchange);
 
-                // Sort exchanges based on savings and keep only top 100
+                // Sort exchanges based on savings and keep only the top ones
                 std::sort(exchanges.begin(), exchanges.end(), [](const Exchange& a, const Exchange& b) {
                   return a.savings>b.savings; // sort in descending order of savings
                 });
 
-                if (exchanges.size()>NUM_SHORTLISTED_SOLUTIONS) {
-                    exchanges.resize(NUM_SHORTLISTED_SOLUTIONS); // keep only top 100
-                }
+                if (exchanges.size()>NUM_SHORTLISTED_SOLUTIONS)
+                    exchanges.resize(NUM_SHORTLISTED_SOLUTIONS); // keep only top solutions
+            }
+        }
+
+        // Exchange start depots of vehicles u and v
+        k = 0, l = 0;
+        savings = 0.0;
+
+        swapped_rotations.clear();
+        swapped_rotations.push_back(vehicle[u].trip_id);  // This has index 0 in swapped_rotations
+        swapped_rotations.push_back(vehicle[v].trip_id);  // This has index 1 in swapped_rotations
+
+        // Exchange trips k and l of vehicles u and v in swapped_rotations
+        temp = swapped_rotations[0][k];
+        swapped_rotations[0][k] = swapped_rotations[1][l];
+        swapped_rotations[1][l] = temp;
+
+        if (evaluation::are_rotations_charge_feasible(trip, terminal, swapped_rotations)) {
+            // Calculate savings in deadheading from performing the exchange
+            savings += evaluation::calculate_start_depot_replacement_cost(vehicle, trip, u, v, k, l);
+            savings += evaluation::calculate_start_depot_replacement_cost(vehicle, trip, v, u, l, k);
+
+            #pragma omp critical
+            {
+                Exchange temp_exchange;
+                temp_exchange.first_vehicle_index = u;
+                temp_exchange.first_trip_index = k;
+                temp_exchange.second_vehicle_index = v;
+                temp_exchange.second_trip_index = l;
+                temp_exchange.savings = savings;
+                exchanges.push_back(temp_exchange);
+
+                // Sort exchanges based on savings and keep only the top ones
+                std::sort(exchanges.begin(), exchanges.end(), [](const Exchange& a, const Exchange& b) {
+                  return a.savings>b.savings; // sort in descending order of savings
+                });
+
+                if (exchanges.size()>NUM_SHORTLISTED_SOLUTIONS)
+                    exchanges.resize(NUM_SHORTLISTED_SOLUTIONS); // keep only top solutions
             }
         }
     }
@@ -930,7 +1012,8 @@ void locations::open_charging_stations(std::vector<Vehicle>& vehicle, std::vecto
 
     // Solve the CLP-CSP or use the utilization metrics to close down unused charging stations
     if (SOLVE_CLP_CSP)
-        double clp_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal, processed_data, "clp-csp-split");
+        double clp_csp_cost = csp::select_optimization_model(vehicle_copy, trip, terminal, processed_data,
+                "clp-csp-split");
     else
         evaluation::calculate_utilization(vehicle_copy, trip, terminal, processed_data);
 
@@ -1775,8 +1858,8 @@ void evaluation::calculate_utilization(std::vector<Vehicle>& vehicle, std::vecto
     for (const auto& curr_terminal : terminal) {
         logger.log(LogLevel::Info,
                 "Terminal "+std::to_string(curr_terminal.id)+": "+std::to_string(curr_terminal.is_charge_station)
-                +" "+std::to_string(curr_terminal.current_idle_time)
-                +" "+std::to_string(curr_terminal.potential_idle_time));
+                        +" "+std::to_string(curr_terminal.current_idle_time)
+                        +" "+std::to_string(curr_terminal.potential_idle_time));
     }
 
     // Close charging terminals with zero utilization
@@ -1971,8 +2054,7 @@ double evaluation::calculate_trip_replacement_cost(std::vector<Vehicle>& vehicle
 }
 
 // Calculate the cost changes from replacing a depot with another depot at the end of a trip
-// Start depots are not exchanged because they were found from nearest neighbors
-double evaluation::calculate_depot_replacement_cost(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+double evaluation::calculate_end_depot_replacement_cost(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
         int first_vehicle_index, int second_vehicle_index, int first_vehicle_trip_index,
         int second_vehicle_trip_index)
 {
@@ -1982,6 +2064,21 @@ double evaluation::calculate_depot_replacement_cost(std::vector<Vehicle>& vehicl
 
     double curr_cost = (trip[penultimate_trip-1].deadhead_distance[old_depot-1])*COST_PER_KM;
     double new_cost = (trip[penultimate_trip-1].deadhead_distance[new_depot-1])*COST_PER_KM;
+
+    return curr_cost-new_cost;  // If current cost is higher, savings are positive and the exchange is beneficial
+}
+
+// Calculate the cost changes from replacing a depot with another depot at the start of a trip
+double evaluation::calculate_start_depot_replacement_cost(std::vector<Vehicle>& vehicle, std::vector<Trip>& trip,
+        int first_vehicle_index, int second_vehicle_index, int first_vehicle_trip_index,
+        int second_vehicle_trip_index)
+{
+    int opening_trip = vehicle[first_vehicle_index].trip_id[1];
+    int old_depot = vehicle[first_vehicle_index].trip_id[first_vehicle_trip_index];
+    int new_depot = vehicle[second_vehicle_index].trip_id[second_vehicle_trip_index];
+
+    double curr_cost = (trip[old_depot-1].deadhead_distance[opening_trip-1])*COST_PER_KM;
+    double new_cost = (trip[new_depot-1].deadhead_distance[opening_trip-1])*COST_PER_KM;
 
     return curr_cost-new_cost;  // If current cost is higher, savings are positive and the exchange is beneficial
 }
